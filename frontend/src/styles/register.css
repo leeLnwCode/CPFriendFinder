@@ -1,0 +1,401 @@
+* {
+    box-sizing: border-box;
+}
+
+.register-page {
+    min-height: 100vh;
+    background: var(--bg-color);
+    color: var(--text-color);
+
+    display: flex;
+    justify-content: center;
+
+    padding: 40px 20px;
+
+    overflow-y: auto;
+}
+
+.register-card {
+    width: 100%;
+    max-width: 650px;
+    color: var(--text-color);
+
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.register-logo {
+    width: 220px;
+    height: auto;
+    margin-bottom: 20px;
+}
+
+.register-card h1 {
+    margin: 0;
+
+    color: var(--text-color);
+    font-size: 36px;
+}
+
+.register-subtitle {
+    margin: 10px 0 30px;
+
+    color: var(--secondary-text);
+    font-size: 17px;
+}
+
+
+/* Form */
+
+.register-form {
+    width: 100%;
+    max-width: 540px;
+}
+
+.register-form label {
+    display: block;
+    text-align: left;
+
+    margin-top: 18px;
+    margin-bottom: 8px;
+
+    color: #b7b7b7;
+    font-size: 15px;
+}
+
+
+/* Input */
+
+.register-form input,
+.register-form select {
+    width: 100%;
+    height: 50px;
+
+    padding: 0 16px;
+
+    border: none;
+    border-radius: 9px;
+
+    background: var(--input-bg);
+    color: var(--input-text);
+    font-size: 15px;
+
+    outline: none;
+}
+
+.register-form input::placeholder {
+    color: #777;
+}
+
+
+/* Password */
+
+.password-wrapper {
+    position: relative;
+}
+
+.password-wrapper input {
+    padding-right: 65px;
+}
+
+.password-wrapper button {
+    position: absolute;
+
+    right: 12px;
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    border: none;
+    background: transparent;
+
+    color: #222;
+
+    cursor: pointer;
+}
+
+
+/* Name */
+
+.name-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+
+    gap: 15px;
+}
+
+
+/* Profile */
+
+.profile-upload {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    margin-bottom: 15px;
+}
+
+.profile-circle {
+    width: 100px;
+    height: 100px;
+
+    border-radius: 50%;
+
+    background: #f0f2f5;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    color: #18a8dc;
+    font-size: 40px;
+}
+
+.upload-button {
+    margin-top: 10px;
+
+    border: none;
+    background: transparent;
+
+    color: #18a8dc;
+
+    cursor: pointer;
+}
+
+
+/* Create Account */
+
+.create-account-button {
+    width: 100%;
+    height: 52px;
+
+    margin-top: 30px;
+
+    border: none;
+    border-radius: 9px;
+
+    background: var(--primary);
+    color: white;
+
+    font-size: 17px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    box-shadow: 0 10px 20px rgba(24, 168, 220, 0.3);
+    margin-bottom: 40px;
+}
+
+.create-account-button:hover {
+    background: var(--primary-hover);
+}
+
+
+/* Login */
+
+.already-account {
+    margin-top: 25px;
+
+    color: #aaa;
+
+    font-size: 14px;
+}
+
+.already-account a {
+    margin-left: 5px;
+
+    color: #18a8dc;
+
+    text-decoration: none;
+}
+
+
+/* =========================
+   Register Buttons
+========================= */
+
+.register-buttons {
+    width: 100%;
+    max-width: 540px;
+
+    display: flex;
+    gap: 15px;
+
+    margin-top: 30px;
+}
+
+
+/* Cancel / Back */
+
+.cancel-button {
+    flex: 1;
+
+    height: 52px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border: 1px solid #18a8dc;
+    border-radius: 9px;
+
+    background: transparent;
+    color: #18a8dc;
+
+    font-size: 16px;
+    font-weight: 600;
+
+    text-decoration: none;
+    cursor: pointer;
+    margin-bottom: 40px;
+}
+
+.cancel-button:hover {
+    background: var(--cancel-hover);
+}
+
+
+/* Next */
+
+.next-button {
+    flex: 1;
+
+    height: 52px;
+
+    border: none;
+    border-radius: 9px;
+
+    background: #18a8dc;
+    color: white;
+
+    font-size: 16px;
+    font-weight: 600;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 10px 20px
+        rgba(24, 168, 220, 0.3);
+}
+
+
+.next-button:hover {
+    background: #1299ca;
+}
+
+
+/* =========================
+   Profile Picture
+========================= */
+
+.profile-upload {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    margin-bottom: 20px;
+}
+
+
+.profile-circle {
+    width: 110px;
+    height: 110px;
+
+    border-radius: 50%;
+
+    background: #f0f2f5;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    color: #18a8dc;
+    font-size: 40px;
+}
+
+
+.upload-button {
+    margin-top: 10px;
+
+    border: none;
+    background: transparent;
+
+    color: #18a8dc;
+
+    cursor: pointer;
+}
+
+
+/* =========================
+   Interest Selection
+========================= */
+
+.interest-container {
+    width: 100%;
+    max-width: 540px;
+
+    margin-top: 15px;
+}
+
+
+.interest-group {
+    margin-bottom: 28px;
+}
+
+
+.interest-group h3 {
+    margin: 0 0 12px;
+    text-align: left;
+
+    color: white;
+    font-size: 16px;
+    font-weight: 600;
+}
+
+
+.interest-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+
+/* Chip */
+
+.interest {
+    border: none;
+    border-radius: 20px;
+
+    padding: 7px 14px;
+
+    background: var(--interest-bg);
+    color: var(--interest-text);
+
+    font-size: 13px;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.interest-group h3 {
+    color: var(--text-color);
+}
+
+
+/* Hover */
+
+.interest:hover {
+    background: #e1e1e1;
+}
+
+
+/* Selected */
+
+.interest.selected {
+    background: var(--interest-selected-bg);
+    color: var(--interest-selected-text);
+
+    font-weight: 500;
+}
