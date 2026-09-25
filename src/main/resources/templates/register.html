@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Create Account - CP Friend Finder</title>
+
+    <link rel="stylesheet" th:href="@{/css/register.css}">
+
+</head>
+
+<body class="register-body">
+
+    <div class="register-page">
+
+        <div class="register-card">
+
+            <!-- STEP INDICATOR  -->
+
+            <div class="step-indicator">
+
+                <div class="step active" id="stepIndicator1">
+                    <span>1</span>
+                    <p>บัญชี</p>
+                </div>
+
+                <div class="step-line"></div>
+
+                <div class="step" id="stepIndicator2">
+                    <span>2</span>
+                    <p>โปรไฟล์</p>
+                </div>
+
+                <div class="step-line"></div>
+
+                <div class="step" id="stepIndicator3">
+                    <span>3</span>
+                    <p>ความสนใจ</p>
+                </div>
+
+            </div>
+
+
+            <!-- STEP 1 -->
+
+            <section class="register-step active-step" id="step1">
+
+                <h1>สร้างบัญชี</h1>
+
+                <p class="register-subtitle">
+                    สร้างบัญชีของคุณเพื่อนหาเพื่อนใหม่!
+                </p>
+
+
+                <div class="register-form">
+
+                    <label for="email">
+                        Email address
+                    </label>
+
+                    <input id="email" type="email" placeholder="Enter your email" required>
+
+
+                    <label for="password">
+                        Password
+                    </label>
+
+                    <div class="password-wrapper">
+
+                        <input id="password" type="password" placeholder="Enter your password" required>
+
+                        <button type="button" class="password-toggle" data-target="password">
+                            Show
+                        </button>
+
+                    </div>
+
+
+                    <label for="confirmPassword">
+                        Confirm password
+                    </label>
+
+                    <div class="password-wrapper">
+
+                        <input id="confirmPassword" type="password" placeholder="Confirm your password" required>
+
+                        <button type="button" class="password-toggle" data-target="confirmPassword">
+                            Show
+                        </button>
+
+                    </div>
+
+                </div>
+
+
+                <div class="register-buttons">
+
+                    <a th:href="@{/login}" class="cancel-button">
+                        ยกเลิก
+                    </a>
+
+                    <button type="button" class="next-button" onclick="nextStep(2)">
+                        ถัดไป →
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <!--  STEP 2 -->
+
+            <section class="register-step" id="step2">
+
+                <h1>โปรไฟล์</h1>
+
+                <p class="register-subtitle">
+                    บอกอะไรสักอย่างเกี่ยวกับคุณ
+                </p>
+
+
+                <div class="register-form">
+
+                    <!-- Profile Picture -->
+
+                    <label>
+                        รูปโปรไฟล์
+                    </label>
+
+                    <div class="profile-upload">
+
+                        <div class="profile-preview">
+
+                            <img id="profilePreview" src="" alt="Profile">
+
+                            <span id="profilePlaceholder">
+                                +
+                            </span>
+
+                        </div>
+
+                        <input id="profileImage" type="file" accept="image/*" onchange="previewProfile(event)">
+
+                        <label for="profileImage" class="upload-button">
+                            เลือกรูป
+                        </label>
+
+                    </div>
+
+
+                    <!-- Username -->
+
+                    <label for="username">
+                        Username
+                    </label>
+
+                    <input id="username" type="text" placeholder="Enter your username">
+
+
+                    <!-- Name -->
+
+                    <div class="name-row">
+
+                        <div>
+
+                            <label for="firstname">
+                                ชื่อ
+                            </label>
+
+                            <input id="firstname" type="text" placeholder="First name">
+
+                        </div>
+
+
+                        <div>
+
+                            <label for="lastname">
+                                นามสกุล
+                            </label>
+
+                            <input id="lastname" type="text" placeholder="Last name">
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Date of Birth -->
+
+                    <label for="dob">
+                        วันเกิด
+                    </label>
+
+                    <input id="dob" type="date">
+
+
+                    <!-- Year -->
+
+                    <label for="year">
+                        ชั้นปี
+                    </label>
+
+                    <select id="year">
+
+                        <option value="">
+                            เลือกชั้นปี
+                        </option>
+
+                        <option value="1">
+                            ปี 1
+                        </option>
+
+                        <option value="2">
+                            ปี 2
+                        </option>
+
+                        <option value="3">
+                            ปี 3
+                        </option>
+
+                        <option value="4">
+                            ปี 4
+                        </option>
+
+                        <option value="5">
+                            ปีลึก
+                        </option>
+
+                    </select>
+
+
+                    <!-- Department -->
+
+                    <label for="department">
+                        สาขา
+                    </label>
+
+                    <select id="year">
+
+                        <option value="">
+                            เลือกสาขา
+                        </option>
+
+                        <option value="CS">
+                            CS
+                        </option>
+
+                        <option value="CS-VIP">
+                            CS-VIP
+                        </option>
+
+                        <option value="ITII">
+                            ITII
+                        </option>
+
+                        <option value="CY">
+                            CY
+                        </option>
+
+                        <option value="CY-VIP">
+                            CY-VIP
+                        </option>
+
+                        <option value="AI">
+                            AI
+                        </option>
+
+                        <option value="AI-VIP">
+                            AI-VIP
+                        </option>
+
+                        <option value="GIS">
+                            GIS
+                        </option>
+
+                    </select>
+
+                </div>
+
+
+                <div class="register-buttons">
+
+                    <button type="button" class="back-button" onclick="nextStep(1)">
+                        ← กลับ
+                    </button>
+
+                    <button type="button" class="next-button" onclick="nextStep(3)">
+                        ถัดไป →
+                    </button>
+
+                </div>
+
+            </section>
+
+
+            <!-- STEP 3 -->
+
+            <section class="register-step" id="step3">
+
+                <h1>ความสนใจ</h1>
+
+                <p class="register-subtitle">
+                    เลือกความสนใจเพื่อช่วยให้คุณหาเพื่อน
+                </p>
+
+
+                <div class="interest-container">
+
+
+                    <!-- Games -->
+                    <div class="interest-group">
+
+                        <h3>เกม</h3>
+
+                        <div class="interest-list">
+
+                            <button type="button" class="interest" onclick="toggleInterest(this)">
+                                🎮 Gaming
+                            </button>
+
+                            <button type="button" class="interest" onclick="toggleInterest(this)">
+                                ⚔ ROV
+                            </button>
+
+                            <button type="button" class="interest" onclick="toggleInterest(this)">
+                                ⚔ Minecraft
+                            </button>
+
+                            <button type="button" class="interest" onclick="toggleInterest(this)">
+                                ⚔ Valorant
+                            </button>
+
+                        </div>
+
+
+                        <!-- Custom game -->
+
+                        <div class="interest-list" id="customGameList"></div>
+
+                        <div class="custom-interest">
+
+                            <input type="text" id="customGame" placeholder="ชื่อเกมอื่นๆ">
+
+                            <button type="button" class="add-interest-button" onclick="addCustomGame()">
+                                + เพิ่ม
+                            </button>
+
+                        </div>
+
+                        
+
+                    </div>
+
+
+                    <!-- Activities -->
+
+                    <div class="interest-group">
+
+                        <h3>กิจกรรม</h3>
+
+                        <div class="interest-list">
+
+                            <button type="button" class="interest" onclick="toggleInterest(this)">
+                                💻 Programming
+                            </button>
+
+                            <button type="button" class="interest" onclick="toggleInterest(this)">
+                                📁 Project
+                            </button>
+
+                            <button type="button" class="interest" onclick="toggleInterest(this)">
+                                🚀 Hackathon
+                            </button>
+
+                        </div>
+
+                        <!-- Custom Activity -->
+
+                        <div class="interest-list" id="customActivityList"></div>
+                        
+                        <div class="custom-interest">
+
+                            <input type="text" id="customActivity" placeholder="กิจกรรมอื่นๆ">
+
+                            <button type="button" class="add-interest-button" onclick="addCustomActivity()">
+                                + เพิ่ม
+                            </button>
+
+                        </div>
+
+                        
+
+                    </div>
+
+
+                    <!-- Entertainment -->
+
+                    <div class="interest-group">
+
+                        <h3>ความบันเทิง</h3>
+
+                        <div class="interest-list">
+
+                            <button type="button" class="interest" onclick="toggleInterest(this)">
+                                🎬 Anime
+                            </button>
+
+                            <button type="button" class="interest" onclick="toggleInterest(this)">
+                                🎥 Movie
+                            </button>
+
+                            <button type="button" class="interest" onclick="toggleInterest(this)">
+                                📚 Book
+                            </button>
+
+                        </div>
+
+                        <div class="interest-list" id="customEntertainmentList"></div>
+
+                        <div class="custom-interest">
+
+                            <input type="text" id="customEntertainment" placeholder="ความบันเทิงอื่นๆ">
+
+                            <button type="button" class="add-interest-button" onclick="addCustomEntertainment()">
+                                + เพิ่ม
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="register-buttons">
+
+                    <button type="button" class="back-button" onclick="nextStep(2)">
+                        ← กลับ
+                    </button>
+
+                    <button type="button" class="next-button" onclick="createAccount()">
+                        สร้างบัญชี
+                    </button>
+
+                </div>
+
+            </section>
+
+        </div>
+
+    </div>
+
+
+    <script th:src="@{/js/register.js}"></script>
+
+</body>
+
+</html>
