@@ -16,5 +16,11 @@ public class PageController {
     public String register() {
         return "register";
     }
+
+    @GetMapping("/home")
+    public String home() {
+        return "home";
+    }
+
     
 }
