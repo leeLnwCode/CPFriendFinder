@@ -1,5 +1,12 @@
-# API Test (เตรียมพื้นที่)
+# การทดสอบ API
 
-ยังไม่มีผลทดสอบ API จริงในชุดเริ่มต้นนี้ เมื่อทีมยืนยัน Contract และ Security Configuration แล้ว ให้เพิ่ม Postman Collection หรือ Automated API Test สำหรับ `/api/auth/register`, `/api/auth/login`, `GET /api/auth`, `/api/auth/logout` พร้อม request, expected HTTP status, actual response และหลักฐาน
+พื้นที่สำหรับจัดเก็บกรณีทดสอบ API และหลักฐานผลการรันของ CPFriendFinder
 
-Endpoint ที่พบในซอร์ส `AuthController` ไม่เท่ากับการรับรองว่าใช้งานได้ครบทุกกรณี; สถานะยังเป็น Planned
+| Endpoint | ประเด็นทดสอบ |
+|---|---|
+| `POST /api/auth/register` | HTTP status, validation และรูปแบบ response |
+| `POST /api/auth/login` | HTTP status, credential และ session |
+| `GET /api/auth` | ผลลัพธ์เมื่อมีหรือไม่มี session |
+| `POST /api/auth/logout` | HTTP status และการสิ้นสุด session |
+
+**สถานะ:** ยังไม่มีผลการรันทดสอบ API ในรายงานวันที่ 30 กันยายน 2569
