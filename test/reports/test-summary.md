@@ -1,19 +1,23 @@
-# สรุปผลการทดสอบ CPFriendFinder
+# รายงานสรุปผลการทดสอบ CPFriendFinder
 
-**อัปเดต:** 30 กันยายน 2569  
+**วันที่รัน:** 30 กันยายน 2569 เวลา 14:14 น. (+07)  
 **ผู้ทดสอบ:** จิรัชญา เป้าจันทึก  
-**ขอบเขต:** Backend เริ่มต้น และ Unit Test ของ Register/Login
+**สภาพแวดล้อม:** Windows 11, JDK 21.0.11, Maven Wrapper 3.9.16  
+**คำสั่ง:** `./mvnw -Djava.version=21 clean test`
 
-| ชุดทดสอบ | จำนวนที่เตรียม | รันแล้ว | ผ่าน | ไม่ผ่าน | สถานะ |
-|---|---:|---:|---:|---:|---|
-| `FriendApplicationTests` | 1 | 1 | 1 | 0 | ผ่าน |
-| `AuthServiceRegisterTest` | 12 | 0 | — | — | ยังไม่รัน |
-| `AuthServiceLoginTest` | 11 | 0 | — | — | ยังไม่รัน |
+## ผลการทดสอบ
 
-**ผลที่ยืนยันตอนนี้:** รันแล้ว 1 รายการ ผ่าน 1 รายการ ไม่มี Fail/Error ส่วน Test ของ Register และ Login เป็นรายการที่เตรียมไว้ ยังต้องรันและกรอกผลจริง
+| ชุดทดสอบ | รัน | ผ่าน | ไม่ผ่าน | Error | ข้าม |
+|---|---:|---:|---:|---:|---:|
+| `FriendApplicationTests` | 1 | 1 | 0 | 0 | 0 |
+| `AuthServiceRegisterTest` | 12 | 12 | 0 | 0 | 0 |
+| `AuthServiceLoginTest` | 11 | 11 | 0 | 0 | 0 |
+| `AuthServiceTest` | 1 | 1 | 0 | 0 | 0 |
+| **รวม** | **25** | **25** | **0** | **0** | **0** |
 
-**งานที่ต้องทำต่อ**
-1. รัน Unit Test ของ Register และ Login แล้วตรวจรายงาน Surefire
-2. บันทึกผลลง Excel ทั้ง Expected/Actual และสถานะของแต่ละกรณี
-3. อัปเดตตารางนี้ตามผลรันจริง รวมถึงรายการที่ Fail (ถ้ามี)
-4. ทดสอบอีกครั้งหลัง Backend รวมเข้า `develop`
+**ผลจาก Maven:** `BUILD SUCCESS`  
+**ระยะเวลา:** 1 นาที 34 วินาที
+
+Test Case ใน Excel ครอบคลุม `AuthServiceRegisterTest` 12 กรณี และ `AuthServiceLoginTest` 11 กรณี รวม 23 กรณี ส่วนผลรวมจาก Maven มี `FriendApplicationTests` และ `AuthServiceTest` เพิ่มอีกอย่างละ 1 รายการ จึงเป็น 25 รายการ
+
+**ขอบเขต:** ผลรายงานนี้ครอบคลุมการโหลด Spring Context และการทดสอบ AuthService ด้วย JUnit 5/Mockito ไม่รวมการทดสอบ Controller, API, ฐานข้อมูลจริง หรือ UAT
