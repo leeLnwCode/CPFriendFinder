@@ -1,22 +1,37 @@
-# รายงานสรุปผลการทดสอบ CPFriendFinder
+# CPFriendFinder Test Summary Report
 
-**วันที่รัน:** 30 กันยายน 2569 เวลา 15:00 น. (+07)  
-**ผู้ทดสอบ:** จิรัชญา เป้าจันทึก  
-**สภาพแวดล้อม:** Windows 11, JDK 21.0.11, Maven Wrapper 3.9.16  
-**คำสั่ง:** `./mvnw -Djava.version=21 clean test`
+**Date:** 2026-09-30  
+**Tester:** Jiratchaya Paocanthuek  
+**Environment:** Windows 11, JDK 21, Maven Wrapper  
+**Command:** `./mvnw -Djava.version=21 clean test`
 
-## ผลการทดสอบ
+## Latest Execution
 
-| ชุดทดสอบ | รัน | ผ่าน | ไม่ผ่าน | Error | ข้าม |
+**Completed:** 17:09:30 (UTC+07:00)  
+**Duration:** 41.638 seconds  
+**Build Result:** BUILD SUCCESS
+
+| Test Class | Tests | Passed | Failed | Errors | Skipped |
 |---|---:|---:|---:|---:|---:|
 | `FriendApplicationTests` | 1 | 1 | 0 | 0 | 0 |
 | `AuthServiceRegisterTest` | 12 | 12 | 0 | 0 | 0 |
 | `AuthServiceLoginTest` | 11 | 11 | 0 | 0 | 0 |
-| **รวม** | **24** | **24** | **0** | **0** | **0** |
+| `AuthControllerMvcTest` | 10 | 10 | 0 | 0 | 0 |
+| `AuthSecurityWebMvcTest` | 9 | 9 | 0 | 0 | 0 |
+| **Total** | **43** | **43** | **0** | **0** | **0** |
 
-**ผลจาก Maven:** `BUILD SUCCESS`  
-**ระยะเวลา:** 2 นาที 0 วินาที
+The workbook documents 42 authentication test cases: 23 service, 10 controller MVC and 9 security cases. The additional Spring application-context test brings the Maven total to 43.
 
-Test Case ใน Excel ครอบคลุม `AuthServiceRegisterTest` 12 กรณี และ `AuthServiceLoginTest` 11 กรณี รวม 23 กรณี ส่วนผลรวมจาก Maven มี `FriendApplicationTests` เพิ่มอีก 1 รายการ จึงเป็น 24 รายการ
+## Execution History
 
-**ขอบเขต:** ผลรายงานนี้ครอบคลุมการโหลด Spring Context และการทดสอบ AuthService ด้วย JUnit 5/Mockito ไม่รวมการทดสอบ Controller, API, ฐานข้อมูลจริง หรือ UAT
+| Completed (2026-09-30, UTC+07:00) | Scope | Result | Duration |
+|---|---|---:|---:|
+| 15:00:47 | Service and application context | 24/24 passed | Not recorded |
+| 16:23:47 | Service, controller and application context | 34/34 passed | 55.244 seconds |
+| 17:09:30 | Service, controller, security and application context | 43/43 passed | 41.638 seconds |
+
+## Test Boundaries
+
+Service tests use Mockito for dependencies. Controller tests use MockMvc. Security tests run the configured security filter chain with `AuthService` mocked. `FriendApplicationTests` checks application-context startup. These results do not represent end-to-end testing against a real database.
+
+**Execution evidence:** The local Maven/Surefire report directory is `target/surefire-reports/`; case-level records and history are in the workbook.
