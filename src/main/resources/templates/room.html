@@ -1,0 +1,188 @@
+<!doctype html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>Room - CP Friend Finder</title>
+    <link rel="stylesheet" th:href="@{/css/room.css}" />
+    <link rel="stylesheet" th:href="@{/css/theme.css}" />
+  </head>
+
+  <body>
+    <div class="room-page">
+      <!-- ================= SIDEBAR ================= -->
+
+      <aside class="sidebar">
+        <!-- Logo -->
+        <div class="sidebar-logo">
+          <img th:src="@{/images/Full_logo.png}" alt="CP Friend Finder" />
+        </div>
+
+        <!-- Profile -->
+        <div class="sidebar-profile">
+          <img
+            th:src="@{/images/man.jpg}"
+            alt="Profile"
+            class="profile-image"
+          />
+
+          <div class="profile-info">
+            <div class="profile-name">Singha Waraha</div>
+
+            <div class="profile-year">ปี 1 CS</div>
+          </div>
+
+          <button class="profile-arrow">⌄</button>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="sidebar-menu">
+          <a href="/home" class="menu-item">
+            <span class="menu-icon"> 🏠︎ </span>
+
+            <span> หน้าหลัก </span>
+          </a>
+
+          <a href="#" class="menu-item">
+            <span class="menu-icon"> 🎲 </span>
+
+            <span> สุ่มคุย </span>
+          </a>
+
+          <a href="#" class="menu-item">
+            <span class="menu-icon"> 🫂 </span>
+
+            <span> เพื่อนของฉัน </span>
+          </a>
+
+          <a href="#" class="menu-item">
+            <span class="menu-icon"> 🔔 </span>
+
+            <span> การแจ้งเตือน </span>
+          </a>
+
+          <a href="/setting" class="menu-item active">
+            <span class="menu-icon">⚙️</span>
+            <span>การตั้งค่า</span>
+          </a>
+        </nav>
+      </aside>
+
+      <!-- ================= ROOM ================= -->
+
+      <main class="room-content">
+        <!-- Room Header -->
+
+        <header class="room-header">
+          <div>
+            <h1 id="roomTitle">ห้องพูดคุย</h1>
+
+            <p id="roomMembers">0/10 คนกำลังคุย</p>
+          </div>
+
+          <button type="button" class="leave-room-button" id="leaveRoomButton">
+            ออกจากห้อง
+          </button>
+        </header>
+
+        <!-- ================= ROOM MEMBERS ================= -->
+
+        <section class="members-section">
+          <div class="members-grid">
+            <!-- Member 1 : Owner -->
+            <article class="member-card">
+              <img id="ownerImage" th:src="@{/images/man2.jpg}" alt="Member" />
+
+              <h3 id="ownerName">เจ้าของห้อง</h3>
+
+              <p id="ownerYear">-</p>
+
+              <small>(เจ้าของห้อง)</small>
+            </article>
+
+            <!-- Member 2 -->
+            <article class="member-card">
+              <img th:src="@{/images/man2.jpg}" alt="Member" />
+
+              <h3>Prashant Kumar Singh</h3>
+
+              <p>ปี 3 CS-VIP</p>
+            </article>
+
+            <!-- Member 3 -->
+            <article class="member-card">
+              <img th:src="@{/images/man2.jpg}" alt="Member" />
+
+              <h3>Prashant Kumar Singh</h3>
+
+              <p>ปี 3 CS-VIP</p>
+            </article>
+
+            <!-- Member 4 -->
+            <article class="member-card">
+              <img th:src="@{/images/man2.jpg}" alt="Member" />
+
+              <h3>Prashant Kumar Singh</h3>
+
+              <p>ปี 3 CS-VIP</p>
+            </article>
+
+            <!-- Member 5 -->
+            <article class="member-card">
+              <img th:src="@{/images/man2.jpg}" alt="Member" />
+
+              <h3>Prashant Kumar Singh</h3>
+
+              <p>ปี 3 CS-VIP</p>
+            </article>
+
+            <!-- Member 6 -->
+            <article class="member-card">
+              <img th:src="@{/images/man2.jpg}" alt="Member" />
+
+              <h3>Prashant Kumar Singh</h3>
+
+              <p>ปี 3 CS-VIP</p>
+            </article>
+          </div>
+        </section>
+      </main>
+
+      <!-- ================= CHAT ================= -->
+
+      <aside class="chat-panel">
+        <div class="chat-header">
+          <h2>แชท</h2>
+
+          <span id="chatMembers">0 คน</span>
+        </div>
+
+        <!-- Messages -->
+
+        <div class="chat-messages" id="chatMessages">
+          <div class="message">
+            <strong> Kumar </strong>
+
+            <p>ชื่อไรกัน</p>
+          </div>
+        </div>
+
+        <!-- Chat Input -->
+
+        <div class="chat-input-area">
+          <button type="button" class="chat-more">⊞</button>
+
+          <input type="text" id="chatInput" placeholder="พิมพ์ข้อความ..." />
+
+          <button type="button" class="chat-send" id="sendMessageButton">
+            ส่ง
+          </button>
+        </div>
+      </aside>
+    </div>
+
+    <script th:src="@{/js/theme.js}"></script>
+    <script th:src="@{/js/room.js(v=2)}"></script>
+  </body>
+</html>
