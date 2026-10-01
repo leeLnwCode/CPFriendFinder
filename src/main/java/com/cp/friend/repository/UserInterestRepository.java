@@ -18,6 +18,14 @@ public interface UserInterestRepository extends JpaRepository<UserInterest, User
     @Query("SELECT ui FROM UserInterest ui JOIN FETCH ui.interest WHERE ui.userId = :userId")
     List<UserInterest> findByUserIdWithInterest(@Param("userId") UUID userId);
 
+        @Query("""
+            SELECT ui FROM UserInterest ui
+            JOIN FETCH ui.interest interest
+            WHERE ui.userId = :userId AND interest.isActive = true
+            ORDER BY interest.name ASC
+            """)
+        List<UserInterest> findActiveByUserIdWithInterest(@Param("userId") UUID userId);
+
     boolean existsByUserIdAndInterestId(UUID userId, UUID interestId);
 
     // ล้าง interest ทั้งหมดของ user (ใช้ตอนแก้ไขโปรไฟล์แล้วบันทึกใหม่)
@@ -30,9 +38,12 @@ public interface UserInterestRepository extends JpaRepository<UserInterest, User
             SELECT other.userId AS userId, COUNT(other.interestId) AS commonCount
             FROM UserInterest mine
             JOIN UserInterest other ON other.interestId = mine.interestId
-            WHERE mine.userId = :userId AND other.userId <> :userId
+                        JOIN Interest sharedInterest ON sharedInterest.id = mine.interestId
+                        WHERE mine.userId = :userId
+                            AND other.userId <> :userId
+                            AND sharedInterest.isActive = true
             GROUP BY other.userId
-            ORDER BY COUNT(other.interestId) DESC
+            ORDER BY COUNT(other.interestId) DESC, other.userId ASC
             """)
     List<CommonInterestCount> findUsersWithCommonInterests(@Param("userId") UUID userId);
 
