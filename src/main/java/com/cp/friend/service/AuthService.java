@@ -1,8 +1,8 @@
 package com.cp.friend.service;
 
 import com.cp.friend.config.S3Config;
-import com.cp.friend.dto.auth.LoginRequest;
-import com.cp.friend.dto.auth.RegisterRequest;
+import com.cp.friend.dto.request.LoginRequest;
+import com.cp.friend.dto.request.RegisterRequest;
 import com.cp.friend.model.User;
 import com.cp.friend.repository.UserRepository;
 import com.cp.friend.tools.StorageTool;

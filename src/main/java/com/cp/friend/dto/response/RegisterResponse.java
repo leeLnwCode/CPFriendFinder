@@ -1,4 +1,4 @@
-package com.cp.friend.dto.auth;
+package com.cp.friend.dto.response;
 
 import com.cp.friend.model.User;
 
