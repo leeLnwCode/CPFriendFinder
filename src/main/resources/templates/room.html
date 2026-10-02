@@ -78,6 +78,11 @@
           <div>
             <h1 id="roomTitle">ห้องพูดคุย</h1>
 
+            <div id="ownerRoomCode" class="owner-room-code">
+              <span>รหัสเข้าห้อง</span>
+              <strong id="roomCode">-</strong>
+            </div>
+
             <p id="roomMembers">0/10 คนกำลังคุย</p>
           </div>
 
@@ -89,63 +94,7 @@
         <!-- ================= ROOM MEMBERS ================= -->
 
         <section class="members-section">
-          <div class="members-grid">
-            <!-- Member 1 : Owner -->
-            <article class="member-card">
-              <img id="ownerImage" th:src="@{/images/man2.jpg}" alt="Member" />
-
-              <h3 id="ownerName">เจ้าของห้อง</h3>
-
-              <p id="ownerYear">-</p>
-
-              <small>(เจ้าของห้อง)</small>
-            </article>
-
-            <!-- Member 2 -->
-            <article class="member-card">
-              <img th:src="@{/images/man2.jpg}" alt="Member" />
-
-              <h3>Prashant Kumar Singh</h3>
-
-              <p>ปี 3 CS-VIP</p>
-            </article>
-
-            <!-- Member 3 -->
-            <article class="member-card">
-              <img th:src="@{/images/man2.jpg}" alt="Member" />
-
-              <h3>Prashant Kumar Singh</h3>
-
-              <p>ปี 3 CS-VIP</p>
-            </article>
-
-            <!-- Member 4 -->
-            <article class="member-card">
-              <img th:src="@{/images/man2.jpg}" alt="Member" />
-
-              <h3>Prashant Kumar Singh</h3>
-
-              <p>ปี 3 CS-VIP</p>
-            </article>
-
-            <!-- Member 5 -->
-            <article class="member-card">
-              <img th:src="@{/images/man2.jpg}" alt="Member" />
-
-              <h3>Prashant Kumar Singh</h3>
-
-              <p>ปี 3 CS-VIP</p>
-            </article>
-
-            <!-- Member 6 -->
-            <article class="member-card">
-              <img th:src="@{/images/man2.jpg}" alt="Member" />
-
-              <h3>Prashant Kumar Singh</h3>
-
-              <p>ปี 3 CS-VIP</p>
-            </article>
-          </div>
+          <div class="members-grid" id="membersGrid"></div>
         </section>
       </main>
 
@@ -160,20 +109,16 @@
 
         <!-- Messages -->
 
-        <div class="chat-messages" id="chatMessages">
-          <div class="message">
-            <strong> Kumar </strong>
-
-            <p>ชื่อไรกัน</p>
-          </div>
-        </div>
+        <div class="chat-messages" id="chatMessages"></div>
 
         <!-- Chat Input -->
 
         <div class="chat-input-area">
-          <button type="button" class="chat-more">⊞</button>
-
           <input type="text" id="chatInput" placeholder="พิมพ์ข้อความ..." />
+
+          <button type="button" class="chat-more" id="imageButton">🅾</button>
+
+          <input type="file" id="imageInput" accept="image/*" hidden />
 
           <button type="button" class="chat-send" id="sendMessageButton">
             ส่ง
