@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.cp.friend.dto.response.FriendRemovalResponse;
 import com.cp.friend.dto.response.FriendResponse;
 import com.cp.friend.model.Friendship;
 import com.cp.friend.model.User;
@@ -34,20 +33,12 @@ public class FriendshipService {
     }
 
     @Transactional
-    public FriendRemovalResponse unfriend(UUID userId, UUID friendId) {
+    public void unfriend(UUID userId, UUID friendId) {
         ensureActiveUser(userId);
-        Friendship friendship = friendshipRepository.findBetween(userId, friendId)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Friendship not found"));
-
-        User friend = friendship.getUser().getId().equals(userId)
-                ? friendship.getFriend()
-                : friendship.getUser();
         int deleted = friendshipRepository.deleteBetween(userId, friendId);
         if (deleted == 0) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Friendship not found");
         }
-
-        return new FriendRemovalResponse(true, "Friend removed", friend.getId());
     }
 
     private void ensureActiveUser(UUID userId) {
