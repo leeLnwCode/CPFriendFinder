@@ -22,5 +22,15 @@ public class PageController {
         return "home";
     }
 
+    @GetMapping("/room")
+    public String room() {
+        return "room";
+    }
+
+    @GetMapping("/setting")
+    public String setting() {
+        return "setting";
+    }
+
     
 }

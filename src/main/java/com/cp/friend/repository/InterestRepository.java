@@ -15,8 +15,12 @@ public interface InterestRepository extends JpaRepository<Interest, UUID> {
 
     boolean existsByName(String name);
 
+    boolean existsByNameIgnoreCase(String name);
+
     // Interest ที่เปิดใช้งาน เรียงตามชื่อ (ใช้แสดงให้ user เลือก)
     List<Interest> findByIsActiveTrueOrderByNameAsc();
+
+    List<Interest> findByNameContainingIgnoreCaseAndIsActiveTrueOrderByNameAsc(String name);
 
     List<Interest> findByIdInAndIsActiveTrue(Collection<UUID> ids);
 }
