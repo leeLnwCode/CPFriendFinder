@@ -3,7 +3,15 @@
    ========================= */
 
 * {
-    font-family: Tahoma, sans-serif !important;;
+    font-family: Tahoma, sans-serif !important;
+    margin:0; padding:0; box-sizing:border-box
+}
+
+body {
+  font-family: Tahoma, sans-serif;
+}
+button, input, select, textarea {
+  font-family: inherit;
 }
 
 :root {

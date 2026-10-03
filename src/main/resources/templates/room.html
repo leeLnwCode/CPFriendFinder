@@ -7,6 +7,7 @@
     <title>Room - CP Friend Finder</title>
     <link rel="stylesheet" th:href="@{/css/room.css}" />
     <link rel="stylesheet" th:href="@{/css/theme.css}" />
+    <link rel="stylesheet" th:href="@{/css/sidebar.css}" />
   </head>
 
   <body>
@@ -39,31 +40,27 @@
         <!-- Navigation -->
         <nav class="sidebar-menu">
           <a href="/home" class="menu-item">
-            <span class="menu-icon"> 🏠︎ </span>
-
-            <span> หน้าหลัก </span>
+            <span class="menu-icon">⌂</span>
+            <span>หน้าหลัก</span>
           </a>
 
-          <a href="#" class="menu-item">
-            <span class="menu-icon"> 🎲 </span>
-
-            <span> สุ่มคุย </span>
+          <a href="/random" class="menu-item">
+            <span class="menu-icon">✌︎</span>
+            <span>สุ่มคุย</span>
           </a>
 
-          <a href="#" class="menu-item">
-            <span class="menu-icon"> 🫂 </span>
-
-            <span> เพื่อนของฉัน </span>
+          <a href="/friends" class="menu-item">
+            <span class="menu-icon">☺︎</span>
+            <span>เพื่อนของฉัน</span>
           </a>
 
-          <a href="#" class="menu-item">
-            <span class="menu-icon"> 🔔 </span>
-
-            <span> การแจ้งเตือน </span>
+          <a href="/notification" class="menu-item active">
+            <span class="menu-icon">☏</span>
+            <span>การแจ้งเตือน</span>
           </a>
 
-          <a href="/setting" class="menu-item active">
-            <span class="menu-icon">⚙️</span>
+          <a href="/setting" class="menu-item">
+            <span class="menu-icon">⚙</span>
             <span>การตั้งค่า</span>
           </a>
         </nav>
