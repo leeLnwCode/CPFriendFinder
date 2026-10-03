@@ -1,8 +1,5 @@
 package com.cp.friend.controller;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.cp.friend.dto.request.LoginRequest;
 import com.cp.friend.dto.request.RegisterRequest;
 import com.cp.friend.dto.response.LoginResponse;
@@ -14,7 +11,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
-public class AuthController {
+public class AuthController extends SessionController {
 
     private final AuthService authService;
 
@@ -47,14 +43,6 @@ public class AuthController {
         session.setAttribute("userId", user.getId());
         LoginResponse response = new LoginResponse(user);
         return ResponseEntity.ok(response);
-    }
-
-    // Auth
-    @GetMapping
-    public ResponseEntity<Map<String, Object>> SessionAuth(HttpSession session) {
-        Map<String, Object> userId = new HashMap<>();
-        userId.put("userId", session.getAttribute("userId"));
-        return ResponseEntity.ok(userId);
     }
 
     // Logout

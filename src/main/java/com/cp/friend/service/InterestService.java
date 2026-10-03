@@ -1,7 +1,6 @@
 package com.cp.friend.service;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.http.HttpStatus;
@@ -34,13 +33,6 @@ public class InterestService {
         Interest interest = new Interest();
         interest.setName(normalizedName);
         return interestRepo.save(interest);
-    }
-
-    @Transactional
-    public void deleteInterest(UUID id) {
-        Interest interest = interestRepo.findById(id)
-                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Interest not found"));
-        interest.setActive(false);
     }
 
     @Transactional

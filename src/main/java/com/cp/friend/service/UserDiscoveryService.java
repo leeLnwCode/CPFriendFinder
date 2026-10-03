@@ -32,7 +32,7 @@ public class UserDiscoveryService {
     private final UserRepository userRepository;
 
     @Transactional(readOnly = true)
-    public List<UserDiscoveryResponse> discover(UUID userId) {
+    public List<UserDiscoveryResponse> discover(UUID userId, String department, Short year) {
         List<UserInterestRepository.CommonInterestCount> matches =
                 userInterestRepository.findUsersWithCommonInterests(userId);
         if (matches.isEmpty()) {
@@ -50,11 +50,23 @@ public class UserDiscoveryService {
             return List.of();
         }
 
+        String normalizedDepartment = department != null && !department.isBlank()
+                ? department.trim()
+                : null;
+
         Map<UUID, User> activeUsersById = new HashMap<>();
         for (User candidate : userRepository.findAllById(candidateIds)) {
-            if (candidate.getStatus() == User.Status.ACTIVE) {
-                activeUsersById.put(candidate.getId(), candidate);
+            if (candidate.getStatus() != User.Status.ACTIVE) {
+                continue;
             }
+            if (normalizedDepartment != null &&
+                    !normalizedDepartment.equalsIgnoreCase(candidate.getDepartment())) {
+                continue;
+            }
+            if (year != null && !year.equals(candidate.getYear())) {
+                continue;
+            }
+            activeUsersById.put(candidate.getId(), candidate);
         }
 
         List<UserDiscoveryResponse> recommendations = new ArrayList<>();

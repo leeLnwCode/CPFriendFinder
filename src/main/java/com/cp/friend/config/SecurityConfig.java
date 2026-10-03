@@ -24,7 +24,7 @@ public class SecurityConfig {
                         HttpSecurity http) throws Exception {
 
                 http
-                                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"))
+                                .csrf(csrf -> csrf.disable())
                                 .authorizeHttpRequests(auth -> auth
 
                                                 .requestMatchers(
@@ -37,7 +37,9 @@ public class SecurityConfig {
                                                 .permitAll()
 
                                                 .requestMatchers(
-                                                                "/api/**")
+                                                                "/api/**",
+                                                                "/ws/**",
+                                                                "/ws")
                                                 .permitAll()
 
                                                 .requestMatchers(

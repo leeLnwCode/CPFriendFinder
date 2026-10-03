@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.server.ResponseStatusException;
 
 import com.cp.friend.dto.request.CreateFriendRequestRequest;
 import com.cp.friend.dto.response.FriendRequestResponse;
@@ -24,7 +23,7 @@ import lombok.RequiredArgsConstructor;
 @RestController
 @RequestMapping("/api/friend-requests")
 @RequiredArgsConstructor
-public class FriendRequestController {
+public class FriendRequestController extends SessionController {
 
     private final FriendRequestService friendRequestService;
 
@@ -55,13 +54,5 @@ public class FriendRequestController {
     @PostMapping("/{requestId}/decline")
     public ResponseEntity<FriendRequestResponse> decline(@PathVariable UUID requestId, HttpSession session) {
         return ResponseEntity.ok(friendRequestService.decline(currentUserId(session), requestId));
-    }
-
-    private UUID currentUserId(HttpSession session) {
-        Object userId = session.getAttribute("userId");
-        if (userId instanceof UUID id) {
-            return id;
-        }
-        throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Authentication required");
     }
 }
