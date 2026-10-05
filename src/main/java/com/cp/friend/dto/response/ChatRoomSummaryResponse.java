@@ -14,6 +14,7 @@ public record ChatRoomSummaryResponse(
         boolean isPrivate,
         short maxMembers,
         long memberCount,
+        long unreadCount,
         List<InterestDto> interests,
         Instant createdAt
 ) {

@@ -26,6 +26,7 @@ public class FriendRequestService {
     private final FriendRequestRepository friendRequestRepository;
     private final FriendshipRepository friendshipRepository;
     private final UserRepository userRepository;
+    private final NotificationService notificationService;
 
     @Transactional
     public FriendRequestResponse send(UUID senderId, UUID receiverId) {
@@ -46,7 +47,10 @@ public class FriendRequestService {
         request.setSender(sender);
         request.setReceiver(receiver);
         request.setStatus(FriendRequest.Status.PENDING);
-        return toResponse(friendRequestRepository.save(request), receiver);
+        request = friendRequestRepository.save(request);
+
+        notificationService.notifyFriendRequestReceived(request);
+        return toResponse(request, receiver);
     }
 
     @Transactional(readOnly = true)
@@ -85,6 +89,8 @@ public class FriendRequestService {
         request.setStatus(FriendRequest.Status.ACCEPTED);
         request.setRespondedAt(Instant.now());
         FriendRequest acceptedRequest = friendRequestRepository.save(request);
+
+        notificationService.notifyFriendRequestAccepted(acceptedRequest);
         return toResponse(acceptedRequest, sender);
     }
 

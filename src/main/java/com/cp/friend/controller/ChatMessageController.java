@@ -5,18 +5,23 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.cp.friend.dto.request.ChatMessagePayload;
 import com.cp.friend.dto.response.ChatMessageResponse;
 import com.cp.friend.service.ChatMessageService;
 
 import jakarta.servlet.http.HttpSession;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @RestController
@@ -25,6 +30,24 @@ import lombok.RequiredArgsConstructor;
 public class ChatMessageController extends SessionController {
 
     private final ChatMessageService chatMessageService;
+
+    // ส่งข้อความทาง REST (เหมาะกับรูป base64 ที่ใหญ่เกิน WS frame)
+    // server จะ broadcast ให้คนอื่นในห้องผ่าน /topic/rooms/{roomId} เอง
+    @PostMapping
+    public ResponseEntity<ChatMessageResponse> sendMessage(
+            @PathVariable UUID roomId,
+            @Valid @RequestBody ChatMessagePayload payload,
+            HttpSession session
+    ) {
+        ChatMessageResponse response = chatMessageService.send(currentUserId(session), roomId, payload);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
+    }
+
+    // จำนวนข้อความที่ยังไม่อ่านในห้องนี้
+    @GetMapping("/unread-count")
+    public ResponseEntity<Long> unreadCount(@PathVariable UUID roomId, HttpSession session) {
+        return ResponseEntity.ok(chatMessageService.unreadCount(currentUserId(session), roomId));
+    }
 
     // โหลดข้อความของห้อง (เก่า → ใหม่) — ?before=ISO instant สำหรับ scroll ย้อนหลัง &limit= (default 50)
     @GetMapping
