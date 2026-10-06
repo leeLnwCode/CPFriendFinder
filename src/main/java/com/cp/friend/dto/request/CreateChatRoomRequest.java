@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
@@ -21,6 +22,10 @@ public class CreateChatRoomRequest {
 
     @Size(max = 500, message = "description must be at most 500 characters")
     private String description;
+
+    // ชั้นปีเป้าหมายของห้อง — null = ทุกชั้นปี
+    @Positive(message = "targetYear must be a positive number")
+    private Short targetYear;
 
     // interest ของห้อง (optional) — ใช้ filter หน้า Home
     private List<UUID> interestIds;
