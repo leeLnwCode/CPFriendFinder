@@ -1,5 +1,7 @@
 package com.cp.friend.config;
 
+import java.util.List;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -10,9 +12,8 @@ import org.springframework.security.web.SecurityFilterChain;
 
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
-import io.swagger.v3.oas.models.servers.Server;
-import java.util.List;
 import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.servers.Server;
 
 @Configuration
 @EnableWebSecurity
@@ -23,7 +24,7 @@ public class SecurityConfig {
                         HttpSecurity http) throws Exception {
 
                 http
-                                .csrf(csrf -> csrf.ignoringRequestMatchers("/api/**"))
+                                .csrf(csrf -> csrf.disable())
                                 .authorizeHttpRequests(auth -> auth
 
                                                 .requestMatchers(
@@ -39,7 +40,9 @@ public class SecurityConfig {
                                                 .permitAll()
 
                                                 .requestMatchers(
-                                                                "/api/**")
+                                                                "/api/**",
+                                                                "/ws/**",
+                                                                "/ws")
                                                 .permitAll()
 
                                                 .requestMatchers(
