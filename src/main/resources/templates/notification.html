@@ -1,201 +1,209 @@
 <!doctype html>
 <html lang="th">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>การแจ้งเตือน - CP Friend Finder</title>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link rel="stylesheet" th:href="@{/css/theme.css}" />
-    <link rel="stylesheet" th:href="@{/css/sidebar.css}" />
-    <link rel="stylesheet" th:href="@{/css/layout.css}" />
-    <link rel="stylesheet" th:href="@{/css/notification.css}" />
-  </head>
+  <title>การแจ้งเตือน - CP Friend Finder</title>
 
-  <body>
-    <div class="page-layout">
-      <!-- ========================= SIDEBAR ========================== -->
-      <aside class="sidebar">
-        <!-- Logo -->
-        <div class="sidebar-logo">
-          <img src="/images/Full_logo.png" alt="CP Friend Finder" />
+  <link rel="stylesheet" th:href="@{/css/theme.css}" />
+  <link rel="stylesheet" th:href="@{/css/sidebar.css}" />
+  <link rel="stylesheet" th:href="@{/css/layout.css}" />
+  <link rel="stylesheet" th:href="@{/css/notification.css}" />
+  <link rel="stylesheet" th:href="@{/css/friend-profile-popup.css}" />
+</head>
+
+<body>
+  <div class="page-layout">
+    <!-- ========================= SIDEBAR ========================== -->
+    <aside class="sidebar">
+      <!-- Logo -->
+      <div class="sidebar-logo">
+        <img src="/images/Full_logo.png" alt="CP Friend Finder" />
+      </div>
+
+      <!-- Profile -->
+      <div class="sidebar-profile">
+        <img src="/images/man.jpg" alt="Profile" class="profile-image" />
+
+        <div class="profile-info">
+          <div class="profile-name">Singha Waraha</div>
+          <div class="profile-year">ปี 1</div>
+          <div class="profile-department">CS-VIP</div>
         </div>
 
-        <!-- Profile -->
-        <div class="sidebar-profile">
-          <img src="/images/man.jpg" alt="Profile" class="profile-image" />
+        <button type="button" class="profile-arrow">⌄</button>
+      </div>
 
-          <div class="profile-info">
-            <div class="profile-name">Singha Waraha</div>
-            <div class="profile-year">ปี 1</div>
-            <div class="profile-department">CS-VIP</div>
-          </div>
+      <!-- Menu -->
+      <nav class="sidebar-menu">
+        <a href="/home" class="menu-item">
+          <span class="menu-icon">⌂</span>
+          <span>หน้าหลัก</span>
+        </a>
 
-          <button type="button" class="profile-arrow">⌄</button>
+        <a href="/random" class="menu-item">
+          <span class="menu-icon">✌︎</span>
+          <span>สุ่มคุย</span>
+        </a>
+
+        <a href="/friend" class="menu-item">
+          <span class="menu-icon">☺︎</span>
+          <span>เพื่อนของฉัน</span>
+        </a>
+
+        <a href="/notification" class="menu-item active">
+          <span class="menu-icon">☏</span>
+          <span>การแจ้งเตือน</span>
+        </a>
+
+        <a href="/setting" class="menu-item">
+          <span class="menu-icon">⚙</span>
+          <span>การตั้งค่า</span>
+        </a>
+      </nav>
+    </aside>
+
+    <!-- =========================  MAIN CONTENT ========================== -->
+
+    <main class="page-content main-content">
+      <!-- ========================= FRIEND REQUEST ========================== -->
+
+      <section class="notification-section">
+        <div class="section-title">
+          <span class="title-icon">٩( ᐛ )( ᐖ )۶</span>
+          <h1>คำขอเป็นเพื่อน</h1>
         </div>
 
-        <!-- Menu -->
-        <nav class="sidebar-menu">
-          <a href="/home" class="menu-item">
-            <span class="menu-icon">⌂</span>
-            <span>หน้าหลัก</span>
-          </a>
-
-          <a href="/random" class="menu-item">
-            <span class="menu-icon">✌︎</span>
-            <span>สุ่มคุย</span>
-          </a>
-
-          <a href="/friend" class="menu-item">
-            <span class="menu-icon">☺︎</span>
-            <span>เพื่อนของฉัน</span>
-          </a>
-
-          <a href="/notification" class="menu-item active">
-            <span class="menu-icon">☏</span>
-            <span>การแจ้งเตือน</span>
-          </a>
-
-          <a href="/setting" class="menu-item">
-            <span class="menu-icon">⚙</span>
-            <span>การตั้งค่า</span>
-          </a>
-        </nav>
-      </aside>
-
-      <!-- =========================  MAIN CONTENT ========================== -->
-
-      <main class="page-content main-content">
-        <!-- ========================= FRIEND REQUEST ========================== -->
-
-        <section class="notification-section">
-          <div class="section-title">
-            <span class="title-icon">٩( ᐛ )( ᐖ )۶</span>
-            <h1>คำขอเป็นเพื่อน</h1>
-          </div>
-
-          <div class="friend-request-list">
-            <!-- Card 1 -->
-            <div class="friend-request-card">
-              <div class="friend-info">
-                <div class="friend-avatar">
-                  <img src="/images/Napha.jpg" alt="Napha" />
-                </div>
-
-                <div class="friend-detail">
-                  <div class="friend-name">Napha</div>
-
-                  <div class="friend-year">ปี 3 CS-VIP</div>
-                </div>
+        <div class="friend-request-list">
+          <!-- Card 1 -->
+          <div class="friend-request-card">
+            <div class="friend-info friend-profile-trigger" data-profile data-name="Napha" data-year="ปี 3 CS-VIP"
+              data-image="/images/Napha.jpg" data-interests="เกม, เพลง, ROV" data-bio="ชอบเล่นเกมและพูดคุยกับเพื่อน">
+              <div class="friend-avatar">
+                <img src="/images/Napha.jpg" alt="Napha" />
               </div>
 
-              <div class="request-actions">
-                <button class="accept-button" onclick="acceptRequest(this)">
-                  ยอมรับ
-                </button>
-
-                <button class="decline-button" onclick="declineRequest(this)">
-                  ปฏิเสธ
-                </button>
+              <div class="friend-detail">
+                <div class="friend-name">Napha</div>
+                <div class="friend-year">ปี 3 CS-VIP</div>
               </div>
             </div>
 
-            <!-- Card 2 -->
-            <div class="friend-request-card">
-              <div class="friend-info">
-                <div class="friend-avatar">
-                  <img src="/images/man2.jpg" alt="Prashant Kumar Singh" />
-                </div>
+            <div class="request-actions">
+              <button class="accept-button" onclick="acceptRequest(this)">
+                ยอมรับ
+              </button>
 
-                <div class="friend-detail">
-                  <div class="friend-name">Prashant Kumar Singh</div>
-
-                  <div class="friend-year">ปี 2 AI-VIP</div>
-                </div>
-              </div>
-
-              <div class="request-actions">
-                <button class="accept-button" onclick="acceptRequest(this)">
-                  ยอมรับ
-                </button>
-
-                <button class="decline-button" onclick="declineRequest(this)">
-                  ปฏิเสธ
-                </button>
-              </div>
-            </div>
-
-            <!-- Card 3 -->
-            <div class="friend-request-card">
-              <div class="friend-info">
-                <div class="friend-avatar">
-                  <img src="/images/Worawut.jpg" alt="Worawut" />
-                </div>
-
-                <div class="friend-detail">
-                  <div class="friend-name">Worawut</div>
-
-                  <div class="friend-year">ปี 1 CY-VIP</div>
-                </div>
-              </div>
-
-              <div class="request-actions">
-                <button class="accept-button" onclick="acceptRequest(this)">
-                  ยอมรับ
-                </button>
-
-                <button class="decline-button" onclick="declineRequest(this)">
-                  ปฏิเสธ
-                </button>
-              </div>
+              <button class="decline-button" onclick="declineRequest(this)">
+                ปฏิเสธ
+              </button>
             </div>
           </div>
-        </section>
 
-        <!-- ========================= MESSAGE ========================== -->
-
-        <section class="notification-section message-section">
-          <div class="section-title">
-            <span class="title-icon message-icon">✉︎</span>
-            <h1>ข้อความ</h1>
-          </div>
-
-          <div class="message-list">
-            <div class="message-item">
-              <div class="message-avatar">
+          <!-- Card 2 -->
+          <div class="friend-request-card">
+            <div class="friend-info friend-profile-trigger" data-profile data-name="Prashant Kumar Singh"
+              data-year="ปี 2 AI-VIP" data-image="/images/man2.jpg">
+              <div class="friend-avatar">
                 <img src="/images/man2.jpg" alt="Prashant Kumar Singh" />
               </div>
 
-              <div class="message-text">
-                Prashant Kumar Singh ส่งข้อความใหม่ถึงคุณ!
+              <div class="friend-detail">
+                <div class="friend-name">Prashant Kumar Singh</div>
+
+                <div class="friend-year">ปี 2 AI-VIP</div>
               </div>
             </div>
 
-            <div class="message-item">
-              <div class="message-avatar">
-                <img src="/images/man2.jpg" alt="Prashant Kumar Singh" />
-              </div>
+            <div class="request-actions">
+              <button class="accept-button" onclick="acceptRequest(this)">
+                ยอมรับ
+              </button>
 
-              <div class="message-text">
-                Prashant Kumar Singh ส่งข้อความใหม่ถึงคุณ!
-              </div>
-            </div>
-
-            <div class="message-item">
-              <div class="message-avatar">
-                <img src="/images/man2.jpg" alt="Prashant Kumar Singh" />
-              </div>
-
-              <div class="message-text">
-                Prashant Kumar Singh ส่งข้อความใหม่ถึงคุณ!
-              </div>
+              <button class="decline-button" onclick="declineRequest(this)">
+                ปฏิเสธ
+              </button>
             </div>
           </div>
-        </section>
-      </main>
-    </div>
 
-    <script th:src="@{/js/theme.js}"></script>
-    <script src="/js/notification.js"></script>
-  </body>
+          <!-- Card 3 -->
+          <div class="friend-request-card">
+            <div class="friend-info friend-profile-trigger" data-profile data-name="Worawut" data-year="ปี 1 CY-VIP"
+              data-image="/images/Worawut.jpg">
+              <div class="friend-avatar">
+                <img src="/images/Worawut.jpg" alt="Worawut" />
+              </div>
+
+              <div class="friend-detail">
+                <div class="friend-name">Worawut</div>
+
+                <div class="friend-year">ปี 1 CY-VIP</div>
+              </div>
+            </div>
+
+            <div class="request-actions">
+              <button class="accept-button" onclick="acceptRequest(this)">
+                ยอมรับ
+              </button>
+
+              <button class="decline-button" onclick="declineRequest(this)">
+                ปฏิเสธ
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ========================= MESSAGE ========================== -->
+
+      <section class="notification-section message-section">
+        <div class="section-title">
+          <span class="title-icon message-icon">✉︎</span>
+          <h1>ข้อความ</h1>
+        </div>
+
+        <div class="message-list">
+          <div class="message-item">
+            <div class="message-avatar">
+              <img src="/images/man2.jpg" alt="Prashant Kumar Singh" />
+            </div>
+
+            <div class="message-text">
+              Prashant Kumar Singh ส่งข้อความใหม่ถึงคุณ!
+            </div>
+          </div>
+
+          <div class="message-item">
+            <div class="message-avatar">
+              <img src="/images/man2.jpg" alt="Prashant Kumar Singh" />
+            </div>
+
+            <div class="message-text">
+              Prashant Kumar Singh ส่งข้อความใหม่ถึงคุณ!
+            </div>
+          </div>
+
+          <div class="message-item">
+            <div class="message-avatar">
+              <img src="/images/man2.jpg" alt="Prashant Kumar Singh" />
+            </div>
+
+            <div class="message-text">
+              Prashant Kumar Singh ส่งข้อความใหม่ถึงคุณ!
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div th:replace="~{fragments/friend-profile-popup :: friendProfilePopup}"></div>
+
+  <script th:src="@{/js/friend-profile-popup.js}"></script>
+  <script th:src="@{/js/theme.js}"></script>
+  <script th:src="@{/js/notification.js}"></script>
+</body>
+
 </html>
