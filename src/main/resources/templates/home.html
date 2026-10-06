@@ -11,6 +11,7 @@
     <link rel="stylesheet" th:href="@{/css/layout.css}" />
     <link rel="stylesheet" th:href="@{/css/home.css}" />
     <link rel="stylesheet" th:href="@{/css/friend-profile-popup.css}" />
+    <link rel="stylesheet" th:href="@{/css/profile-popup.css}" />
   </head>
 
   <body>
@@ -24,7 +25,7 @@
         </div>
 
         <!-- Profile -->
-        <div class="sidebar-profile">
+        <div class="sidebar-profile" id="sidebarProfileButton">
           <img
             id="sidebarProfileImage"
             th:src="@{/images/man.jpg}"
@@ -71,6 +72,114 @@
           </a>
         </nav>
       </aside>
+
+      <div class="profile-modal" id="profileModal">
+        <div class="profile-modal-overlay" id="profileModalOverlay"></div>
+
+        <div class="profile-modal-content">
+          <div class="profile-modal-header">
+            <h2>แก้ไขโปรไฟล์</h2>
+
+            <button
+              type="button"
+              class="profile-modal-close"
+              id="closeProfileModal"
+            >
+              ×
+            </button>
+          </div>
+
+          <div class="profile-edit-form">
+            <!-- รูปโปรไฟล์ -->
+            <div class="profile-image-edit">
+              <img
+                id="editProfileImage"
+                th:src="@{/images/man.jpg}"
+                alt="Profile"
+              />
+
+              <button
+                type="button"
+                class="change-image-button"
+                id="changeProfileImage"
+              >
+                เปลี่ยนรูป
+              </button>
+
+              <input
+                type="file"
+                id="profileImageInput"
+                accept="image/*"
+                hidden
+              />
+            </div>
+
+            <!-- ชื่อ -->
+            <div class="profile-field">
+              <label for="editFirstname">ชื่อ</label>
+              <input type="text" id="editFirstname" placeholder="กรอกชื่อ" />
+            </div>
+
+            <!-- นามสกุล -->
+            <div class="profile-field">
+              <label for="editLastname">นามสกุล</label>
+              <input type="text" id="editLastname" placeholder="กรอกนามสกุล" />
+            </div>
+
+            <!-- Bio -->
+            <div class="profile-field">
+              <label for="editBio">เกี่ยวกับฉัน</label>
+              <textarea
+                id="editBio"
+                rows="4"
+                placeholder="บอกเกี่ยวกับตัวคุณ..."
+              ></textarea>
+            </div>
+
+            <div class="profile-field">
+              <label for="editDateOfBirth">วันเกิด</label>
+              <input type="date" id="editDateOfBirth" />
+            </div>
+
+            <!-- ปี -->
+            <div class="profile-field">
+              <label for="editYear">ชั้นปี</label>
+              <select id="editYear">
+                <option value="">เลือกชั้นปี</option>
+                <option value="1">ปี 1</option>
+                <option value="2">ปี 2</option>
+                <option value="3">ปี 3</option>
+                <option value="4">ปี 4</option>
+              </select>
+            </div>
+
+            <!-- สาขา -->
+            <div class="profile-field">
+              <label for="editDepartment">สาขา</label>
+              <input type="text" id="editDepartment" placeholder="กรอกสาขา" />
+            </div>
+
+            <!-- ปุ่ม -->
+            <div class="profile-modal-actions">
+              <button
+                type="button"
+                class="profile-cancel-button"
+                id="cancelProfileEdit"
+              >
+                ยกเลิก
+              </button>
+
+              <button
+                type="button"
+                class="profile-save-button"
+                id="saveProfileEdit"
+              >
+                บันทึก
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- ================= MAIN ================= -->
 
@@ -320,147 +429,7 @@
         <!-- ================= ROOM GRID ================= -->
 
         <section class="room-grid" id="roomGrid">
-          <!-- Room 1 -->
-
-          <article
-            class="room-card"
-            data-year="2, 3"
-            data-interest="GAMING, MINECRAFT"
-            data-members="6"
-            data-max="10"
-            data-owner="Prashant Kumar Singh"
-            data-owner-year="ปี 3 CS-VIP"
-            data-owner-image="/images/man2.jpg"
-            data-type="Private"
-            data-code="123456"
-          >
-            <h3>Minecraft Hardcore</h3>
-
-            <p class="room-description">
-              6/10 คนกำลังคุย &nbsp;&nbsp; Minecraft, Speed Run
-            </p>
-
-            <div class="room-tags">
-              <span>GAMING</span>
-              <span>MINECRAFT</span>
-              <span>ปี 2</span>
-              <span>ปี 3</span>
-            </div>
-
-            <div
-              class="room-owner friend-profile-trigger"
-              data-name="Prashant Kumar Singh"
-              data-year="ปี 3 CS-VIP"
-              data-image="/images/man2.jpg"
-            >
-              <img th:src="@{/images/man2.jpg}" alt="Owner" />
-
-              <div>
-                <strong>Prashant Kumar Singh</strong>
-
-                <small> ปี 3 CS-VIP (เจ้าของห้อง) </small>
-              </div>
-            </div>
-
-            <div class="room-bottom">
-              <span class="room-type"> Private </span>
-
-              <button type="button" class="join-button">เข้าห้อง</button>
-            </div>
-          </article>
-
-          <!-- Room 2 -->
-
-          <article
-            class="room-card"
-            data-year="1"
-            data-interest="PROJECT"
-            data-members="6"
-            data-max="10"
-            data-owner="Napha Sriprasert"
-            data-owner-year="ปี 2 CS"
-            data-owner-image="/images/napha.jpg"
-            data-type="Public"
-          >
-            <h3>หาเพื่อนปั่นโปรเจค</h3>
-
-            <p class="room-description">
-              6/10 คนกำลังคุย &nbsp;&nbsp; ทำโปรเจค, การบ้าน
-            </p>
-
-            <div class="room-tags">
-              <span>PROJECT</span>
-              <span>ปี 1</span>
-              <span>ปี 2</span>
-            </div>
-
-            <div
-              class="room-owner friend-profile-trigger"
-              data-name="Napha Sriprasert"
-              data-year="ปี 2 CS"
-              data-image="/images/napha.jpg"
-            >
-              <img th:src="@{/images/napha.jpg}" alt="Owner" />
-
-              <div>
-                <strong>Napha Sriprasert</strong>
-
-                <small> ปี 2 CS (เจ้าของห้อง) </small>
-              </div>
-            </div>
-
-            <div class="room-bottom">
-              <span class="room-type"> Public </span>
-
-              <button type="button" class="join-button">เข้าห้อง</button>
-            </div>
-          </article>
-
-          <!-- Room 3 -->
-
-          <article
-            class="room-card"
-            data-year="2"
-            data-interest="CHILL"
-            data-members="10"
-            data-max="10"
-            data-owner="Worawut Suwanarat"
-            data-owner-year="ปี 3 GIS"
-            data-owner-image="/images/worawut.jpg"
-            data-type="Public"
-          >
-            <h3>ริมบึงสีฐานออนไลน์</h3>
-
-            <p class="room-description">
-              10/10 คนกำลังคุย &nbsp;&nbsp; ฟังเพลง, คุยเล่น
-            </p>
-
-            <div class="room-tags">
-              <span>CHILL</span>
-              <span>ปี 2</span>
-            </div>
-
-            <div
-              class="room-owner friend-profile-trigger"
-              data-name="Worawut Suwanarat"
-              data-year="ปี 3 GIS"
-              data-image="/images/worawut.jpg"
-            >
-              <img th:src="@{/images/worawut.jpg}" alt="Owner" />
-
-              <div>
-                <strong>Worawut Suwanarat</strong>
-
-                <small> ปี 3 GIS (เจ้าของห้อง) </small>
-              </div>
-            </div>
-
-            <div class="room-bottom">
-              <span class="room-type"> Public </span>
-
-              <button type="button" class="join-button">เข้าห้อง</button>
-            </div>
-          </article>
+         
         </section>
       </main>
     </div>
@@ -498,5 +467,6 @@
     <script th:src="@{/js/home.js(v=2)}"></script>
     <script th:src="@{/js/theme.js}"></script>
     <script th:src="@{/js/sidebar.js}"></script>
+    <script th:src="@{/js/profile-popup.js}"></script>
   </body>
 </html>

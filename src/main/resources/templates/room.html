@@ -10,6 +10,7 @@
   <link rel="stylesheet" th:href="@{/css/theme.css}" />
   <link rel="stylesheet" th:href="@{/css/sidebar.css}" />
   <link rel="stylesheet" th:href="@{/css/friend-profile-popup.css}" />
+  <link rel="stylesheet" th:href="@{/css/profile-popup.css}" />
 </head>
 
 <body>
@@ -23,17 +24,24 @@
       </div>
 
       <!-- Profile -->
-      <div class="sidebar-profile">
-        <img th:src="@{/images/man.jpg}" alt="Profile" class="profile-image" />
+      <div class="sidebar-profile" id="sidebarProfileButton">
+          <img
+            id="sidebarProfileImage"
+            th:src="@{/images/man.jpg}"
+            alt="Profile"
+            class="profile-image"
+          />
 
-        <div class="profile-info">
-          <div class="profile-name">Singha Waraha</div>
+          <div class="profile-info">
+            <div id="sidebarProfileName" class="profile-name">กำลังโหลด...</div>
 
-          <div class="profile-year">ปี 1 CS</div>
+            <div id="sidebarProfileYear" class="profile-year"></div>
+
+            <div id="sidebarProfileDepartment" class="profile-department"></div>
+          </div>
+
+          <button class="profile-arrow">⌄</button>
         </div>
-
-        <button class="profile-arrow">⌄</button>
-      </div>
 
       <!-- Navigation -->
       <nav class="sidebar-menu">
@@ -63,6 +71,114 @@
         </a>
       </nav>
     </aside>
+
+    <div class="profile-modal" id="profileModal">
+        <div class="profile-modal-overlay" id="profileModalOverlay"></div>
+
+        <div class="profile-modal-content">
+          <div class="profile-modal-header">
+            <h2>แก้ไขโปรไฟล์</h2>
+
+            <button
+              type="button"
+              class="profile-modal-close"
+              id="closeProfileModal"
+            >
+              ×
+            </button>
+          </div>
+
+          <div class="profile-edit-form">
+            <!-- รูปโปรไฟล์ -->
+            <div class="profile-image-edit">
+              <img
+                id="editProfileImage"
+                th:src="@{/images/man.jpg}"
+                alt="Profile"
+              />
+
+              <button
+                type="button"
+                class="change-image-button"
+                id="changeProfileImage"
+              >
+                เปลี่ยนรูป
+              </button>
+
+              <input
+                type="file"
+                id="profileImageInput"
+                accept="image/*"
+                hidden
+              />
+            </div>
+
+            <!-- ชื่อ -->
+            <div class="profile-field">
+              <label for="editFirstname">ชื่อ</label>
+              <input type="text" id="editFirstname" placeholder="กรอกชื่อ" />
+            </div>
+
+            <!-- นามสกุล -->
+            <div class="profile-field">
+              <label for="editLastname">นามสกุล</label>
+              <input type="text" id="editLastname" placeholder="กรอกนามสกุล" />
+            </div>
+
+            <!-- Bio -->
+            <div class="profile-field">
+              <label for="editBio">เกี่ยวกับฉัน</label>
+              <textarea
+                id="editBio"
+                rows="4"
+                placeholder="บอกเกี่ยวกับตัวคุณ..."
+              ></textarea>
+            </div>
+
+            <div class="profile-field">
+              <label for="editDateOfBirth">วันเกิด</label>
+              <input type="date" id="editDateOfBirth" />
+            </div>
+
+            <!-- ปี -->
+            <div class="profile-field">
+              <label for="editYear">ชั้นปี</label>
+              <select id="editYear">
+                <option value="">เลือกชั้นปี</option>
+                <option value="1">ปี 1</option>
+                <option value="2">ปี 2</option>
+                <option value="3">ปี 3</option>
+                <option value="4">ปี 4</option>
+              </select>
+            </div>
+
+            <!-- สาขา -->
+            <div class="profile-field">
+              <label for="editDepartment">สาขา</label>
+              <input type="text" id="editDepartment" placeholder="กรอกสาขา" />
+            </div>
+
+            <!-- ปุ่ม -->
+            <div class="profile-modal-actions">
+              <button
+                type="button"
+                class="profile-cancel-button"
+                id="cancelProfileEdit"
+              >
+                ยกเลิก
+              </button>
+
+              <button
+                type="button"
+                class="profile-save-button"
+                id="saveProfileEdit"
+              >
+                บันทึก
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
 
     <!-- ================= ROOM ================= -->
 
@@ -127,6 +243,7 @@
   <script th:src="@{/js/theme.js}"></script>
   <script th:src="@{/js/room.js(v=2)}"></script>
   <script th:src="@{/js/sidebar.js}"></script>
+  <script th:src="@{/js/profile-popup.js}"></script>
 </body>
 
 </html>
