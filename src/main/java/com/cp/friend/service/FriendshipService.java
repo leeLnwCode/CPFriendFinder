@@ -9,9 +9,15 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.cp.friend.dto.response.FriendResponse;
+import com.cp.friend.dto.response.InterestResponse;
+import com.cp.friend.mapper.InterestMapper;
 import com.cp.friend.model.Friendship;
+import com.cp.friend.model.Interest;
 import com.cp.friend.model.User;
+import com.cp.friend.model.UserInterest;
 import com.cp.friend.repository.FriendshipRepository;
+import com.cp.friend.repository.InterestRepository;
+import com.cp.friend.repository.UserInterestRepository;
 import com.cp.friend.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -22,6 +28,9 @@ public class FriendshipService {
 
     private final FriendshipRepository friendshipRepository;
     private final UserRepository userRepository;
+    private final UserInterestRepository userInterestRepository;
+    private final InterestRepository interestRepository;
+    private final InterestMapper interestMapper;
 
     @Transactional(readOnly = true)
     public List<FriendResponse> listFriends(UUID userId) {
@@ -60,7 +69,21 @@ public class FriendshipService {
                 friend.getImageUrl(),
                 friend.getYear(),
                 friend.getDepartment(),
+                friend.getBio(),
+                interestMapper.toResponseList(loadActiveInterests(friend.getId())),
                 friendship.getCreatedAt()
         );
+    }
+
+    // interest ที่ยัง active ของเพื่อน — สำหรับแสดงในรายการเพื่อน
+    private List<Interest> loadActiveInterests(UUID userId) {
+        List<UUID> interestIds = userInterestRepository.findByUserId(userId)
+                .stream()
+                .map(UserInterest::getInterestId)
+                .toList();
+        if (interestIds.isEmpty()) {
+            return List.of();
+        }
+        return interestRepository.findByIdInAndIsActiveTrue(new java.util.HashSet<>(interestIds));
     }
 }

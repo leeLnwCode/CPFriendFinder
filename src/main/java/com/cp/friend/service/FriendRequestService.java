@@ -10,13 +10,19 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.cp.friend.dto.response.FriendRequestResponse;
+import com.cp.friend.dto.response.InterestResponse;
 import com.cp.friend.event.FriendRequestAcceptedEvent;
 import com.cp.friend.event.FriendRequestSentEvent;
+import com.cp.friend.mapper.InterestMapper;
 import com.cp.friend.model.FriendRequest;
 import com.cp.friend.model.Friendship;
+import com.cp.friend.model.Interest;
 import com.cp.friend.model.User;
+import com.cp.friend.model.UserInterest;
 import com.cp.friend.repository.FriendRequestRepository;
 import com.cp.friend.repository.FriendshipRepository;
+import com.cp.friend.repository.InterestRepository;
+import com.cp.friend.repository.UserInterestRepository;
 import com.cp.friend.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -28,6 +34,9 @@ public class FriendRequestService {
     private final FriendRequestRepository friendRequestRepository;
     private final FriendshipRepository friendshipRepository;
     private final UserRepository userRepository;
+    private final UserInterestRepository userInterestRepository;
+    private final InterestRepository interestRepository;
+    private final InterestMapper interestMapper;
     // Observer Pattern — publish domain event แทนการเรียก NotificationService ตรง
     // (service นี้ไม่รู้จักระบบแจ้งเตือนเลย — ใครสนใจ event ก็มาฟังเอง)
     private final org.springframework.context.ApplicationEventPublisher eventPublisher;
@@ -143,8 +152,24 @@ public class FriendRequestService {
                 otherUser.getFirstname(),
                 otherUser.getLastname(),
                 otherUser.getImageUrl(),
+                otherUser.getYear(),
+                otherUser.getDepartment(),
+                otherUser.getBio(),
+                interestMapper.toResponseList(loadActiveInterests(otherUser.getId())),
                 request.getStatus(),
                 request.getCreatedAt()
         );
+    }
+
+    // interest ที่ยัง active ของ user — สำหรับแสดงใน popup
+    private List<Interest> loadActiveInterests(UUID userId) {
+        List<UUID> interestIds = userInterestRepository.findByUserId(userId)
+                .stream()
+                .map(UserInterest::getInterestId)
+                .toList();
+        if (interestIds.isEmpty()) {
+            return List.of();
+        }
+        return interestRepository.findByIdInAndIsActiveTrue(new java.util.HashSet<>(interestIds));
     }
 }
