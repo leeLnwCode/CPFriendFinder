@@ -363,6 +363,11 @@ public class ChatRoomService {
             RoomInterest roomInterest = new RoomInterest();
             roomInterest.setRoomId(roomId);
             roomInterest.setInterestId(interest.getId());
+            // ตั้ง relations ให้ครบ — ถ้าปล่อย null Hibernate จะ hydrate ไม่ได้ตอน
+            // JOIN FETCH (FetchNotFoundException → 403) ตอนอ่าน summary กลับ
+            ChatRoom roomRef = chatRoomRepository.getReferenceById(roomId);
+            roomInterest.setRoom(roomRef);
+            roomInterest.setInterest(interest);
             roomInterestRepository.save(roomInterest);
         }
     }
