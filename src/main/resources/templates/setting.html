@@ -1,0 +1,290 @@
+<!doctype html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>การตั้งค่า - CP Friend Finder</title>
+
+    <link rel="stylesheet" th:href="@{/css/theme.css}" />
+    <link rel="stylesheet" th:href="@{/css/sidebar.css}" />
+    <link rel="stylesheet" th:href="@{/css/layout.css}" />
+    <link rel="stylesheet" th:href="@{/css/setting.css}" />
+  </head>
+
+  <body>
+    <div class="page-layout">
+      <!-- ================= SIDEBAR ================= -->
+
+      <aside class="sidebar">
+        <!-- Logo -->
+        <div class="sidebar-logo">
+          <img th:src="@{/images/Full_logo.png}" alt="CP Friend Finder" />
+        </div>
+
+        <!-- Profile -->
+        <div class="sidebar-profile">
+          <img
+            th:src="@{/images/man.jpg}"
+            alt="Profile"
+            class="profile-image"
+          />
+
+          <div class="profile-info">
+            <div class="profile-name">Singha Waraha</div>
+            <div class="profile-year">ปี 1</div>
+            <div class="profile-department">CS-VIP</div>
+          </div>
+
+          <button type="button" class="profile-arrow">⌄</button>
+        </div>
+
+        <!-- Navigation -->
+        <nav class="sidebar-menu">
+          <a href="/home" class="menu-item">
+            <span class="menu-icon">⌂</span>
+            <span>หน้าหลัก</span>
+          </a>
+
+          <a href="/random" class="menu-item">
+            <span class="menu-icon">✌︎</span>
+            <span>สุ่มคุย</span>
+          </a>
+
+          <a href="/friend" class="menu-item">
+            <span class="menu-icon">☺︎</span>
+            <span>เพื่อนของฉัน</span>
+          </a>
+
+          <a href="/notification" class="menu-item">
+            <span class="menu-icon">☏</span>
+            <span>การแจ้งเตือน</span>
+          </a>
+
+          <a href="/setting" class="menu-item active">
+            <span class="menu-icon">⚙</span>
+            <span>การตั้งค่า</span>
+          </a>
+        </nav>
+      </aside>
+
+      <!-- ================= MAIN CONTENT ================= -->
+
+      <main class="page-content settings-main">
+        <section class="settings-container">
+          <!-- Header -->
+          <div class="settings-header">
+            <div class="settings-header-icon">⚙</div>
+
+            <div>
+              <h1>ตั้งค่า</h1>
+              <p>ปรับแต่งประสบการณ์การใช้งานของคุณ</p>
+            </div>
+          </div>
+
+          <!-- ================= SETTINGS CARDS ================= -->
+
+          <div class="settings-list">
+            <!-- Account -->
+            <button
+              type="button"
+              class="settings-card"
+              data-modal="accountModal"
+            >
+              <div>
+                <h2>บัญชี</h2>
+                <p>จัดการข้อมูลบัญชี</p>
+              </div>
+            </button>
+
+            <!-- Appearance -->
+            <button
+              type="button"
+              class="settings-card"
+              data-modal="appearanceModal"
+            >
+              <div>
+                <h2>รูปลักษณ์</h2>
+                <p>ธีม</p>
+              </div>
+            </button>
+
+            <!-- Privacy -->
+            <button
+              type="button"
+              class="settings-card"
+              data-modal="privacyModal"
+            >
+              <div>
+                <h2>ความเป็นส่วนตัวและความปลอดภัย</h2>
+                <p>นโยบายความเป็นส่วนตัว</p>
+              </div>
+            </button>
+
+            <!-- Community -->
+            <button
+              type="button"
+              class="settings-card"
+              data-modal="communityModal"
+            >
+              <div>
+                <h2>ชุมชน</h2>
+                <p>ข้อกำหนด / แนวทางการใช้งานชุมชน</p>
+              </div>
+            </button>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- ================================================= -->
+    <!-- ================= ACCOUNT MODAL ================= -->
+    <!-- ================================================= -->
+
+    <div id="accountModal" class="modal">
+      <div class="modal-box">
+        <button type="button" class="modal-close">×</button>
+
+        <div class="modal-title">
+          <span class="modal-title-icon">👤</span>
+          <h2>ข้อมูลบัญชี</h2>
+        </div>
+
+        <div class="account-list">
+          <!-- Email -->
+          <div class="account-row">
+            <div class="account-icon">✉</div>
+
+            <div class="account-info">
+              <span>อีเมล</span>
+              <strong id="accountEmail"> Singha.Ka@Kkumail.Com </strong>
+            </div>
+
+            <button type="button" class="edit-button" data-edit="email">
+              แก้ไข
+            </button>
+          </div>
+
+          <!-- Username -->
+          <div class="account-row">
+            <div class="account-icon">👤</div>
+
+            <div class="account-info">
+              <span>ชื่อผู้ใช้งาน</span>
+              <strong id="accountUsername"> SIng​​ha </strong>
+            </div>
+
+            <button type="button" class="edit-button" data-edit="username">
+              แก้ไข
+            </button>
+          </div>
+
+          <!-- Password -->
+          <div class="account-row">
+            <div class="account-icon">🔒</div>
+
+            <div class="account-info">
+              <span>รหัสผ่าน</span>
+
+              <strong id="accountPassword"> • • • • • • • • </strong>
+            </div>
+
+            <button type="button" class="edit-button" data-edit="password">
+              แก้ไข
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================================================= -->
+    <!-- ================ APPEARANCE MODAL ============== -->
+    <!-- ================================================= -->
+
+    <div id="appearanceModal" class="modal">
+      <div class="modal-box appearance-box">
+        <button type="button" class="modal-close">×</button>
+
+        <div class="modal-title appearance-title">
+          <span class="modal-title-icon">🎨</span>
+          <h2>เปลี่ยนธีม</h2>
+        </div>
+
+        <div class="theme-list">
+          <!-- Light -->
+          <button
+            type="button"
+            class="theme-option selected"
+            data-theme="light"
+          >
+            <div class="theme-preview theme-light"></div>
+
+            <span>Light</span>
+
+            <span class="theme-check">✓</span>
+          </button>
+
+          <!-- Dark -->
+          <button type="button" class="theme-option" data-theme="dark">
+            <div class="theme-preview theme-dark"></div>
+
+            <span>Dark</span>
+
+            <span class="theme-check">✓</span>
+          </button>
+
+          <!-- Blue -->
+          <button type="button" class="theme-option" data-theme="blue">
+            <div class="theme-preview theme-blue"></div>
+
+            <span>Blue</span>
+
+            <span class="theme-check">✓</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================================================= -->
+    <!-- ================= PRIVACY MODAL ================= -->
+    <!-- ================================================= -->
+
+    <div id="privacyModal" class="modal">
+      <div class="modal-box content-modal">
+        <button type="button" class="modal-close">×</button>
+
+        <div class="modal-title">
+          <span class="modal-title-icon">🔒</span>
+          <h2>ความเป็นส่วนตัวและความปลอดภัย</h2>
+        </div>
+
+        <div class="modal-content">
+          <p>นโยบายความเป็นส่วนตัว</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================================================= -->
+    <!-- ================ COMMUNITY MODAL =============== -->
+    <!-- ================================================= -->
+
+    <div id="communityModal" class="modal">
+      <div class="modal-box content-modal">
+        <button type="button" class="modal-close">×</button>
+
+        <div class="modal-title">
+          <span class="modal-title-icon">📄</span>
+          <h2>นโยบาย</h2>
+        </div>
+
+        <div class="modal-content">
+          <p>ข้อกำหนด / แนวทางการใช้งานชุมชน</p>
+        </div>
+      </div>
+    </div>
+
+    <script th:src="@{/js/theme.js}"></script>
+    <script th:src="@{/js/setting.js}"></script>
+    <script th:src="@{/js/home.js}"></script>
+  </body>
+</html>

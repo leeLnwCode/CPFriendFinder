@@ -3,10 +3,9 @@ package com.cp.friend.controller;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 
-
-@Controller 
+@Controller
 public class PageController {
-    
+
     @GetMapping("/login")
     public String login() {
         return "login";
@@ -22,5 +21,28 @@ public class PageController {
         return "home";
     }
 
-    
+    @GetMapping("/room")
+    public String room() {
+        return "room";
+    }
+
+    @GetMapping("/setting")
+    public String setting() {
+        return "setting";
+    }
+
+    @GetMapping("/notification")
+    public String notification() {
+        return "notification";
+    }
+
+    @GetMapping("/friend")
+    public String friend() {
+        return "friend";
+    }
+
+    @GetMapping("/random")
+    public String random() {
+        return "random";
+    }
 }

@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>เพื่อน | CP Friend Finder</title>
+
+    <!-- Global -->
+    <link rel="stylesheet" th:href="@{/css/theme.css}" />
+    <link rel="stylesheet" th:href="@{/css/sidebar.css}" />
+    <link rel="stylesheet" th:href="@{/css/layout.css}" />
+    <link rel="stylesheet" th:href="@{/css/friend-profile-popup.css}" />
+
+    <!-- Page -->
+    <link rel="stylesheet" th:href="@{/css/friend.css}" />
+</head>
+
+<body>
+    <div class="page-layout">
+        <!-- ================= SIDEBAR ================= -->
+
+        <aside class="sidebar">
+            <!-- Logo -->
+            <div class="sidebar-logo">
+                <img th:src="@{/images/Full_logo.png}" alt="CP Friend Finder" />
+            </div>
+
+            <!-- Profile -->
+            <div class="sidebar-profile">
+                <img th:src="@{/images/man.jpg}" alt="Profile" class="profile-image" />
+
+                <div class="profile-info">
+                    <div class="profile-name">Singha Waraha</div>
+
+                    <div class="profile-year">ปี 1 CS</div>
+                </div>
+
+                <button class="profile-arrow">⌄</button>
+            </div>
+
+            <!-- Navigation -->
+            <nav class="sidebar-menu">
+                <a href="/home" class="menu-item">
+                    <span class="menu-icon">⌂</span>
+                    <span>หน้าหลัก</span>
+                </a>
+
+                <a href="/random" class="menu-item">
+                    <span class="menu-icon">✌︎</span>
+                    <span>สุ่มคุย</span>
+                </a>
+
+                <a href="/friend" class="menu-item active">
+                    <span class="menu-icon">☺︎</span>
+                    <span>เพื่อนของฉัน</span>
+                </a>
+
+                <a href="/notification" class="menu-item">
+                    <span class="menu-icon">☏</span>
+                    <span>การแจ้งเตือน</span>
+                </a>
+
+                <a href="/setting" class="menu-item">
+                    <span class="menu-icon">⚙</span>
+                    <span>การตั้งค่า</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- =====================================================
+         MAIN CONTENT
+    ====================================================== -->
+        <main class="page-content friend-content">
+            <div class="friend-page">
+                <!-- =================================================
+                 FRIEND LIST
+            ================================================== -->
+                <section class="friend-list-section">
+                    <div class="friend-list-header">
+                        <h1>เพื่อน</h1>
+                    </div>
+
+                    <!-- Search -->
+                    <div class="friend-search">
+                        <span class="search-icon">⌕</span>
+
+                        <input type="text" id="friendSearch" placeholder="ค้นชื่อเพื่อน..." autocomplete="off" />
+                    </div>
+
+                    <!-- Friend List -->
+                    <div class="friend-list" id="friendList">
+                        <!-- Friend 1 -->
+                        <button type="button" class="friend-list-item active" data-name="Prashant Kumar Singh"
+                            data-year="ปี 3 CS-VIP" data-image="/images/man2.jpg" data-id="1"
+                            data-interests="🎮 Gaming, ⚔ ROV, 💻 Programming" data-bio="ชอบเล่นเกมโดยเฉพาะ ROV ชอบเล่นได้ๆๆ
+อยากหาเพื่อนคุยและทำโปรเจกต์ด้วยกัน">
+                            <img src="/images/man2.jpg" alt="Prashant Kumar Singh" class="friend-list-avatar" />
+
+                            <span class="friend-list-info">
+                                <span class="friend-list-name"> Prashant Kumar Singh </span>
+
+                                <span class="friend-list-year"> ปี 3 CS-VIP </span>
+                            </span>
+                        </button>
+
+                        <!-- Friend 2 -->
+                        <button type="button" class="friend-list-item" data-name="Worawut Srichan"
+                            data-year="ปี 3 CS-VIP" data-image="/images/Worawut.jpg" data-id="2"
+                            data-interests="🎮 Gaming, ⚔ ROV" data-bio="ชอบเล่นเกมและหาเพื่อนคุย">
+                            <img src="/images/Worawut.jpg" alt="Worawut Srichan" class="friend-list-avatar" />
+
+                            <span class="friend-list-info">
+                                <span class="friend-list-name"> Worawut Srichan </span>
+
+                                <span class="friend-list-year"> ปี 3 CS-VIP </span>
+                            </span>
+                        </button>
+
+                        <!-- Friend 3 -->
+                        <button type="button" class="friend-list-item" data-name="Napha" data-year="ปี 3 CS-VIP"
+                            data-image="/images/Napha.jpg" data-id="3" data-interests="🎵 Music, 🎮 Gaming"
+                            data-bio="ชอบฟังเพลงและเล่นเกม">
+                            <img src="/images/Napha.jpg" alt="Napha" class="friend-list-avatar" />
+
+                            <span class="friend-list-info">
+                                <span class="friend-list-name"> Napha </span>
+
+                                <span class="friend-list-year"> ปี 3 CS-VIP </span>
+                            </span>
+                        </button>
+                    </div>
+                </section>
+
+                <!-- =================================================
+                 CHAT
+            ================================================== -->
+                <section class="chat-section">
+                    <div class="chat-container">
+                        <!-- ================= CHAT HEADER ================= -->
+                        <header class="chat-header">
+                            <div class="chat-user friend-chat-profile-trigger" id="chatUserProfile" data-profile>
+                                <img id="chatUserImage" src="/images/man2.jpg" alt="Profile" class="chat-user-avatar" />
+
+                                <div class="chat-user-info">
+                                    <div id="chatUserName" class="chat-user-name">
+                                        Prashant Kumar Singh
+                                    </div>
+
+                                    <div id="chatUserYear" class="chat-user-year">
+                                        ปี 3 CS-VIP
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- ================= CHAT ACTIONS ================= -->
+                            <div class="chat-actions">
+                                <!-- โทรเสียง -->
+                                <button type="button" id="voiceCallButton" class="chat-icon-button" title="โทรเสียง">
+                                    <img src="/images/phone-call.png" alt="โทรเสียง" class="theme-icon" />
+                                </button>
+
+                                <!-- วิดีโอคอล -->
+                                <button type="button" id="videoCallButton" class="chat-icon-button" title="วิดีโอคอล">
+                                    <img src="/images/cam-recorder.png" alt="วิดีโอคอล" class="theme-icon" />
+                                </button>
+
+                                <!-- More -->
+                                <div class="chat-more">
+                                    <button type="button" id="chatMoreButton" class="chat-icon-button"
+                                        title="เพิ่มเติม">
+                                        <img src="/images/dots.png" alt="เพิ่มเติม" class="theme-icon" />
+                                    </button>
+
+                                    <div id="chatMoreMenu" class="chat-more-menu">
+                                        <button type="button" id="unfriendButton">
+                                            เลิกเป็นเพื่อน
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </header>
+
+                        <!-- ================= MESSAGES ================= -->
+                        <div class="chat-messages" id="chatMessages">
+                            <!-- จะถูกสร้างจาก friend.js -->
+                        </div>
+
+                        <!-- ================= CHAT INPUT ================= -->
+                        <form id="messageForm" class="chat-input-area">
+                            <!-- เลือกรูป -->
+                            <button type="button" id="imageButton" class="image-button" title="ส่งรูป">
+                                <img src="/images/image.png" alt="ส่งรูป" class="theme-icon" />
+                            </button>
+
+                            <!-- input file ซ่อนไว้ -->
+                            <input type="file" id="imageInput" accept="image/*" hidden />
+
+                            <!-- ข้อความ -->
+                            <input type="text" id="messageInput" placeholder="พิมพ์ข้อความ..." autocomplete="off" />
+
+                            <!-- ส่ง -->
+                            <button type="submit" class="send-button">ส่ง</button>
+                        </form>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+
+    <!-- ================= VOICE CALL POPUP ================= -->
+
+    <div id="voiceCallOverlay" class="voice-call-overlay">
+        <div class="voice-call-popup">
+            <!-- ปุ่มปิด -->
+            <button type="button" id="voiceCallClose" class="voice-call-close">
+                ×
+            </button>
+
+            <!-- รูปโปรไฟล์ -->
+            <div class="voice-call-image-wrapper">
+                <img id="voiceCallImage" src="/images/man2.jpg" alt="Profile" class="voice-call-image" />
+            </div>
+
+            <!-- ชื่อ -->
+            <h2 id="voiceCallName">Prashant Kumar Singh</h2>
+
+            <!-- สถานะ / เวลา -->
+            <div id="voiceCallStatus" class="voice-call-status">กำลังโทร...</div>
+
+            <!-- ปุ่มควบคุม -->
+            <div class="voice-call-actions">
+
+                <!-- ปิดไมค์ -->
+                <button type="button" id="voiceCallMute" class="voice-call-action">
+                    <span class="voice-call-icon">
+                        <img src="/images/microphone-black-shape.png" alt="ไมโครโฟน" />
+                        <span class="voice-call-slash"></span>
+                    </span>
+                    <span>ไมค์</span>
+                </button>
+
+
+                <!-- วางสาย -->
+                <button type="button" id="voiceCallEnd" class="voice-call-end">
+                    <span class="voice-call-end-icon">
+                        <img src="/images/phone-call.png" alt="วางสาย" />
+                    </span>
+                    <span>วางสาย</span>
+                </button>
+
+
+                <!-- ลำโพง -->
+                <button type="button" id="voiceCallSpeaker" class="voice-call-action">
+                    <span class="voice-call-icon">
+                        <img src="/images/volume-up.png" alt="ลำโพง" />
+                        <span class="voice-call-slash"></span>
+                    </span>
+                    <span>ลำโพง</span>
+                </button>
+
+            </div>
+
+            <div th:replace="~{fragments/friend-profile-popup :: friendProfilePopup}"></div>
+
+            <script th:src="@{/js/friend-profile-popup.js}"></script>
+            <script th:src="@{/js/theme.js}"></script>
+            <script th:src="@{/js/friend.js}"></script>
+</body>
+
+</html>

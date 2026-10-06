@@ -1,750 +1,486 @@
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
-
 
 html,
 body {
-    margin: 0;
-    padding: 0;
-    width: 100%;
-    min-height: 100%;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  min-height: 100%;
 }
-
 
 .register-body {
-    background: #ffffff;
-    font-family: Arial, sans-serif;
+  background: #ffffff;
 }
-
-
-
 
 /* PAGE */
 
-
 .register-page {
-    width: 100%;
-    min-height: 100vh;
+  width: 100%;
+  min-height: 100vh;
 
+  display: flex;
+  justify-content: center;
 
-    display: flex;
-    justify-content: center;
+  padding: 40px 20px 80px;
 
+  background: #ffffff;
 
-    padding: 40px 20px 80px;
-
-
-    background: #ffffff;
-
-
-    overflow-y: auto;
+  overflow-y: auto;
 }
-
-
-
 
 /* CARD  */
 
-
 .register-card {
-    width: 100%;
-    max-width: 650px;
+  width: 100%;
+  max-width: 650px;
 
-
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
-
-
-
 
 /*  LOGO */
 
-
 .register-logo {
-    width: 190px;
+  width: 190px;
 
-
-    margin-bottom: 25px;
+  margin-bottom: 25px;
 }
-
-
-
 
 /*  STEP INDICATOR  */
 
-
 .step-indicator {
-    width: 100%;
-    max-width: 540px;
+  width: 100%;
+  max-width: 540px;
 
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-
-    margin-bottom: 30px;
+  margin-bottom: 30px;
 }
-
-
-
 
 .step {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
-
-    color: #999999;
+  color: #999999;
 }
-
-
-
 
 .step span {
-    width: 36px;
-    height: 36px;
+  width: 36px;
+  height: 36px;
 
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  border-radius: 50%;
 
+  background: #eeeeee;
 
-    border-radius: 50%;
-
-
-    background: #eeeeee;
-
-
-    font-weight: 600;
+  font-weight: 600;
 }
-
-
-
 
 .step p {
-    margin: 6px 0 0;
+  margin: 6px 0 0;
 
-
-    font-size: 13px;
+  font-size: 13px;
 }
-
-
-
 
 .step.active {
-    color: #18a8dc;
+  color: #18a8dc;
 }
-
-
-
 
 .step.active span {
-    background: #18a8dc;
-    color: #ffffff;
+  background: #18a8dc;
+  color: #ffffff;
 }
-
-
-
 
 .step-line {
-    width: 80px;
-    height: 2px;
+  width: 80px;
+  height: 2px;
 
+  margin: 0 10px;
 
-    margin: 0 10px;
-
-
-    background: #dddddd;
+  background: #dddddd;
 }
-
-
-
 
 /*  STEP */
 
-
 .register-step {
-    display: none;
+  display: none;
 
-
-    width: 100%;
+  width: 100%;
 }
-
-
-
 
 .register-step.active-step {
-    display: block;
+  display: block;
 }
-
-
-
 
 .register-step h1 {
-    margin: 0;
+  margin: 0;
 
+  text-align: center;
 
-    text-align: center;
+  color: #222222;
 
-
-    color: #222222;
-
-
-    font-size: 30px;
+  font-size: 30px;
 }
-
-
-
 
 .register-subtitle {
-    margin: 10px 0 25px;
+  margin: 10px 0 25px;
 
+  text-align: center;
 
-    text-align: center;
+  color: #666666;
 
-
-    color: #666666;
-
-
-    font-size: 15px;
+  font-size: 15px;
 }
-
-
-
 
 /*  FORM */
 
-
 .register-form {
-    width: 100%;
-    max-width: 540px;
+  width: 100%;
+  max-width: 540px;
 
-
-    margin: 0 auto;
+  margin: 0 auto;
 }
-
-
-
 
 .register-form label {
-    display: block;
+  display: block;
 
+  margin-top: 16px;
+  margin-bottom: 7px;
 
-    margin-top: 16px;
-    margin-bottom: 7px;
+  color: #222222;
 
-
-    color: #222222;
-
-
-    font-size: 15px;
-    font-weight: 600;
+  font-size: 15px;
+  font-weight: 600;
 }
-
-
-
 
 .register-form input,
 .register-form select {
-    width: 100%;
-    height: 52px;
+  width: 100%;
+  height: 52px;
 
+  padding: 0 16px;
 
-    padding: 0 16px;
+  border: none;
+  border-radius: 10px;
 
+  background: #f0f2f5;
 
-    border: none;
-    border-radius: 10px;
+  color: #333333;
 
+  font-size: 16px;
 
-    background: #f0f2f5;
-
-
-    color: #333333;
-
-
-    font-size: 16px;
-
-
-    outline: none;
+  outline: none;
 }
-
-
-
 
 .register-form input:focus,
 .register-form select:focus {
-    outline: 2px solid #18a8dc;
+  outline: 2px solid #18a8dc;
 }
-
-
-
 
 /*  PASSWORD */
 
-
 .password-wrapper {
-    position: relative;
+  position: relative;
 }
-
-
-
 
 .password-wrapper input {
-    padding-right: 70px;
+  padding-right: 70px;
 }
-
-
-
 
 .password-toggle {
-    position: absolute;
+  position: absolute;
 
+  right: 15px;
+  top: 50%;
 
-    right: 15px;
-    top: 50%;
+  transform: translateY(-50%);
 
+  border: none;
 
-    transform: translateY(-50%);
+  background: transparent;
 
+  color: #18a8dc;
 
-    border: none;
+  font-weight: 600;
 
-
-    background: transparent;
-
-
-    color: #18a8dc;
-
-
-    font-weight: 600;
-
-
-    cursor: pointer;
+  cursor: pointer;
 }
-
-
-
 
 /* NAME  */
 
-
 .name-row {
-    display: grid;
+  display: grid;
 
+  grid-template-columns: 1fr 1fr;
 
-    grid-template-columns: 1fr 1fr;
-
-
-    gap: 15px;
+  gap: 15px;
 }
-
-
-
 
 /*  PROFILE IMAGE */
 
-
 .profile-upload {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 
-
-    margin: 10px 0 20px;
+  margin: 10px 0 20px;
 }
-
-
-
 
 .profile-preview {
-    position: relative;
+  position: relative;
 
+  width: 120px;
+  height: 120px;
 
-    width: 120px;
-    height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
+  overflow: hidden;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  border-radius: 50%;
 
+  background: #f0f2f5;
 
-    overflow: hidden;
-
-
-    border-radius: 50%;
-
-
-    background: #f0f2f5;
-
-
-    border: 2px solid #18a8dc;
+  border: 2px solid #18a8dc;
 }
-
-
-
 
 .profile-preview img {
-    width: 100%;
-    height: 100%;
+  width: 100%;
+  height: 100%;
 
+  object-fit: cover;
 
-    object-fit: cover;
-
-
-    display: none;
+  display: none;
 }
-
-
-
 
 .profile-preview span {
-    font-size: 40px;
+  font-size: 40px;
 
-
-    color: #18a8dc;
+  color: #18a8dc;
 }
-
-
-
 
 #profileImage {
-    display: none;
+  display: none;
 }
-
-
-
 
 .upload-button {
-    margin-top: 12px !important;
+  margin-top: 12px !important;
 
+  padding: 8px 18px;
 
-    padding: 8px 18px;
+  border-radius: 8px;
 
+  background: #18a8dc;
 
-    border-radius: 8px;
+  color: #ffffff !important;
 
-
-    background: #18a8dc;
-
-
-    color: #ffffff !important;
-
-
-    cursor: pointer;
+  cursor: pointer;
 }
-
-
-
 
 /*  INTEREST */
 
-
 .interest-container {
-    width: 100%;
-    max-width: 540px;
+  width: 100%;
+  max-width: 540px;
 
-
-    margin: 0 auto;
+  margin: 0 auto;
 }
-
-
-
 
 .interest-group {
-    margin-bottom: 25px;
+  margin-bottom: 25px;
 }
-
-
-
 
 .interest-group h3 {
-    margin: 0 0 10px;
+  margin: 0 0 10px;
 
+  color: #333333;
 
-    color: #333333;
-
-
-    font-size: 17px;
+  font-size: 17px;
 }
-
-
-
 
 .interest-list {
-    display: flex;
-    flex-wrap: wrap;
+  display: flex;
+  flex-wrap: wrap;
 
-
-    gap: 10px;
+  gap: 10px;
 }
-
-
-
 
 .interest {
-    padding: 10px 16px;
+  padding: 10px 16px;
 
+  border: none;
+  border-radius: 20px;
 
-    border: none;
-    border-radius: 20px;
+  background: #e8f4fa;
 
+  color: #17658a;
 
-    background: #e8f4fa;
+  font-size: 14px;
 
+  cursor: pointer;
 
-    color: #17658a;
-
-
-    font-size: 14px;
-
-
-    cursor: pointer;
-
-
-    transition: 0.2s;
+  transition: 0.2s;
 }
-
-
-
 
 .interest:hover {
-    background: #d5edf8;
+  background: #d5edf8;
 }
-
-
-
 
 .interest.selected {
-    background: #18a8dc;
+  background: #18a8dc;
 
-
-    color: #ffffff;
+  color: #ffffff;
 }
-
-
-
 
 /*  BUTTONS  */
 
-
 .register-buttons {
-    width: 100%;
-    max-width: 540px;
+  width: 100%;
+  max-width: 540px;
 
+  display: flex;
 
-    display: flex;
+  gap: 15px;
 
-
-    gap: 15px;
-
-
-    margin: 30px auto 40px;
+  margin: 30px auto 40px;
 }
-
-
-
 
 .cancel-button,
 .back-button,
 .next-button {
-    flex: 1;
+  flex: 1;
 
+  height: 52px;
 
-    height: 52px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 
+  border-radius: 9px;
 
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  font-size: 16px;
+  font-weight: 600;
 
-
-    border-radius: 9px;
-
-
-    font-size: 16px;
-    font-weight: 600;
-
-
-    cursor: pointer;
+  cursor: pointer;
 }
-
-
-
 
 .cancel-button,
 .back-button {
-    border: 1px solid #18a8dc;
+  border: 1px solid #18a8dc;
 
+  background: #ffffff;
 
-    background: #ffffff;
+  color: #18a8dc;
 
-
-    color: #18a8dc;
-
-
-    text-decoration: none;
+  text-decoration: none;
 }
-
-
-
 
 .cancel-button:hover,
 .back-button:hover {
-    background: #e8f6fc;
+  background: #e8f6fc;
 }
-
-
-
 
 .next-button {
-    border: none;
+  border: none;
 
+  background: #18a8dc;
 
-    background: #18a8dc;
-
-
-    color: #ffffff;
+  color: #ffffff;
 }
-
-
-
 
 .next-button:hover {
-    background: #1299ca;
+  background: #1299ca;
 }
-
-
-
 
 /* MOBILE */
 
-
 @media (max-width: 600px) {
+  .register-page {
+    padding: 25px 15px 60px;
+  }
 
+  .name-row {
+    grid-template-columns: 1fr;
+    gap: 0;
+  }
 
-    .register-page {
-        padding: 25px 15px 60px;
-    }
-
-
-    .name-row {
-        grid-template-columns: 1fr;
-        gap: 0;
-    }
-
-
-    .step-line {
-        width: 40px;
-    }
-
-
+  .step-line {
+    width: 40px;
+  }
 }
-
 
 /* CUSTOM INTEREST */
 .custom-interest {
-    display: flex;
+  display: flex;
 
+  gap: 10px;
 
-    gap: 10px;
+  margin-top: 15px;
 
-
-    margin-top: 15px;
-
-
-    margin-bottom: 12px;
+  margin-bottom: 12px;
 }
-
-
-
 
 .custom-interest input {
-    flex: 1;
+  flex: 1;
 
+  height: 44px;
 
-    height: 44px;
+  padding: 0 14px;
 
+  border: 1px solid #d9dfe5;
 
-    padding: 0 14px;
+  border-radius: 9px;
 
+  background: #f0f2f5;
 
-    border: 1px solid #d9dfe5;
+  font-size: 14px;
 
-
-    border-radius: 9px;
-
-
-    background: #f0f2f5;
-
-
-    font-size: 14px;
-
-
-    outline: none;
+  outline: none;
 }
-
-
-
 
 .custom-interest input:focus {
-    border-color: #18a8dc;
+  border-color: #18a8dc;
 
-
-    outline: 2px solid rgba(24, 168, 220, 0.15);
+  outline: 2px solid rgba(24, 168, 220, 0.15);
 }
-
-
-
 
 .add-interest-button {
-    height: 44px;
+  height: 44px;
 
+  padding: 0 18px;
 
-    padding: 0 18px;
+  border: none;
 
+  border-radius: 9px;
 
-    border: none;
+  background: #18a8dc;
 
+  color: white;
 
-    border-radius: 9px;
+  font-size: 14px;
 
+  font-weight: 600;
 
-    background: #18a8dc;
-
-
-    color: white;
-
-
-    font-size: 14px;
-
-
-    font-weight: 600;
-
-
-    cursor: pointer;
+  cursor: pointer;
 }
-
-
-
 
 .add-interest-button:hover {
-    background: #1299ca;
+  background: #1299ca;
 }
-
-
-
 
 .interest-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 10px;
 }
-
