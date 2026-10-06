@@ -76,83 +76,7 @@
           <h1>คำขอเป็นเพื่อน</h1>
         </div>
 
-        <div class="friend-request-list">
-          <!-- Card 1 -->
-          <div class="friend-request-card">
-            <div class="friend-info friend-profile-trigger" data-profile data-name="Napha" data-year="ปี 3 CS-VIP"
-              data-image="/images/Napha.jpg" data-interests="เกม, เพลง, ROV" data-bio="ชอบเล่นเกมและพูดคุยกับเพื่อน">
-              <div class="friend-avatar">
-                <img src="/images/Napha.jpg" alt="Napha" />
-              </div>
-
-              <div class="friend-detail">
-                <div class="friend-name">Napha</div>
-                <div class="friend-year">ปี 3 CS-VIP</div>
-              </div>
-            </div>
-
-            <div class="request-actions">
-              <button class="accept-button" onclick="acceptRequest(this)">
-                ยอมรับ
-              </button>
-
-              <button class="decline-button" onclick="declineRequest(this)">
-                ปฏิเสธ
-              </button>
-            </div>
-          </div>
-
-          <!-- Card 2 -->
-          <div class="friend-request-card">
-            <div class="friend-info friend-profile-trigger" data-profile data-name="Prashant Kumar Singh"
-              data-year="ปี 2 AI-VIP" data-image="/images/man2.jpg">
-              <div class="friend-avatar">
-                <img src="/images/man2.jpg" alt="Prashant Kumar Singh" />
-              </div>
-
-              <div class="friend-detail">
-                <div class="friend-name">Prashant Kumar Singh</div>
-
-                <div class="friend-year">ปี 2 AI-VIP</div>
-              </div>
-            </div>
-
-            <div class="request-actions">
-              <button class="accept-button" onclick="acceptRequest(this)">
-                ยอมรับ
-              </button>
-
-              <button class="decline-button" onclick="declineRequest(this)">
-                ปฏิเสธ
-              </button>
-            </div>
-          </div>
-
-          <!-- Card 3 -->
-          <div class="friend-request-card">
-            <div class="friend-info friend-profile-trigger" data-profile data-name="Worawut" data-year="ปี 1 CY-VIP"
-              data-image="/images/Worawut.jpg">
-              <div class="friend-avatar">
-                <img src="/images/Worawut.jpg" alt="Worawut" />
-              </div>
-
-              <div class="friend-detail">
-                <div class="friend-name">Worawut</div>
-
-                <div class="friend-year">ปี 1 CY-VIP</div>
-              </div>
-            </div>
-
-            <div class="request-actions">
-              <button class="accept-button" onclick="acceptRequest(this)">
-                ยอมรับ
-              </button>
-
-              <button class="decline-button" onclick="declineRequest(this)">
-                ปฏิเสธ
-              </button>
-            </div>
-          </div>
+        <div id="friendRequestList" class="friend-request-list">
         </div>
       </section>
 
@@ -199,7 +123,42 @@
     </main>
   </div>
 
-  <div th:replace="~{fragments/friend-profile-popup :: friendProfilePopup}"></div>
+  <div id="friendProfileOverlay" class="friend-profile-overlay">
+    <div class="friend-profile-popup">
+
+        <button type="button"
+                id="friendProfileClose"
+                class="friend-profile-close">
+            ×
+        </button>
+
+        <img id="friendProfileImage"
+             src="/images/man.jpg"
+             alt="Profile"
+             class="friend-profile-image">
+
+        <h2 id="friendProfileName">ชื่อเพื่อน</h2>
+
+        <p id="friendProfileYear">ปี 1</p>
+
+        <div id="friendProfileInterests"
+             class="friend-profile-interests">
+        </div>
+
+        <p id="friendProfileBio"
+           class="friend-profile-bio">
+        </p>
+
+        <button type="button"
+                id="friendProfileAction"
+                class="friend-profile-action">
+            <span id="friendProfileActionText">
+                เพิ่มเพื่อน
+            </span>
+        </button>
+
+    </div>
+</div>
 
   <script th:src="@{/js/friend-profile-popup.js}"></script>
   <script th:src="@{/js/theme.js}"></script>

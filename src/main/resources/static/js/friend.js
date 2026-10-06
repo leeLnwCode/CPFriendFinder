@@ -31,47 +31,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const imageInput = document.getElementById("imageInput");
 
-  /* =====================================================
-         CHAT DATA
-      ====================================================== */
-
-  const conversations = {
-    1: [
-      {
-        type: "received",
-        text: "ใช่น้องที่เล่น ROV ตานั้นมั้ยครับ",
-        image: "/images/man2.jpg",
-      },
-      {
-        type: "sent",
-        text: "ใช่ครับ",
-      },
-    ],
-
-    2: [
-      {
-        type: "received",
-        text: "สวัสดีครับ เห็นว่าเล่นเกมเหมือนกัน",
-        image: "/images/Worawut.jpg",
-      },
-      {
-        type: "sent",
-        text: "ใช่ครับ เล่นหลายเกมเลยครับ",
-      },
-    ],
-
-    3: [
-      {
-        type: "received",
-        text: "สวัสดีครับ",
-        image: "/images/Napha.jpg",
-      },
-      {
-        type: "sent",
-        text: "สวัสดีครับ",
-      },
-    ],
-  };
 
   /* =====================================================
          LOAD CHAT
@@ -128,66 +87,108 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =====================================================
-         RENDER MESSAGES
-      ====================================================== */
+       RENDER MESSAGES
+    ====================================================== */
 
-  function renderMessages(friendId, friendName, friendImage) {
-    chatMessages.innerHTML = "";
+function renderMessages(friendId, friendName, friendImage) {
+  chatMessages.innerHTML = "";
 
-    const messages = conversations[friendId] || [];
+  const emptyMessage = document.createElement("div");
 
-    messages.forEach((message) => {
-      const row = document.createElement("div");
+  emptyMessage.className = "friend-empty";
 
-      row.className = `message-row ${message.type}`;
+  emptyMessage.textContent = "ยังไม่มีข้อความ";
 
-      if (message.type === "received") {
-        const avatar = document.createElement("img");
+  chatMessages.appendChild(emptyMessage);
 
-        avatar.src = message.image || friendImage;
-
-        avatar.alt = friendName;
-
-        avatar.className = "message-avatar";
-
-        row.appendChild(avatar);
-      }
-
-      const bubble = document.createElement("div");
-
-      bubble.className = "message-bubble";
-
-      if (message.imageUrl) {
-        const image = document.createElement("img");
-
-        image.src = message.imageUrl;
-
-        image.alt = "รูปภาพ";
-
-        image.className = "sent-chat-image";
-
-        bubble.appendChild(image);
-      } else {
-        bubble.textContent = message.text;
-      }
-
-      row.appendChild(bubble);
-
-      chatMessages.appendChild(row);
-    });
-
-    scrollToBottom();
-  }
+  scrollToBottom();
+}
 
   /* =====================================================
-         FRIEND CLICK
-      ====================================================== */
+       LOAD FRIENDS FROM BACKEND
+    ====================================================== */
 
-  document.querySelectorAll(".friend-list-item").forEach((friend) => {
-    friend.addEventListener("click", () => {
-      loadConversation(friend);
+async function loadFriends() {
+  try {
+    const response = await fetch("/api/friends", {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+      },
+      credentials: "include",
     });
-  });
+
+    if (!response.ok) {
+      throw new Error(`โหลดเพื่อนไม่สำเร็จ (${response.status})`);
+    }
+
+    const friends = await response.json();
+
+    friendList.innerHTML = "";
+
+    if (!friends || friends.length === 0) {
+      friendList.innerHTML = `
+        <div class="friend-empty">
+          ยังไม่มีเพื่อน
+        </div>
+      `;
+      return;
+    }
+
+    friends.forEach((friend, index) => {
+      const friendItem = document.createElement("div");
+
+      friendItem.className = "friend-list-item";
+
+      friendItem.dataset.id = friend.friendId;
+      friendItem.dataset.name =
+        `${friend.firstname || ""} ${friend.lastname || ""}`.trim();
+      friendItem.dataset.year = "";
+      friendItem.dataset.image = friend.imageUrl || "/images/man.jpg";
+
+      friendItem.innerHTML = `
+        <img
+          class="friend-avatar"
+          src="${friend.imageUrl || "/images/man.jpg"}"
+          alt="${friend.firstname || "เพื่อน"}"
+        >
+
+        <div class="friend-info">
+          <div class="friend-name">
+            ${friend.firstname || ""} ${friend.lastname || ""}
+          </div>
+        </div>
+      `;
+
+      friendItem.addEventListener("click", () => {
+        loadConversation(friendItem);
+      });
+
+      friendList.appendChild(friendItem);
+
+      /*
+       * เพื่อนคนแรกเป็นเพื่อนที่เลือกอยู่ตอนเปิดหน้า
+       */
+      if (index === 0) {
+        friendItem.classList.add("active");
+      }
+    });
+
+    const firstFriend = friendList.querySelector(".friend-list-item");
+
+    if (firstFriend) {
+      loadConversation(firstFriend);
+    }
+  } catch (error) {
+    console.error("โหลดรายชื่อเพื่อนล้มเหลว:", error);
+
+    friendList.innerHTML = `
+      <div class="friend-empty">
+        ไม่สามารถโหลดรายชื่อเพื่อนได้
+      </div>
+    `;
+  }
+}
 
   /* =====================================================
          SEARCH
@@ -256,16 +257,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     const friendId = activeFriend.dataset.id;
 
-    /* Save message */
-
-    if (!conversations[friendId]) {
-      conversations[friendId] = [];
-    }
-
-    conversations[friendId].push({
-      type: "sent",
-      text: text,
-    });
 
     /* Re-render */
 
@@ -389,14 +380,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const friendId = activeFriend.dataset.id;
 
-      if (!conversations[friendId]) {
-        conversations[friendId] = [];
-      }
-
-      conversations[friendId].push({
-        type: "sent",
-        imageUrl: reader.result,
-      });
 
       renderMessages(
         friendId,
@@ -418,15 +401,7 @@ document.addEventListener("DOMContentLoaded", () => {
     chatMessages.scrollTop = chatMessages.scrollHeight;
   }
 
-  /* =====================================================
-         INITIAL CHAT
-      ====================================================== */
-
-  const firstFriend = document.querySelector(".friend-list-item.active");
-
-  if (firstFriend) {
-    loadConversation(firstFriend);
-  }
+  
 });
 
 /* =========================================================
