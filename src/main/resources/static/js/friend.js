@@ -9,6 +9,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
   const chatUserYear = document.getElementById("chatUserYear");
 
+  const chatUserProfile = document.getElementById("chatUserProfile");
+
   const chatMessages = document.getElementById("chatMessages");
 
   const messageForm = document.getElementById("messageForm");
@@ -30,8 +32,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const imageInput = document.getElementById("imageInput");
 
   /* =====================================================
-       CHAT DATA
-    ====================================================== */
+         CHAT DATA
+      ====================================================== */
 
   const conversations = {
     1: [
@@ -72,8 +74,8 @@ document.addEventListener("DOMContentLoaded", () => {
   };
 
   /* =====================================================
-       LOAD CHAT
-    ====================================================== */
+         LOAD CHAT
+      ====================================================== */
 
   function loadConversation(friend) {
     const id = friend.dataset.id;
@@ -100,6 +102,22 @@ document.addEventListener("DOMContentLoaded", () => {
 
     chatUserImage.src = image;
 
+    /* Profile Popup Data */
+
+    chatUserProfile.dataset.name = name;
+
+    chatUserProfile.dataset.year = year;
+
+    chatUserProfile.dataset.image = image;
+
+    chatUserProfile.dataset.id = id;
+
+    chatUserProfile.dataset.interests = friend.dataset.interests || "";
+
+    chatUserProfile.dataset.bio = friend.dataset.bio || "";
+
+    chatUserProfile.dataset.status = "friend";
+
     /* Messages */
 
     renderMessages(id, name, image);
@@ -110,8 +128,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =====================================================
-       RENDER MESSAGES
-    ====================================================== */
+         RENDER MESSAGES
+      ====================================================== */
 
   function renderMessages(friendId, friendName, friendImage) {
     chatMessages.innerHTML = "";
@@ -162,8 +180,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   /* =====================================================
-       FRIEND CLICK
-    ====================================================== */
+         FRIEND CLICK
+      ====================================================== */
 
   document.querySelectorAll(".friend-list-item").forEach((friend) => {
     friend.addEventListener("click", () => {
@@ -172,8 +190,8 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   /* =====================================================
-       SEARCH
-    ====================================================== */
+         SEARCH
+      ====================================================== */
 
   friendSearch.addEventListener("input", () => {
     const keyword = friendSearch.value.trim().toLowerCase();
@@ -218,8 +236,8 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   /* =====================================================
-       SEND TEXT
-    ====================================================== */
+         SEND TEXT
+      ====================================================== */
 
   messageForm.addEventListener("submit", (event) => {
     event.preventDefault();
@@ -263,8 +281,8 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   /* =====================================================
-       ENTER TO SEND
-    ====================================================== */
+         ENTER TO SEND
+      ====================================================== */
 
   messageInput.addEventListener("keydown", (event) => {
     if (event.key === "Enter" && !event.shiftKey) {
@@ -275,8 +293,8 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   /* =====================================================
-       VOICE CALL
-    ====================================================== */
+         VOICE CALL
+      ====================================================== */
 
   voiceCallButton.addEventListener("click", () => {
     const name = chatUserName.textContent;
@@ -285,8 +303,8 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   /* =====================================================
-       VIDEO CALL
-    ====================================================== */
+         VIDEO CALL
+      ====================================================== */
 
   videoCallButton.addEventListener("click", () => {
     const name = chatUserName.textContent;
@@ -295,8 +313,8 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   /* =====================================================
-       MORE MENU
-    ====================================================== */
+         MORE MENU
+      ====================================================== */
 
   chatMoreButton.addEventListener("click", (event) => {
     event.stopPropagation();
@@ -313,8 +331,8 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   /* =====================================================
-       UNFRIEND
-    ====================================================== */
+         UNFRIEND
+      ====================================================== */
 
   unfriendButton.addEventListener("click", () => {
     const activeFriend = document.querySelector(".friend-list-item.active");
@@ -341,6 +359,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     chatUserImage.src = "/images/man.jpg";
 
+    chatUserProfile.removeAttribute("data-profile");
+
     chatMessages.innerHTML = `
                 <div class="friend-empty">
                     คุณเลิกเป็นเพื่อนกับ ${name} แล้ว
@@ -351,16 +371,16 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   /* =====================================================
-       IMAGE BUTTON
-    ====================================================== */
+         IMAGE BUTTON
+      ====================================================== */
 
   imageButton.addEventListener("click", () => {
     imageInput.click();
   });
 
   /* =====================================================
-       IMAGE SELECT
-    ====================================================== */
+         IMAGE SELECT
+      ====================================================== */
 
   imageInput.addEventListener("change", (event) => {
     const file = event.target.files[0];
@@ -410,16 +430,16 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 
   /* =====================================================
-       SCROLL
-    ====================================================== */
+         SCROLL
+      ====================================================== */
 
   function scrollToBottom() {
     chatMessages.scrollTop = chatMessages.scrollHeight;
   }
 
   /* =====================================================
-       INITIAL CHAT
-    ====================================================== */
+         INITIAL CHAT
+      ====================================================== */
 
   const firstFriend = document.querySelector(".friend-list-item.active");
 

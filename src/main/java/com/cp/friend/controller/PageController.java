@@ -40,4 +40,9 @@ public class PageController {
     public String friend() {
         return "friend";
     }
+
+    @GetMapping("/random")
+    public String random() {
+        return "random";
+    }
 }

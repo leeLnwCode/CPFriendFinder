@@ -3,289 +3,206 @@
 ========================================================= */
 
 document.addEventListener("DOMContentLoaded", () => {
+  const overlay = document.getElementById("friendProfileOverlay");
 
-    const overlay = document.getElementById("friendProfileOverlay");
+  if (!overlay) {
+    return;
+  }
 
-    if (!overlay) {
-        return;
-    }
+  const closeButton = document.getElementById("friendProfileClose");
 
+  const profileImage = document.getElementById("friendProfileImage");
 
-    const closeButton =
-        document.getElementById("friendProfileClose");
+  const profileName = document.getElementById("friendProfileName");
 
-    const profileImage =
-        document.getElementById("friendProfileImage");
+  const profileYear = document.getElementById("friendProfileYear");
 
-    const profileName =
-        document.getElementById("friendProfileName");
+  const profileInterests = document.getElementById("friendProfileInterests");
 
-    const profileYear =
-        document.getElementById("friendProfileYear");
+  const profileBio = document.getElementById("friendProfileBio");
 
-    const profileInterests =
-        document.getElementById("friendProfileInterests");
+  const actionButton = document.getElementById("friendProfileAction");
 
-    const profileBio =
-        document.getElementById("friendProfileBio");
+  const actionIcon = document.getElementById("friendProfileActionIcon");
 
-    const actionButton =
-        document.getElementById("friendProfileAction");
+  const actionText = document.getElementById("friendProfileActionText");
 
-    const actionIcon =
-        document.getElementById("friendProfileActionIcon");
+  let currentProfileId = null;
+  let currentStatus = "none";
 
-    const actionText =
-        document.getElementById("friendProfileActionText");
-
-
-    let currentProfileId = null;
-    let currentStatus = "none";
-
-
-    /* =====================================================
+  /* =====================================================
        OPEN POPUP
     ===================================================== */
 
-    function openFriendProfile(element) {
+  function openFriendProfile(element) {
+    const name = element.dataset.name || "ไม่ระบุชื่อ";
 
-        const name =
-            element.dataset.name || "ไม่ระบุชื่อ";
+    const year = element.dataset.year || "";
 
-        const year =
-            element.dataset.year || "";
+    const image = element.dataset.image || "/images/man2.jpg";
 
-        const image =
-            element.dataset.image || "/images/man2.jpg";
+    const bio = element.dataset.bio || "ยังไม่มีข้อมูลเกี่ยวกับฉัน";
 
-        const bio =
-            element.dataset.bio ||
-            "ยังไม่มีข้อมูลเกี่ยวกับฉัน";
+    const interests = element.dataset.interests || "";
+    
+    const status = element.dataset.status || "none";
 
-        const interests =
-            element.dataset.interests || "";
+    const id = element.dataset.id || "";
 
-        const status =
-            element.dataset.friendStatus || "none";
+    currentProfileId = id;
+    currentStatus = status;
 
-        const id =
-            element.dataset.id || "";
+    profileName.textContent = name;
 
+    profileYear.textContent = year;
 
-        currentProfileId = id;
-        currentStatus = status;
+    profileImage.src = image;
+    profileImage.alt = name;
 
+    profileBio.textContent = bio;
 
-        profileName.textContent = name;
+    /* Interests */
 
-        profileYear.textContent = year;
+    profileInterests.innerHTML = "";
 
-        profileImage.src = image;
-        profileImage.alt = name;
+    const interestList = interests
+      .split(",")
+      .map((item) => item.trim())
+      .filter((item) => item !== "");
 
-        profileBio.textContent = bio;
+    if (interestList.length === 0) {
+      const empty = document.createElement("span");
 
+      empty.textContent = "ยังไม่มีข้อมูล";
 
-        /* Interests */
+      empty.className = "friend-profile-interest";
 
-        profileInterests.innerHTML = "";
+      profileInterests.appendChild(empty);
+    } else {
+      interestList.forEach((interest) => {
+        const tag = document.createElement("span");
 
-        const interestList =
-            interests
-                .split(",")
-                .map(item => item.trim())
-                .filter(item => item !== "");
+        tag.className = "friend-profile-interest";
 
+        tag.textContent = interest;
 
-        if (interestList.length === 0) {
-
-            const empty =
-                document.createElement("span");
-
-            empty.textContent = "ยังไม่มีข้อมูล";
-
-            empty.className =
-                "friend-profile-interest";
-
-            profileInterests.appendChild(empty);
-
-        } else {
-
-            interestList.forEach(interest => {
-
-                const tag =
-                    document.createElement("span");
-
-                tag.className =
-                    "friend-profile-interest";
-
-                tag.textContent = interest;
-
-                profileInterests.appendChild(tag);
-
-            });
-
-        }
-
-
-        updateActionButton();
-
-
-        overlay.classList.add("show");
-
-        overlay.setAttribute("aria-hidden", "false");
-
-        document.body.style.overflow = "hidden";
+        profileInterests.appendChild(tag);
+      });
     }
 
+    updateActionButton();
 
-    /* =====================================================
+    overlay.classList.add("show");
+
+    overlay.setAttribute("aria-hidden", "false");
+
+    document.body.style.overflow = "hidden";
+  }
+
+  /* =====================================================
        CLOSE POPUP
     ===================================================== */
 
-    function closeFriendProfile() {
+  function closeFriendProfile() {
+    overlay.classList.remove("show");
 
-        overlay.classList.remove("show");
+    overlay.setAttribute("aria-hidden", "true");
 
-        overlay.setAttribute("aria-hidden", "true");
+    document.body.style.overflow = "";
+  }
 
-        document.body.style.overflow = "";
-
-    }
-
-
-    /* =====================================================
+  /* =====================================================
        ACTION BUTTON
     ===================================================== */
 
-    function updateActionButton() {
+  function updateActionButton() {
+    actionButton.classList.remove("is-pending", "is-friend");
 
-        actionButton.classList.remove(
-            "is-pending",
-            "is-friend"
-        );
+    if (currentStatus === "friend") {
+      actionIcon.textContent = "💬";
 
+      actionText.textContent = "ส่งข้อความ";
 
-        if (currentStatus === "friend") {
+      actionButton.classList.add("is-friend");
 
-            actionIcon.textContent = "💬";
-
-            actionText.textContent = "ส่งข้อความ";
-
-            actionButton.classList.add("is-friend");
-
-            return;
-        }
-
-
-        if (currentStatus === "pending") {
-
-            actionIcon.textContent = "✓";
-
-            actionText.textContent = "ส่งคำขอแล้ว";
-
-            actionButton.classList.add("is-pending");
-
-            return;
-        }
-
-
-        actionIcon.textContent = "👤+";
-
-        actionText.textContent = "เพิ่มเพื่อน";
+      return;
     }
 
+    if (currentStatus === "pending") {
+      actionIcon.textContent = "✓";
 
-    /* =====================================================
+      actionText.textContent = "ส่งคำขอแล้ว";
+
+      actionButton.classList.add("is-pending");
+
+      return;
+    }
+
+    actionIcon.textContent = "👤+";
+
+    actionText.textContent = "เพิ่มเพื่อน";
+  }
+
+  /* =====================================================
        CLICK PROFILE
     ===================================================== */
 
-    document.addEventListener("click", event => {
+  document.addEventListener("click", (event) => {
+    const profile = event.target.closest("[data-profile]");
 
-        const profile =
-            event.target.closest("[data-profile]");
+    if (!profile) {
+      return;
+    }
 
-        if (!profile) {
-            return;
-        }
+    openFriendProfile(profile);
+  });
 
-        openFriendProfile(profile);
-
-    });
-
-
-    /* =====================================================
+  /* =====================================================
        CLOSE
     ===================================================== */
 
-    closeButton.addEventListener(
-        "click",
-        closeFriendProfile
-    );
+  closeButton.addEventListener("click", closeFriendProfile);
 
+  overlay.addEventListener("click", (event) => {
+    if (event.target === overlay) {
+      closeFriendProfile();
+    }
+  });
 
-    overlay.addEventListener("click", event => {
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape" && overlay.classList.contains("show")) {
+      closeFriendProfile();
+    }
+  });
 
-        if (event.target === overlay) {
-
-            closeFriendProfile();
-
-        }
-
-    });
-
-
-    document.addEventListener("keydown", event => {
-
-        if (
-            event.key === "Escape" &&
-            overlay.classList.contains("show")
-        ) {
-
-            closeFriendProfile();
-
-        }
-
-    });
-
-
-    /* =====================================================
+  /* =====================================================
        SEND FRIEND REQUEST
     ===================================================== */
 
-    actionButton.addEventListener("click", () => {
+  actionButton.addEventListener("click", () => {
+    if (!currentProfileId) {
+      return;
+    }
 
-        if (!currentProfileId) {
-            return;
-        }
+    if (currentStatus === "friend") {
+      window.location.href = `/friend?id=${currentProfileId}`;
 
+      return;
+    }
 
-        if (currentStatus === "friend") {
+    if (currentStatus === "pending") {
+      return;
+    }
 
-            window.location.href =
-                `/friend?id=${currentProfileId}`;
+    /*
+     * Prototype
+     * เปลี่ยนสถานะเป็นส่งคำขอแล้ว
+     */
 
-            return;
-        }
+    currentStatus = "pending";
 
+    updateActionButton();
 
-        if (currentStatus === "pending") {
-            return;
-        }
-
-
-        /*
-         * Prototype
-         * เปลี่ยนสถานะเป็นส่งคำขอแล้ว
-         */
-
-        currentStatus = "pending";
-
-        updateActionButton();
-
-
-        alert("ส่งคำขอเป็นเพื่อนแล้ว");
-
-    });
-
+    alert("ส่งคำขอเป็นเพื่อนแล้ว");
+  });
 });
