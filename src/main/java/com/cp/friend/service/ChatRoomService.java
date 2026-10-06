@@ -66,6 +66,7 @@ public class ChatRoomService {
         ChatRoom room = new ChatRoom();
         room.setRoomName(request.getRoomName().trim());
         room.setDescription(request.getDescription() == null ? null : request.getDescription().trim());
+        room.setTargetYear(request.getTargetYear());
         room.setRoomType(ChatRoom.RoomType.GROUP);
         room.setCreatedBy(creator);
         room.setMaxMembers(request.getMaxMembers() == null ? (short) 10 : request.getMaxMembers());
