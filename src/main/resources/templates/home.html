@@ -1,477 +1,433 @@
 <!doctype html>
 <html lang="th" xmlns:th="http://www.thymeleaf.org">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>Home - CP Friend Finder</title>
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link rel="stylesheet" th:href="@{/css/home.css}" />
-    <link rel="stylesheet" th:href="@{/css/theme.css}" />
-  </head>
+  <title>Home - CP Friend Finder</title>
 
-  <body>
-    <div class="home-page">
-      <!-- ================= SIDEBAR ================= -->
+  <link rel="stylesheet" th:href="@{/css/theme.css}" />
+  <link rel="stylesheet" th:href="@{/css/sidebar.css}" />
+  <link rel="stylesheet" th:href="@{/css/layout.css}" />
+  <link rel="stylesheet" th:href="@{/css/home.css}" />
+  <link rel="stylesheet" th:href="@{/css/friend-profile-popup.css}" />
+</head>
 
-      <aside class="sidebar">
-        <!-- Logo -->
-        <div class="sidebar-logo">
-          <img th:src="@{/images/Full_logo.png}" alt="CP Friend Finder" />
+<body>
+  <div class="page-layout">
+    <!-- ================= SIDEBAR ================= -->
+
+    <aside class="sidebar">
+      <!-- Logo -->
+      <div class="sidebar-logo">
+        <img th:src="@{/images/Full_logo.png}" alt="CP Friend Finder" />
+      </div>
+
+      <!-- Profile -->
+      <div class="sidebar-profile">
+        <img th:src="@{/images/man.jpg}" alt="Profile" class="profile-image" />
+
+        <div class="profile-info">
+          <div class="profile-name">Singha Waraha</div>
+
+          <div class="profile-year">ปี 1</div>
+
+          <div class="profile-department">CS-VIP</div>
         </div>
 
-        <!-- Profile -->
-        <div class="sidebar-profile">
-          <img
-            th:src="@{/images/man.jpg}"
-            alt="Profile"
-            class="profile-image"
-          />
+        <button class="profile-arrow">⌄</button>
+      </div>
 
-          <div class="profile-info">
-            <div class="profile-name">Singha Waraha</div>
+      <!-- Navigation -->
+      <nav class="sidebar-menu">
+        <a href="/home" class="menu-item active">
+          <span class="menu-icon">⌂</span>
+          <span>หน้าหลัก</span>
+        </a>
 
-            <div class="profile-year">ปี 1</div>
+        <a href="/random" class="menu-item">
+          <span class="menu-icon">✌︎</span>
+          <span>สุ่มคุย</span>
+        </a>
 
-            <div class="profile-department">CS-VIP</div>
-          </div>
+        <a href="/friend" class="menu-item">
+          <span class="menu-icon">☺︎</span>
+          <span>เพื่อนของฉัน</span>
+        </a>
 
-          <button class="profile-arrow">⌄</button>
-        </div>
+        <a href="/notification" class="menu-item">
+          <span class="menu-icon">☏</span>
+          <span>การแจ้งเตือน</span>
+        </a>
 
-        <!-- Navigation -->
-        <nav class="sidebar-menu">
-          <a href="/home" class="menu-item active">
-            <span class="menu-icon">🏠︎</span>
-            <span>หน้าหลัก</span>
-          </a>
+        <a href="/setting" class="menu-item">
+          <span class="menu-icon">⚙</span>
+          <span>การตั้งค่า</span>
+        </a>
+      </nav>
+    </aside>
 
-          <a href="#" class="menu-item">
-            <span class="menu-icon">🎲</span>
-            <span>สุ่มคุย</span>
-          </a>
+    <!-- ================= MAIN ================= -->
 
-          <a href="#" class="menu-item">
-            <span class="menu-icon">🫂</span>
-            <span>เพื่อนของฉัน</span>
-          </a>
+    <main class="page-content home-content">
+      <!-- Random Friend Banner -->
 
-          <a href="#" class="menu-item">
-            <span class="menu-icon">🔔</span>
-            <span>การแจ้งเตือน</span>
-          </a>
+      <section class="random-banner">
+        <div class="banner-content">
+          <h1>ไม่รู้จะคุยกับใคร? ลองสุ่มเพื่อนดู!</h1>
 
-          <a href="/setting" class="menu-item">
-            <span class="menu-icon">⚙️</span>
-            <span>การตั้งค่า</span>
-          </a>
-        </nav>
-      </aside>
+          <p>เจอเพื่อนใหม่จากความสนใจที่เหมือนกัน แล้วเริ่มคุยกันได้เลย</p>
 
-      <!-- ================= MAIN ================= -->
-
-      <main class="home-content">
-        <!-- Random Friend Banner -->
-
-        <section class="random-banner">
-          <div class="banner-content">
-            <h1>ไม่รู้จะคุยกับใคร? ลองสุ่มเพื่อนดู!</h1>
-
-            <p>เจอเพื่อนใหม่จากความสนใจที่เหมือนกัน แล้วเริ่มคุยกันได้เลย</p>
-
-            <button class="random-button">
-              เริ่มค้นหาเพื่อนเลย
-              <span>▶</span>
-            </button>
-          </div>
-
-          <div class="banner-decoration">✦</div>
-        </section>
-
-        <!-- Room Header -->
-
-        <div class="room-header">
-          <h2>ห้องที่กำลังคุย</h2>
-
-          <div class="room-navigation">
-            <button type="button">‹</button>
-            <button type="button">›</button>
-          </div>
-        </div>
-
-        <!-- Search + Filter -->
-
-        <div class="room-toolbar">
-          <div class="search-box">
-            <span>⌕</span>
-
-            <input
-              type="text"
-              id="roomSearch"
-              placeholder="ค้นหาห้องที่ความสนใจ..."
-            />
-          </div>
-
-          <select id="yearFilter">
-            <option value="">ทุกปี</option>
-            <option value="1">ปี 1</option>
-            <option value="2">ปี 2</option>
-            <option value="3">ปี 3</option>
-            <option value="4">ปี 4</option>
-            <option value="other">ปีลึก</option>
-          </select>
-
-          <select id="interestFilter">
-            <option value="">ทุกความสนใจ</option>
-            <option value="GAMING">Gaming</option>
-            <option value="ROV">ROV</option>
-            <option value="MINECRAFT">Minecraft</option>
-            <option value="VALORANT">Valorant</option>
-            <option value="PROGRAMMING">Programming</option>
-            <option value="PROJECT">Project</option>
-            <option value="HACKATHON">Hackathon</option>
-            <option value="ANIME">Anime</option>
-            <option value="MOVIE">Movie</option>
-            <option value="MUSIC">Music</option>
-            <option value="CHILL">Chill</option>
-          </select>
-
-          <button
-            type="button"
-            id="createRoomButton"
-            class="create-room-button"
-          >
-            + สร้างห้อง
+          <button class="random-button">
+            เริ่มค้นหาเพื่อนเลย
+            <span>▶</span>
           </button>
         </div>
 
-        <!-- Create Room Popup -->
+        <div class="banner-decoration">✦</div>
+      </section>
 
-        <div id="createRoomModal" class="modal-overlay">
-          <div class="create-room-modal">
-            <h2>สร้างห้องพูดคุย</h2>
+      <!-- Room Header -->
 
-            <label>ชื่อห้อง</label>
+      <div class="room-header">
+        <h2>ห้องที่กำลังคุย</h2>
 
-            <input
-              type="text"
-              id="roomName"
-              placeholder="เช่น หาเพื่อนนั่งทำโปรเจค..."
-            />
-
-            <label>คำอธิบายเพิ่มเติม</label>
-
-            <input
-              type="text"
-              id="roomDescription"
-              placeholder="เช่น ปั่นโปรเจค/การบ้านด้วยกัน..."
-            />
-
-            <div class="form-row">
-              <!-- ความสนใจ -->
-              <div>
-                <label>ความสนใจ</label>
-
-                <details class="multi-select" id="roomInterest">
-                  <summary class="multi-select-display">
-                    <span id="selectedInterestText"> เลือกความสนใจ </span>
-
-                    <span class="dropdown-arrow"> ▼ </span>
-                  </summary>
-
-                  <div class="multi-select-options">
-                    <label>
-                      <input type="checkbox" value="GAMING" />
-                      Gaming
-                    </label>
-
-                    <label>
-                      <input type="checkbox" value="ROV" />
-                      ROV
-                    </label>
-
-                    <label>
-                      <input type="checkbox" value="MINECRAFT" />
-                      Minecraft
-                    </label>
-
-                    <label>
-                      <input type="checkbox" value="VALORANT" />
-                      Valorant
-                    </label>
-
-                    <label>
-                      <input type="checkbox" value="PROGRAMMING" />
-                      Programming
-                    </label>
-
-                    <label>
-                      <input type="checkbox" value="PROJECT" />
-                      Project
-                    </label>
-
-                    <label>
-                      <input type="checkbox" value="HACKATHON" />
-                      Hackathon
-                    </label>
-
-                    <label>
-                      <input type="checkbox" value="ANIME" />
-                      Anime
-                    </label>
-
-                    <label>
-                      <input type="checkbox" value="MOVIE" />
-                      Movie
-                    </label>
-
-                    <label>
-                      <input type="checkbox" value="MUSIC" />
-                      Music
-                    </label>
-
-                    <label>
-                      <input type="checkbox" value="CHILL" />
-                      Chill
-                    </label>
-                  </div>
-                </details>
-              </div>
-
-              <!-- ชั้นปี -->
-              <div>
-                <label>ชั้นปี</label>
-
-                <details class="multi-select" id="roomYearSelect">
-                  <summary class="multi-select-display">
-                    <span id="selectedYearText">ปี 1</span>
-                    <span class="dropdown-arrow">▼</span>
-                  </summary>
-
-                  <div class="multi-select-options year-options">
-                    <label>
-                      <input type="checkbox" name="roomYear" value="all" />
-                      ทุกชั้นปี
-                    </label>
-
-                    <label>
-                      <input
-                        type="checkbox"
-                        name="roomYear"
-                        value="1"
-                        checked
-                      />
-                      ปี 1
-                    </label>
-
-                    <label>
-                      <input type="checkbox" name="roomYear" value="2" />
-                      ปี 2
-                    </label>
-
-                    <label>
-                      <input type="checkbox" name="roomYear" value="3" />
-                      ปี 3
-                    </label>
-
-                    <label>
-                      <input type="checkbox" name="roomYear" value="4" />
-                      ปี 4
-                    </label>
-
-                    <label>
-                      <input type="checkbox" name="roomYear" value="other" />
-                      ปีลึก
-                    </label>
-                  </div>
-                </details>
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div>
-                <label>จำนวนคนสูงสุด</label>
-
-                <input type="number" id="roomMax" value="10" min="2" max="10" />
-              </div>
-
-              <div>
-                <label>ประเภทห้อง</label>
-
-                <select id="roomType">
-                  <option value="Public">Public</option>
-                  <option value="Private">Private</option>
-                </select>
-              </div>
-            </div>
-
-            <div class="modal-buttons">
-              <button type="button" id="cancelCreateRoom">ยกเลิก</button>
-
-              <button type="button" id="confirmCreateRoom">ยืนยัน</button>
-            </div>
-          </div>
-        </div>
-
-        <!-- ================= ROOM GRID ================= -->
-
-        <section class="room-grid" id="roomGrid">
-          <!-- Room 1 -->
-
-          <article
-            class="room-card"
-            data-year="2, 3"
-            data-interest="GAMING, MINECRAFT"
-            data-members="6"
-            data-max="10"
-            data-owner="Prashant Kumar Singh"
-            data-owner-year="ปี 3 CS-VIP"
-            data-owner-image="/images/man2.jpg"
-            data-type="Private"
-            data-code="123456"
-          >
-            <h3>Minecraft Hardcore</h3>
-
-            <p class="room-description">
-              6/10 คนกำลังคุย &nbsp;&nbsp; Minecraft, Speed Run
-            </p>
-
-            <div class="room-tags">
-              <span>GAMING</span>
-              <span>MINECRAFT</span>
-              <span>ปี 2</span>
-              <span>ปี 3</span>
-            </div>
-
-            <div class="room-owner">
-              <img th:src="@{/images/man2.jpg}" alt="Owner" />
-
-              <div>
-                <strong>Prashant Kumar Singh</strong>
-
-                <small> ปี 3 CS-VIP (เจ้าของห้อง) </small>
-              </div>
-            </div>
-
-            <div class="room-bottom">
-              <span class="room-type"> Private </span>
-
-              <button type="button" class="join-button">เข้าห้อง</button>
-            </div>
-          </article>
-
-          <!-- Room 2 -->
-
-          <article
-            class="room-card"
-            data-year="1"
-            data-interest="PROJECT"
-            data-members="6"
-            data-max="10"
-            data-owner="Napha Sriprasert"
-            data-owner-year="ปี 2 CS"
-            data-owner-image="/images/napha.jpg"
-            data-type="Public"
-          >
-            <h3>หาเพื่อนปั่นโปรเจค</h3>
-
-            <p class="room-description">
-              6/10 คนกำลังคุย &nbsp;&nbsp; ทำโปรเจค, การบ้าน
-            </p>
-
-            <div class="room-tags">
-              <span>PROJECT</span>
-              <span>ปี 1</span>
-              <span>ปี 2</span>
-            </div>
-
-            <div class="room-owner">
-              <img th:src="@{/images/napha.jpg}" alt="Owner" />
-
-              <div>
-                <strong>Napha Sriprasert</strong>
-
-                <small> ปี 2 CS (เจ้าของห้อง) </small>
-              </div>
-            </div>
-
-            <div class="room-bottom">
-              <span class="room-type"> Public </span>
-
-              <button type="button" class="join-button">เข้าห้อง</button>
-            </div>
-          </article>
-
-          <!-- Room 3 -->
-
-          <article
-            class="room-card"
-            data-year="2"
-            data-interest="CHILL"
-            data-members="10"
-            data-max="10"
-            data-owner="Worawut Suwanarat"
-            data-owner-year="ปี 3 GIS"
-            data-owner-image="/images/worawut.jpg"
-            data-type="Public"
-          >
-            <h3>ริมบึงสีฐานออนไลน์</h3>
-
-            <p class="room-description">
-              10/10 คนกำลังคุย &nbsp;&nbsp; ฟังเพลง, คุยเล่น
-            </p>
-
-            <div class="room-tags">
-              <span>CHILL</span>
-              <span>ปี 2</span>
-            </div>
-
-            <div class="room-owner">
-              <img th:src="@{/images/worawut.jpg}" alt="Owner" />
-
-              <div>
-                <strong>Worawut Suwanarat</strong>
-
-                <small> ปี 3 GIS (เจ้าของห้อง) </small>
-              </div>
-            </div>
-
-            <div class="room-bottom">
-              <span class="room-type"> Public </span>
-
-              <button type="button" class="join-button">เข้าห้อง</button>
-            </div>
-          </article>
-        </section>
-      </main>
-    </div>
-
-    <!-- PRIVATE ROOM CODE POPUP  -->
-
-    <div id="privateRoomModal" class="modal-overlay">
-      <div class="private-room-modal">
-        <h2>เข้าห้อง Private</h2>
-
-        <p id="privateRoomName">กรุณากรอกรหัสเพื่อเข้าห้อง</p>
-
-        <input
-          type="text"
-          id="privateRoomCode"
-          placeholder="กรอกรหัสเข้าห้อง"
-          maxlength="6"
-        />
-
-        <p id="privateRoomError"></p>
-
-        <div class="modal-buttons">
-          <button type="button" id="cancelPrivateRoom">ยกเลิก</button>
-
-          <button type="button" id="confirmPrivateRoom">เข้าห้อง</button>
+        <div class="room-navigation">
+          <button type="button">‹</button>
+          <button type="button">›</button>
         </div>
       </div>
-    </div>
 
-    <script th:src="@{/js/home.js(v=2)}"></script>
-    <script th:src="@{/js/theme.js}"></script>
-  </body>
+      <!-- Search + Filter -->
+
+      <div class="room-toolbar">
+        <div class="search-box">
+          <span>⌕</span>
+
+          <input type="text" id="roomSearch" placeholder="ค้นหาห้องที่ความสนใจ..." />
+        </div>
+
+        <select id="yearFilter">
+          <option value="">ทุกปี</option>
+          <option value="1">ปี 1</option>
+          <option value="2">ปี 2</option>
+          <option value="3">ปี 3</option>
+          <option value="4">ปี 4</option>
+          <option value="other">ปีลึก</option>
+        </select>
+
+        <select id="interestFilter">
+          <option value="">ทุกความสนใจ</option>
+          <option value="GAMING">Gaming</option>
+          <option value="ROV">ROV</option>
+          <option value="MINECRAFT">Minecraft</option>
+          <option value="VALORANT">Valorant</option>
+          <option value="PROGRAMMING">Programming</option>
+          <option value="PROJECT">Project</option>
+          <option value="HACKATHON">Hackathon</option>
+          <option value="ANIME">Anime</option>
+          <option value="MOVIE">Movie</option>
+          <option value="MUSIC">Music</option>
+          <option value="CHILL">Chill</option>
+        </select>
+
+        <button type="button" id="createRoomButton" class="create-room-button">
+          + สร้างห้อง
+        </button>
+      </div>
+
+      <!-- Create Room Popup -->
+
+      <div id="createRoomModal" class="modal-overlay">
+        <div class="create-room-modal">
+          <h2>สร้างห้องพูดคุย</h2>
+
+          <label>ชื่อห้อง</label>
+
+          <input type="text" id="roomName" placeholder="เช่น หาเพื่อนนั่งทำโปรเจค..." />
+
+          <label>คำอธิบายเพิ่มเติม</label>
+
+          <input type="text" id="roomDescription" placeholder="เช่น ปั่นโปรเจค/การบ้านด้วยกัน..." />
+
+          <div class="form-row">
+            <!-- ความสนใจ -->
+            <div>
+              <label>ความสนใจ</label>
+
+              <details class="multi-select" id="roomInterest">
+                <summary class="multi-select-display">
+                  <span id="selectedInterestText"> เลือกความสนใจ </span>
+
+                  <span class="dropdown-arrow"> ▼ </span>
+                </summary>
+
+                <div class="multi-select-options">
+                  <label>
+                    <input type="checkbox" value="GAMING" />
+                    Gaming
+                  </label>
+
+                  <label>
+                    <input type="checkbox" value="ROV" />
+                    ROV
+                  </label>
+
+                  <label>
+                    <input type="checkbox" value="MINECRAFT" />
+                    Minecraft
+                  </label>
+
+                  <label>
+                    <input type="checkbox" value="VALORANT" />
+                    Valorant
+                  </label>
+
+                  <label>
+                    <input type="checkbox" value="PROGRAMMING" />
+                    Programming
+                  </label>
+
+                  <label>
+                    <input type="checkbox" value="PROJECT" />
+                    Project
+                  </label>
+
+                  <label>
+                    <input type="checkbox" value="HACKATHON" />
+                    Hackathon
+                  </label>
+
+                  <label>
+                    <input type="checkbox" value="ANIME" />
+                    Anime
+                  </label>
+
+                  <label>
+                    <input type="checkbox" value="MOVIE" />
+                    Movie
+                  </label>
+
+                  <label>
+                    <input type="checkbox" value="MUSIC" />
+                    Music
+                  </label>
+
+                  <label>
+                    <input type="checkbox" value="CHILL" />
+                    Chill
+                  </label>
+                </div>
+              </details>
+            </div>
+
+            <!-- ชั้นปี -->
+            <div>
+              <label>ชั้นปี</label>
+
+              <details class="multi-select" id="roomYearSelect">
+                <summary class="multi-select-display">
+                  <span id="selectedYearText">ปี 1</span>
+                  <span class="dropdown-arrow">▼</span>
+                </summary>
+
+                <div class="multi-select-options year-options">
+                  <label>
+                    <input type="checkbox" name="roomYear" value="all" />
+                    ทุกชั้นปี
+                  </label>
+
+                  <label>
+                    <input type="checkbox" name="roomYear" value="1" checked />
+                    ปี 1
+                  </label>
+
+                  <label>
+                    <input type="checkbox" name="roomYear" value="2" />
+                    ปี 2
+                  </label>
+
+                  <label>
+                    <input type="checkbox" name="roomYear" value="3" />
+                    ปี 3
+                  </label>
+
+                  <label>
+                    <input type="checkbox" name="roomYear" value="4" />
+                    ปี 4
+                  </label>
+
+                  <label>
+                    <input type="checkbox" name="roomYear" value="other" />
+                    ปีลึก
+                  </label>
+                </div>
+              </details>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div>
+              <label>จำนวนคนสูงสุด</label>
+
+              <input type="number" id="roomMax" value="10" min="2" max="10" />
+            </div>
+
+            <div>
+              <label>ประเภทห้อง</label>
+
+              <select id="roomType">
+                <option value="Public">Public</option>
+                <option value="Private">Private</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="modal-buttons">
+            <button type="button" id="cancelCreateRoom">ยกเลิก</button>
+
+            <button type="button" id="confirmCreateRoom">ยืนยัน</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= ROOM GRID ================= -->
+
+      <section class="room-grid" id="roomGrid">
+        <!-- Room 1 -->
+
+        <article class="room-card" data-year="2, 3" data-interest="GAMING, MINECRAFT" data-members="6" data-max="10"
+          data-owner="Prashant Kumar Singh" data-owner-year="ปี 3 CS-VIP" data-owner-image="/images/man2.jpg"
+          data-type="Private" data-code="123456">
+          <h3>Minecraft Hardcore</h3>
+
+          <p class="room-description">
+            6/10 คนกำลังคุย &nbsp;&nbsp; Minecraft, Speed Run
+          </p>
+
+          <div class="room-tags">
+            <span>GAMING</span>
+            <span>MINECRAFT</span>
+            <span>ปี 2</span>
+            <span>ปี 3</span>
+          </div>
+
+          <div class="room-owner friend-profile-trigger" data-name="Prashant Kumar Singh" data-year="ปี 3 CS-VIP"
+            data-image="/images/man2.jpg">
+            <img th:src="@{/images/man2.jpg}" alt="Owner" />
+
+            <div>
+              <strong>Prashant Kumar Singh</strong>
+
+              <small> ปี 3 CS-VIP (เจ้าของห้อง) </small>
+            </div>
+          </div>
+
+          <div class="room-bottom">
+            <span class="room-type"> Private </span>
+
+            <button type="button" class="join-button">เข้าห้อง</button>
+          </div>
+        </article>
+
+        <!-- Room 2 -->
+
+        <article class="room-card" data-year="1" data-interest="PROJECT" data-members="6" data-max="10"
+          data-owner="Napha Sriprasert" data-owner-year="ปี 2 CS" data-owner-image="/images/napha.jpg"
+          data-type="Public">
+          <h3>หาเพื่อนปั่นโปรเจค</h3>
+
+          <p class="room-description">
+            6/10 คนกำลังคุย &nbsp;&nbsp; ทำโปรเจค, การบ้าน
+          </p>
+
+          <div class="room-tags">
+            <span>PROJECT</span>
+            <span>ปี 1</span>
+            <span>ปี 2</span>
+          </div>
+
+          <div class="room-owner friend-profile-trigger" data-name="Napha Sriprasert" data-year="ปี 2 CS"
+            data-image="/images/napha.jpg">
+            <img th:src="@{/images/napha.jpg}" alt="Owner" />
+
+            <div>
+              <strong>Napha Sriprasert</strong>
+
+              <small> ปี 2 CS (เจ้าของห้อง) </small>
+            </div>
+          </div>
+
+          <div class="room-bottom">
+            <span class="room-type"> Public </span>
+
+            <button type="button" class="join-button">เข้าห้อง</button>
+          </div>
+        </article>
+
+        <!-- Room 3 -->
+
+        <article class="room-card" data-year="2" data-interest="CHILL" data-members="10" data-max="10"
+          data-owner="Worawut Suwanarat" data-owner-year="ปี 3 GIS" data-owner-image="/images/worawut.jpg"
+          data-type="Public">
+          <h3>ริมบึงสีฐานออนไลน์</h3>
+
+          <p class="room-description">
+            10/10 คนกำลังคุย &nbsp;&nbsp; ฟังเพลง, คุยเล่น
+          </p>
+
+          <div class="room-tags">
+            <span>CHILL</span>
+            <span>ปี 2</span>
+          </div>
+
+          <div class="room-owner friend-profile-trigger" data-name="Worawut Suwanarat" data-year="ปี 3 GIS"
+            data-image="/images/worawut.jpg">
+            <img th:src="@{/images/worawut.jpg}" alt="Owner" />
+
+            <div>
+              <strong>Worawut Suwanarat</strong>
+
+              <small> ปี 3 GIS (เจ้าของห้อง) </small>
+            </div>
+          </div>
+
+          <div class="room-bottom">
+            <span class="room-type"> Public </span>
+
+            <button type="button" class="join-button">เข้าห้อง</button>
+          </div>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <!-- PRIVATE ROOM CODE POPUP  -->
+
+  <div id="privateRoomModal" class="modal-overlay">
+    <div class="private-room-modal">
+      <h2>เข้าห้อง Private</h2>
+
+      <p id="privateRoomName">กรุณากรอกรหัสเพื่อเข้าห้อง</p>
+
+      <input type="text" id="privateRoomCode" placeholder="กรอกรหัสเข้าห้อง" maxlength="6" />
+
+      <p id="privateRoomError"></p>
+
+      <div class="modal-buttons">
+        <button type="button" id="cancelPrivateRoom">ยกเลิก</button>
+
+        <button type="button" id="confirmPrivateRoom">เข้าห้อง</button>
+      </div>
+    </div>
+  </div>
+
+  <div th:replace="~{fragments/friend-profile-popup :: friendProfilePopup}"></div>
+
+  <script th:src="@{/js/friend-profile-popup.js}"></script>
+  <script th:src="@{/js/home.js(v=2)}"></script>
+  <script th:src="@{/js/theme.js}"></script>
+</body>
+
 </html>

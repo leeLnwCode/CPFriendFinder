@@ -13,134 +13,13 @@ button {
   color: inherit;
 }
 
-
-/* ================================================= */
-/* ================= PAGE ========================== */
-/* ================================================= */
-
-.settings-page {
-  min-height: 100vh;
-  display: flex;
-}
-
-
-/* ================================================= */
-/* ================= SIDEBAR ======================= */
-/* ================================================= */
-
-.sidebar {
-  width: 225px;
-  min-height: 100vh;
-  background: var(--sidebar-bg);
-  border-right: 1px solid var(--border-color);
-  padding: 28px 20px;
-  flex-shrink: 0;
-}
-
-.sidebar-logo {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 28px;
-}
-
-.sidebar-logo img {
-  width: 165px;
-  height: auto;
-}
-
-
-.sidebar-profile {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 30px;
-}
-
-.profile-image {
-  width: 42px;
-  height: 42px;
-  border-radius: 50%;
-  object-fit: cover;
-}
-
-.profile-info {
-  min-width: 0;
-  flex: 1;
-}
-
-.profile-name {
-  font-size: 14px;
-  font-weight: 600;
-  white-space: nowrap;
-}
-
-.profile-year {
-  font-size: 12px;
-  margin-top: 4px;
-  color: var(--secondary-text-color);
-}
-
-.profile-department {
-  font-size: 12px;
-  display: none;
-}
-
-.profile-arrow {
-  border: 0;
-  background: transparent;
-  color: var(--text-color);
-  font-size: 21px;
-  cursor: pointer;
-}
-
-
-.sidebar-menu {
-  display: flex;
-  flex-direction: column;
-  gap: 7px;
-}
-
-.menu-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-
-  min-height: 42px;
-  padding: 9px 10px;
-
-  border-radius: 5px;
-
-  text-decoration: none;
-  color: var(--text-color);
-
-  font-size: 16px;
-
-  transition: 0.2s;
-}
-
-.menu-icon {
-  width: 22px;
-  text-align: center;
-  font-size: 17px;
-}
-
-.menu-item:hover {
-  background: var(--hover-bg);
-}
-
-.menu-item.active {
-  color: var(--active-text);
-  background: var(--active-bg);
-}
-
-
 /* ================================================= */
 /* ================= MAIN ========================== */
 /* ================================================= */
 
 .settings-main {
-  flex: 1;
-  padding: 24px 20px;
+  background: var(--bg-color);
+  color: var(--text-color);
 }
 
 .settings-container {
@@ -156,7 +35,6 @@ button {
 
   border-radius: 20px;
 }
-
 
 /* ================================================= */
 /* ================= HEADER ======================== */
@@ -187,7 +65,6 @@ button {
 
   font-size: 14px;
 }
-
 
 /* ================================================= */
 /* ================ SETTINGS CARDS ================= */
@@ -243,7 +120,6 @@ button {
   font-size: 14px;
 }
 
-
 /* ================================================= */
 /* ================= MODAL ========================= */
 /* ================================================= */
@@ -268,7 +144,6 @@ button {
   display: flex;
 }
 
-
 .modal-box {
   position: relative;
 
@@ -286,7 +161,6 @@ button {
 
   box-shadow: 0 10px 35px rgba(0, 0, 0, 0.15);
 }
-
 
 .modal-close {
   position: absolute;
@@ -308,7 +182,6 @@ button {
   cursor: pointer;
 }
 
-
 .modal-title {
   display: flex;
   align-items: center;
@@ -328,7 +201,6 @@ button {
   font-size: 22px;
   font-weight: 700;
 }
-
 
 /* ================================================= */
 /* ================= ACCOUNT ======================= */
@@ -405,7 +277,6 @@ button {
   background: var(--hover-bg);
 }
 
-
 /* ================================================= */
 /* ================= APPEARANCE ==================== */
 /* ================================================= */
@@ -447,7 +318,6 @@ button {
   border: 1px solid var(--border-color);
 }
 
-/* ใช้ .theme-preview นำหน้า เพื่อไม่ให้ชนกับ class ธีมที่ <body> */
 .theme-preview.theme-light {
   background: #ffffff;
 }
@@ -460,12 +330,10 @@ button {
   background: #eaf3ff;
 }
 
-
 .theme-option > span:not(.theme-check) {
   font-size: 14px;
   font-weight: 700;
 }
-
 
 .theme-check {
   display: none;
@@ -493,7 +361,6 @@ button {
   display: block;
 }
 
-
 /* ================================================= */
 /* ================= CONTENT MODAL ================= */
 /* ================================================= */
@@ -512,23 +379,11 @@ button {
   margin: 0;
 }
 
-
-
-
 /* ================================================= */
 /* ================= RESPONSIVE ==================== */
 /* ================================================= */
 
 @media (max-width: 800px) {
-
-  .sidebar {
-    width: 190px;
-  }
-
-  .settings-main {
-    padding: 15px;
-  }
-
   .settings-container {
     padding: 22px 18px;
   }
@@ -536,34 +391,9 @@ button {
   .theme-list {
     gap: 12px;
   }
-
 }
 
 @media (max-width: 650px) {
-
-  .settings-page {
-    flex-direction: column;
-  }
-
-  .sidebar {
-    width: 100%;
-    min-height: auto;
-    padding: 15px;
-  }
-
-  .sidebar-logo {
-    justify-content: flex-start;
-  }
-
-  .sidebar-menu {
-    flex-direction: row;
-    overflow-x: auto;
-  }
-
-  .menu-item {
-    white-space: nowrap;
-  }
-
   .settings-header {
     margin-bottom: 22px;
   }
@@ -595,5 +425,4 @@ button {
   .theme-preview {
     width: 95px;
   }
-
 }

@@ -83,20 +83,25 @@ document.addEventListener("DOMContentLoaded", function () {
 
   const ownerCard = document.createElement("article");
 
-  ownerCard.className = "member-card";
+  ownerCard.className = "member-card friend-profile-trigger";
+
+  ownerCard.setAttribute("data-profile", "");
+  ownerCard.setAttribute("data-name", owner);
+  ownerCard.setAttribute("data-year", ownerYear);
+  ownerCard.setAttribute("data-image", ownerImage);
 
   ownerCard.innerHTML = `
-    <img
-      src="${ownerImage}"
-      alt="${owner}"
-    />
+  <img
+    src="${ownerImage}"
+    alt="${owner}"
+  />
 
-    <h3>${owner}</h3>
+  <h3>${owner}</h3>
 
-    <p>${ownerYear}</p>
+  <p>${ownerYear}</p>
 
-    <small>(เจ้าของห้อง)</small>
-  `;
+  <small>(เจ้าของห้อง)</small>
+`;
 
   membersGrid.appendChild(ownerCard);
 

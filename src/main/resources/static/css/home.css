@@ -1,149 +1,7 @@
-* {
-  box-sizing: border-box;
-}
-
-html,
-body {
-  margin: 0;
-  padding: 0;
-  width: 100%;
-  min-height: 100%;
-}
-
-/* ================= HOME ================= */
-
-.home-page {
-  min-height: 100vh;
-  display: flex;
-  background: var(--bg-color);
-  color: var(--text-color);
-}
-
-/* ================= SIDEBAR ================= */
-
-.sidebar {
-  position: fixed;
-  left: 0;
-  top: 0;
-
-  width: 225px;
-  height: 100vh;
-
-  background: var(--sidebar-bg);
-  border-right: 1px solid var(--border-color);
-
-  padding: 30px 18px;
-
-  z-index: 10;
-}
-
-/* LOGO */
-
-.sidebar-logo {
-  display: flex;
-  justify-content: center;
-  margin-bottom: 28px;
-}
-
-.sidebar-logo img {
-  width: 165px;
-  height: auto;
-}
-
-/* PROFILE */
-
-.sidebar-profile {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-
-  padding: 0 8px 20px;
-}
-
-.profile-image {
-  width: 42px;
-  height: 42px;
-
-  border-radius: 50%;
-
-  object-fit: cover;
-}
-
-.profile-info {
-  flex: 1;
-}
-
-.profile-name {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-color);
-}
-
-.profile-year,
-.profile-department {
-  margin-top: 4px;
-  font-size: 12px;
-  color: var(--secondary-text-color);
-}
-
-.profile-arrow {
-  border: none;
-  background: transparent;
-  color: var(--text-color);
-
-  font-size: 20px;
-  cursor: pointer;
-}
-
-/* MENU */
-
-.sidebar-menu {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-.menu-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-
-  padding: 11px 12px;
-
-  border-radius: 6px;
-
-  text-decoration: none;
-
-  color: var(--text-color);
-
-  font-size: 15px;
-
-  transition: 0.2s;
-}
-
-.menu-item:hover {
-  background: var(--hover-bg);
-  color: var(--active-text);
-}
-
-.menu-item.active {
-  background: var(--active-bg);
-  color: var(--active-text);
-}
-
-.menu-icon {
-  width: 18px;
-  text-align: center;
-}
-
-/* ================= MAIN ================= */
-
 .home-content {
-  margin-left: 225px;
-  width: calc(100% - 225px);
-  min-height: 100vh;
-  padding: 28px 40px 60px;
-  overflow-y: auto;
+  flex: 1;
+  min-width: 0;
+
   background: var(--bg-color);
   color: var(--text-color);
 }
@@ -519,16 +377,6 @@ body {
 }
 
 @media (max-width: 800px) {
-  .sidebar {
-    width: 180px;
-  }
-
-  .home-content {
-    margin-left: 180px;
-    width: calc(100% - 180px);
-    padding: 20px;
-  }
-
   .room-grid {
     grid-template-columns: 1fr;
   }
@@ -539,17 +387,6 @@ body {
 
   .create-room-button {
     margin-left: 0;
-  }
-}
-
-@media (max-width: 600px) {
-  .sidebar {
-    display: none;
-  }
-
-  .home-content {
-    margin-left: 0;
-    width: 100%;
   }
 }
 
