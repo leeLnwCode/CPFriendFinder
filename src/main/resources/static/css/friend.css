@@ -1,4 +1,3 @@
-
 * {
   box-sizing: border-box;
 }
@@ -31,7 +30,6 @@
   overflow: hidden;
 }
 
-
 /* =========================================================
    FRIEND LIST
 ========================================================= */
@@ -57,7 +55,6 @@
 
   color: var(--text-color);
 }
-
 
 /* =========================================================
    SEARCH
@@ -112,7 +109,6 @@
   color: var(--secondary-text-color);
 }
 
-
 /* =========================================================
    FRIEND LIST
 ========================================================= */
@@ -139,7 +135,6 @@
   background: var(--border-color);
   border-radius: 10px;
 }
-
 
 /* =========================================================
    FRIEND ITEM
@@ -209,7 +204,6 @@
   color: var(--secondary-text-color);
 }
 
-
 /* =========================================================
    CHAT
 ========================================================= */
@@ -241,7 +235,6 @@
 
   background: var(--surface-color);
 }
-
 
 /* =========================================================
    CHAT HEADER
@@ -305,7 +298,6 @@
   color: var(--secondary-text-color);
 }
 
-
 /* =========================================================
    CHAT ACTIONS
 ========================================================= */
@@ -347,7 +339,6 @@
   display: block;
 }
 
-
 /* =========================================================
    CHAT MESSAGES
 ========================================================= */
@@ -377,7 +368,6 @@
   border-radius: 10px;
 }
 
-
 /* =========================================================
    MESSAGE ROW
 ========================================================= */
@@ -401,7 +391,6 @@
   align-self: flex-end;
 }
 
-
 /* =========================================================
    MESSAGE AVATAR
 ========================================================= */
@@ -414,7 +403,6 @@
   border-radius: 50%;
   object-fit: cover;
 }
-
 
 /* =========================================================
    MESSAGE BUBBLE
@@ -447,7 +435,6 @@
   border-top-right-radius: 5px;
 }
 
-
 /* =========================================================
    CHAT INPUT
 ========================================================= */
@@ -470,7 +457,6 @@
 
   box-sizing: border-box;
 }
-
 
 /* =========================================================
    MESSAGE INPUT
@@ -506,7 +492,6 @@
   color: var(--secondary-text-color);
 }
 
-
 /* =========================================================
    IMAGE BUTTON
 ========================================================= */
@@ -539,7 +524,6 @@
   height: 24px;
 }
 
-
 /* =========================================================
    SEND
 ========================================================= */
@@ -567,7 +551,6 @@
   opacity: 0.88;
 }
 
-
 /* =========================================================
    SENT IMAGE
 ========================================================= */
@@ -591,52 +574,394 @@
 ========================================================= */
 
 .chat-more {
-    position: relative;
+  position: relative;
 }
 
 .chat-more-menu {
-    position: absolute;
-    top: 40px;
-    right: 0;
+  position: absolute;
+  top: 40px;
+  right: 0;
 
-    width: 150px;
+  width: 150px;
 
-    background: var(--surface-color);
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
 
-    box-shadow: 0 6px 20px var(--shadow-color);
+  box-shadow: 0 6px 20px var(--shadow-color);
 
-    padding: 6px;
+  padding: 6px;
 
-    display: none;
+  display: none;
 
-    z-index: 20;
+  z-index: 20;
 }
 
 .chat-more-menu.show {
-    display: block;
+  display: block;
 }
 
 .chat-more-menu button {
-    width: 100%;
-    height: 38px;
+  width: 100%;
+  height: 38px;
 
-    border: none;
-    border-radius: 7px;
+  border: none;
+  border-radius: 7px;
 
-    background: transparent;
-    color: var(--text-color);
+  background: transparent;
+  color: var(--text-color);
 
-    text-align: left;
-    padding: 0 12px;
+  text-align: left;
+  padding: 0 12px;
 
-    font-family: inherit;
-    font-size: 13px;
+  font-family: inherit;
+  font-size: 13px;
 
-    cursor: pointer;
+  cursor: pointer;
 }
 
 .chat-more-menu button:hover {
-    background: var(--hover-bg);
+  background: var(--hover-bg);
+}
+
+/* =========================================================
+   VOICE CALL POPUP
+========================================================= */
+
+.voice-call-overlay {
+  position: fixed;
+  inset: 0;
+
+  display: none;
+  align-items: center;
+  justify-content: center;
+
+  background: rgba(0, 0, 0, 0.55);
+
+  z-index: 1000;
+}
+
+.voice-call-overlay.show {
+  display: flex;
+}
+
+/* =========================================================
+   POPUP
+========================================================= */
+
+.voice-call-popup {
+  position: relative;
+
+  width: 500px;
+  max-width: calc(100% - 40px);
+
+  min-height: 480px;
+
+  padding: 55px 40px 40px;
+
+  background: var(--surface-color);
+
+  border: 1px solid var(--border-color);
+  border-radius: 18px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+/* =========================================================
+   CLOSE
+========================================================= */
+
+.voice-call-close {
+  position: absolute;
+
+  top: 14px;
+  right: 18px;
+
+  width: 42px;
+  height: 42px;
+
+  border: none;
+  background: transparent;
+
+  color: var(--text-color);
+
+  font-size: 42px;
+  font-weight: 300;
+
+  line-height: 1;
+
+  cursor: pointer;
+}
+
+.voice-call-close:hover {
+  opacity: 0.7;
+}
+
+/* =========================================================
+   PROFILE IMAGE
+========================================================= */
+
+.voice-call-image-wrapper {
+  width: 120px;
+  height: 120px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  margin-bottom: 28px;
+
+  border-radius: 50%;
+
+  box-shadow:
+    0 0 0 12px rgba(24, 168, 220, 0.08),
+    0 0 35px rgba(24, 168, 220, 0.35);
+}
+
+.voice-call-image {
+  width: 120px;
+  height: 120px;
+
+  border-radius: 50%;
+
+  object-fit: cover;
+
+  display: block;
+}
+
+/* =========================================================
+   NAME
+========================================================= */
+
+.voice-call-popup h2 {
+  margin: 0;
+
+  color: var(--text-color);
+
+  font-size: 21px;
+  font-weight: 600;
+
+  text-align: center;
+}
+
+/* =========================================================
+   STATUS
+========================================================= */
+
+.voice-call-status {
+  margin-top: 8px;
+
+  color: var(--secondary-text-color);
+
+  font-size: 16px;
+}
+
+/* =========================================================
+   ACTIONS
+========================================================= */
+
+.voice-call-actions {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+
+  gap: 32px;
+  margin-top: 28px;
+}
+
+/* =========================================================
+   NORMAL ACTION
+========================================================= */
+
+.voice-call-action {
+  width: 80px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  gap: 8px;
+
+  border: none;
+  background: transparent;
+
+  color: var(--text-color);
+
+  font-family: inherit;
+
+  font-size: 14px;
+  font-weight: 500;
+
+  cursor: pointer;
+}
+
+.voice-call-action-icon {
+  width: 58px;
+  height: 58px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: var(--hover-bg);
+
+  font-size: 25px;
+}
+
+.voice-call-action:hover .voice-call-action-icon {
+  background: var(--active-bg);
+}
+
+/* =========================================================
+   END CALL
+========================================================= */
+
+.voice-call-end {
+  width: 80px;
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  gap: 8px;
+
+  border: none;
+  background: transparent;
+
+  color: var(--text-color);
+
+  font-family: inherit;
+
+  font-size: 14px;
+  font-weight: 500;
+
+  cursor: pointer;
+}
+
+.voice-call-end:hover .voice-call-end-icon {
+  background: #e60000;
+}
+
+/* =========================================================
+   VOICE CALL ICON
+========================================================= */
+
+.voice-call-icon {
+  position: relative;
+  width: 60px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.voice-call-icon img {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+  display: block;
+}
+
+.voice-call-slash {
+  display: none;
+}
+
+/* =========================================================
+   END CALL
+========================================================= */
+
+
+/* วงกลมแดงขนาดเดิม 64px */
+
+.voice-call-end-icon {
+  width: 64px;
+  height: 64px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #ff1f1f;
+}
+
+/* ไอคอนโทรคว่ำลง */
+.voice-call-end-icon img {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+  transform: rotate(135deg);
+}
+
+/* =========================================================
+   VOICE CALL - MUTE / SPEAKER SLASH
+========================================================= */
+
+.voice-call-action {
+  position: relative;
+}
+
+.voice-call-action.muted::after {
+  content: "";
+
+  position: absolute;
+
+  width: 5px;
+  height: 62px;
+
+  background: #ff1f1f;
+
+  border-radius: 4px;
+
+  left: 50%;
+  top: 29px;
+
+  transform: translate(-50%, -50%) rotate(-45deg);
+
+  z-index: 20;
+  pointer-events: none;
+}
+
+
+/* =========================================================
+   DARK THEME
+   ไมค์ + ลำโพง เป็นสีขาว
+========================================================= */
+
+body.theme-dark .voice-call-action img {
+  filter: brightness(0) invert(1);
+}
+
+
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 600px) {
+  .voice-call-popup {
+    min-height: 420px;
+    padding: 45px 20px 30px;
+  }
+
+  .voice-call-image-wrapper,
+  .voice-call-image {
+    width: 120px;
+    height: 120px;
+  }
+
+  .voice-call-popup h2 {
+    font-size: 21px;
+  }
+
+  .voice-call-actions {
+    gap: 20px;
+  }
 }

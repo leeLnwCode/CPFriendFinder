@@ -292,25 +292,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 
-  /* =====================================================
-         VOICE CALL
-      ====================================================== */
-
-  voiceCallButton.addEventListener("click", () => {
-    const name = chatUserName.textContent;
-
-    alert(`กำลังโทรเสียงหา ${name}`);
-  });
-
-  /* =====================================================
-         VIDEO CALL
-      ====================================================== */
-
-  videoCallButton.addEventListener("click", () => {
-    const name = chatUserName.textContent;
-
-    alert(`กำลังวิดีโอคอลกับ ${name}`);
-  });
 
   /* =====================================================
          MORE MENU
@@ -447,3 +428,97 @@ document.addEventListener("DOMContentLoaded", () => {
     loadConversation(firstFriend);
   }
 });
+
+/* =========================================================
+   VOICE CALL
+========================================================= */
+
+const voiceCallButton = document.getElementById("voiceCallButton");
+const voiceCallOverlay = document.getElementById("voiceCallOverlay");
+const voiceCallClose = document.getElementById("voiceCallClose");
+const voiceCallEnd = document.getElementById("voiceCallEnd");
+
+const voiceCallImage = document.getElementById("voiceCallImage");
+const voiceCallName = document.getElementById("voiceCallName");
+const voiceCallStatus = document.getElementById("voiceCallStatus");
+
+/* ================= OPEN CALL ================= */
+
+if (voiceCallButton) {
+  voiceCallButton.addEventListener("click", function () {
+    const image = document.getElementById("chatUserImage");
+    const name = document.getElementById("chatUserName");
+
+    if (image) {
+      voiceCallImage.src = image.src;
+    }
+
+    if (name) {
+      voiceCallName.textContent = name.textContent.trim();
+    }
+
+    voiceCallStatus.textContent = "กำลังโทร...";
+
+    voiceCallMute.classList.remove("muted");
+    voiceCallSpeaker.classList.remove("muted");
+
+    voiceCallOverlay.classList.add("show");
+  });
+}
+
+/* ================= CLOSE ================= */
+
+function closeVoiceCall() {
+  voiceCallOverlay.classList.remove("show");
+}
+
+/* ================= CLOSE BUTTON ================= */
+
+if (voiceCallClose) {
+  voiceCallClose.addEventListener("click", closeVoiceCall);
+}
+
+/* ================= END CALL ================= */
+
+if (voiceCallEnd) {
+  voiceCallEnd.addEventListener("click", function () {
+    voiceCallStatus.textContent = "สิ้นสุดการโทร";
+
+    setTimeout(function () {
+      closeVoiceCall();
+    }, 500);
+  });
+}
+
+/* ================= CLICK BACKGROUND ================= */
+
+if (voiceCallOverlay) {
+  voiceCallOverlay.addEventListener("click", function (event) {
+    if (event.target === voiceCallOverlay) {
+      closeVoiceCall();
+    }
+  });
+}
+
+/* ================= ESC ================= */
+
+document.addEventListener("keydown", function (event) {
+  if (event.key === "Escape") {
+    closeVoiceCall();
+  }
+});
+
+const voiceCallMute = document.getElementById("voiceCallMute");
+const voiceCallSpeaker = document.getElementById("voiceCallSpeaker");
+
+if (voiceCallMute) {
+  voiceCallMute.addEventListener("click", () => {
+    voiceCallMute.classList.toggle("muted");
+  });
+}
+
+if (voiceCallSpeaker) {
+  voiceCallSpeaker.addEventListener("click", () => {
+    voiceCallSpeaker.classList.toggle("muted");
+  });
+}

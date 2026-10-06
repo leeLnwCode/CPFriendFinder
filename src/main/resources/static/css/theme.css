@@ -34,7 +34,10 @@ textarea {
   --shadow-color: rgba(0, 0, 0, 0.06);
 }
 
-.theme-icon { width: 24px; height: 24px; }
+.theme-icon {
+  width: 24px;
+  height: 24px;
+}
 
 /* =========================
    DARK THEME
@@ -55,7 +58,13 @@ body.theme-dark {
   --shadow-color: rgba(0, 0, 0, 0.4);
 }
 
-body.theme-dark .theme-icon { filter: invert(1); }
+body.theme-dark .theme-icon {
+  filter: invert(1);
+}
+
+body.theme-dark .voice-call-icon img {
+  filter: brightness(0) invert(1);
+}
 
 /* =========================
    BLUE THEME
