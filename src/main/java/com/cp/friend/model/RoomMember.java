@@ -40,4 +40,8 @@ public class RoomMember {
 
     @Column(name = "left_at")
     private Instant leftAt;
+
+    // เวลาที่อ่านข้อความล่าสุด — ใช้นับ unread ต่อห้อง (null = ยังไม่เคยอ่าน)
+    @Column(name = "last_read_at")
+    private Instant lastReadAt;
 }

@@ -7,11 +7,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.cp.friend.config.S3Config;
 import com.cp.friend.dto.request.UpdateProfileRequest;
 import com.cp.friend.model.User;
+import com.cp.friend.port.StoragePort;
 import com.cp.friend.repository.UserRepository;
-import com.cp.friend.tools.StorageTool;
 
 import lombok.RequiredArgsConstructor;
 
@@ -20,8 +19,8 @@ import lombok.RequiredArgsConstructor;
 public class UserService {
 
     private final UserRepository userRepository;
-    private final StorageTool storageTool;
-    private final S3Config s3Config;
+    // Dependency Inversion — พึ่ง interface StoragePort ไม่ใช่ S3 SDK โดยตรง
+    private final StoragePort storagePort;
 
     @Transactional(readOnly = true)
     public User getProfile(UUID userId) {
@@ -61,10 +60,8 @@ public class UserService {
 
         String imageBase64 = request.getImageBase64();
         if (imageBase64 != null && !imageBase64.isBlank()) {
-            String fileName = storageTool.uploadBase64(imageBase64);
-            user.setImageUrl(s3Config.getEndpoint()
-                    .concat("/storage/")
-                    .concat(fileName));
+            String fileName = storagePort.uploadBase64(imageBase64);
+            user.setImageUrl(storagePort.publicUrl(fileName));
         }
 
         return userRepository.save(user);

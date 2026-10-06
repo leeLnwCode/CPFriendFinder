@@ -47,4 +47,11 @@ public interface MessageRepository extends JpaRepository<Message, UUID> {
     int softDelete(@Param("id") UUID id, @Param("senderId") UUID senderId, @Param("at") Instant at);
 
     long countByRoomIdAndDeletedAtIsNull(UUID roomId);
+
+    // นับ unread ของ user ในห้อง: ข้อความของคนอื่น ยังไม่ลบ
+    long countByRoomIdAndDeletedAtIsNullAndSenderIdNot(UUID roomId, UUID senderId);
+
+    // นับ unread เมื่อรู้เวลาอ่านล่าสุด (จาก room_members.last_read_at)
+    long countByRoomIdAndDeletedAtIsNullAndSenderIdNotAndCreatedAtAfter(
+            UUID roomId, UUID senderId, Instant after);
 }

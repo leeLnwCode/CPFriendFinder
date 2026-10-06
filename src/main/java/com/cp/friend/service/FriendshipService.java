@@ -58,6 +58,8 @@ public class FriendshipService {
                 friend.getFirstname(),
                 friend.getLastname(),
                 friend.getImageUrl(),
+                friend.getYear(),
+                friend.getDepartment(),
                 friendship.getCreatedAt()
         );
     }
