@@ -76,7 +76,7 @@ PUT  /api/users/me/interests        // แทนที่ทั้งหมด: 
 ### 1.4 เพื่อน + Friend Request
 
 ```js
-GET    /api/friends                      // → [{friendId, firstname, lastname, imageUrl, friendsSince}]
+GET    /api/friends                      // → [{friendId, firstname, lastname, imageUrl, year, department, friendsSince}]
 DELETE /api/friends/{friendId}           // เลิกคบ → 204
 
 POST   /api/friend-requests              // {receiverId} → 201 | 409 ถ้าเป็นเพื่อนแล้ว/ส่งแล้ว

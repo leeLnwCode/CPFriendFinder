@@ -8,6 +8,8 @@ public record FriendResponse(
         String firstname,
         String lastname,
         String imageUrl,
+        Short year,
+        String department,
         Instant friendsSince
 ) {
 }
