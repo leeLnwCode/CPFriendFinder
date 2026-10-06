@@ -1,348 +1,355 @@
 let currentStep = 1;
 
-/* =========================
-   CHANGE STEP
-========================= */
+
+
+
+/*  CHANGE STEP */
+
 
 function nextStep(step) {
-  /* =========================
-     VALIDATE BEFORE NEXT STEP
-  ========================= */
 
-  if (step === 2) {
-    const emailInput = document.getElementById("email");
-    const passwordInput = document.getElementById("password");
-    const confirmPasswordInput = document.getElementById("confirmPassword");
 
-    const email = emailInput ? emailInput.value.trim() : "";
-    const password = passwordInput ? passwordInput.value : "";
-    const confirmPassword = confirmPasswordInput
-      ? confirmPasswordInput.value
-      : "";
+    document.querySelectorAll(".register-step")
+        .forEach(function (section) {
+            section.classList.remove("active-step");
+        });
 
-    if (email === "") {
-      alert("กรุณากรอก Email");
-      return;
+
+
+
+    document.getElementById("step" + step)
+        .classList.add("active-step");
+
+
+
+
+    document.querySelectorAll(".step")
+        .forEach(function (indicator) {
+            indicator.classList.remove("active");
+        });
+
+
+
+
+    for (let i = 1; i <= step; i++) {
+
+
+        document.getElementById("stepIndicator" + i)
+            .classList.add("active");
+
+
     }
 
-    if (password === "") {
-      alert("กรุณากรอก Password");
-      return;
-    }
 
-    if (password.length < 8) {
-      alert("รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร");
-      return;
-    }
 
-    if (confirmPassword === "") {
-      alert("กรุณายืนยันรหัสผ่าน");
-      return;
-    }
 
-    if (password !== confirmPassword) {
-      alert("รหัสผ่านไม่ตรงกัน");
-      return;
-    }
-  }
+    currentStep = step;
 
-  /* =========================
-     CHANGE STEP
-  ========================= */
 
-  document.querySelectorAll(".register-step").forEach(function (section) {
-    section.classList.remove("active-step");
-  });
-
-  const targetStep = document.getElementById("step" + step);
-
-  if (targetStep) {
-    targetStep.classList.add("active-step");
-  }
-
-  document.querySelectorAll(".step").forEach(function (indicator) {
-    indicator.classList.remove("active");
-  });
-
-  for (let i = 1; i <= step; i++) {
-    const indicator = document.getElementById("stepIndicator" + i);
-
-    if (indicator) {
-      indicator.classList.add("active");
-    }
-  }
-
-  currentStep = step;
-
-  window.scrollTo({
-    top: 0,
-    behavior: "smooth",
-  });
+    window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+    });
 }
 
-/* =========================
-   SHOW / HIDE PASSWORD
-========================= */
+
+
+
+/*  SHOW / HIDE PASSWORD  */
+
 
 document.addEventListener("DOMContentLoaded", function () {
-  document.querySelectorAll(".password-toggle").forEach(function (button) {
-    button.addEventListener("click", function () {
-      const targetId = button.getAttribute("data-target");
 
-      const input = document.getElementById(targetId);
 
-      if (!input) {
-        return;
-      }
+    document.querySelectorAll(".password-toggle")
+        .forEach(function (button) {
 
-      if (input.type === "password") {
-        input.type = "text";
-        button.textContent = "Hide";
-      } else {
-        input.type = "password";
-        button.textContent = "Show";
-      }
-    });
-  });
+
+            button.addEventListener("click", function () {
+
+
+                const targetId =
+                    button.getAttribute("data-target");
+
+
+                const input =
+                    document.getElementById(targetId);
+
+
+
+
+                if (input.type === "password") {
+
+
+                    input.type = "text";
+
+
+                    button.textContent = "Hide";
+
+
+                } else {
+
+
+                    input.type = "password";
+
+
+                    button.textContent = "Show";
+
+
+                }
+
+
+            });
+
+
+        });
+
+
 });
 
-/* =========================
-   PROFILE IMAGE PREVIEW
-========================= */
+
+
+
+/*  PROFILE IMAGE PREVIEW  */
+
 
 function previewProfile(event) {
-  const file = event.target.files[0];
 
-  if (!file) {
-    return;
-  }
 
-  const preview = document.getElementById("profilePreview");
+    const file = event.target.files[0];
 
-  const placeholder = document.getElementById("profilePlaceholder");
 
-  if (!preview || !placeholder) {
-    return;
-  }
+    if (!file) {
+        return;
+    }
 
-  preview.src = URL.createObjectURL(file);
 
-  preview.style.display = "block";
 
-  placeholder.style.display = "none";
+
+    const preview =
+        document.getElementById("profilePreview");
+
+
+    const placeholder =
+        document.getElementById("profilePlaceholder");
+
+
+
+
+    preview.src =
+        URL.createObjectURL(file);
+
+
+    preview.style.display = "block";
+
+
+    placeholder.style.display = "none";
 }
 
-/* =========================
-   INTEREST
-========================= */
+
+
+
+/*  INTEREST */
+
 
 function toggleInterest(button) {
-  button.classList.toggle("selected");
+
+
+    button.classList.toggle("selected");
+
+
 }
 
-/* =========================
-   FILE → BASE64
-========================= */
 
-function fileToBase64(file) {
-  return new Promise(function (resolve, reject) {
-    const reader = new FileReader();
 
-    reader.onload = function () {
-      resolve(reader.result);
-    };
 
-    reader.onerror = function (error) {
-      reject(error);
-    };
+/*  CREATE ACCOUNT */
 
-    reader.readAsDataURL(file);
-  });
+
+function createAccount() {
+
+
+    alert("Account creation prototype complete!");
+
+
 }
 
-/* =========================
-   CREATE ACCOUNT
-========================= */
 
-async function createAccount() {
-  const email = document.getElementById("email").value.trim();
-  const password = document.getElementById("password").value;
-  const confirmPassword = document.getElementById("confirmPassword").value;
-  const firstname = document.getElementById("firstname").value.trim();
-  const lastname = document.getElementById("lastname").value.trim();
-  const dateOfBirth = document.getElementById("dateOfBirth").value;
-  const year = Number(document.getElementById("year").value);
-  const department = document.getElementById("department").value;
-  const profileInput = document.getElementById("profileImage");
+/*  CREATE OTHER GAME  */
 
-  // ตรวจสอบรหัสผ่านอย่างน้อย 8 ตัว
-  if (password.length < 8) {
-    alert("รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร");
-    return;
-  }
 
-  /* =========================
-     Validation
-  ========================= */
+function addCustomGame() {
 
-  if (email === "") {
-    alert("กรุณากรอก Email");
-    return;
-  }
 
-  if (password === "") {
-    alert("กรุณากรอก Password");
-    return;
-  }
+    const input = document.getElementById("customGame");
 
-  if (password !== confirmPassword) {
-    alert("รหัสผ่านไม่ตรงกัน");
-    return;
-  }
 
-  if (firstname === "") {
-    alert("กรุณากรอกชื่อ");
-    return;
-  }
+    const gameName = input.value.trim();
 
-  if (lastname === "") {
-    alert("กรุณากรอกนามสกุล");
-    return;
-  }
 
-  if (dateOfBirth === "") {
-    alert("กรุณาเลือกวันเกิด");
-    return;
-  }
-
-  if (!year) {
-    alert("กรุณาเลือกชั้นปี");
-    return;
-  }
-
-  if (department === "") {
-    alert("กรุณาเลือกสาขา");
-    return;
-  }
-
-  /* =========================
-     Profile Image
-  ========================= */
-
-  let imageBase64 = "";
-
-  if (profileInput && profileInput.files.length > 0) {
-    try {
-      imageBase64 = await fileToBase64(profileInput.files[0]);
-    } catch (error) {
-      console.error("Image error:", error);
-
-      alert("ไม่สามารถอ่านรูปโปรไฟล์ได้");
-
-      return;
-    }
-  }
-
-  /* =========================
-     API Request
-  ========================= */
-
-  const requestData = {
-    email: email,
-
-    password: password,
-
-    firstname: firstname,
-
-    lastname: lastname,
-
-    imageBase64: imageBase64,
-
-    dateOfBirth: dateOfBirth,
-
-    year: year,
-
-    department: department,
-  };
-
-  console.log("Register request:", requestData);
-  console.log(requestData);
-
-  /* =========================
-     Call Backend
-  ========================= */
-
-  try {
-    const response = await fetch("/api/auth/register", {
-      method: "POST",
-
-      headers: {
-        "Content-Type": "application/json",
-      },
-
-      body: JSON.stringify(requestData),
-    });
-
-    const data = await response.json();
-
-    console.log("Register response:", data);
-
-    /* =========================
-       Error
-    ========================= */
-
-    if (!response.ok) {
-      console.error("Register failed:", data);
-
-      alert("สมัครสมาชิกไม่สำเร็จ");
-
-      return;
+    if (gameName === "") {
+        return;
     }
 
-    /* =========================
-       Success
-    ========================= */
 
-    console.log("Register success:", data);
+    const gameList =
+        document.getElementById("customGameList");
 
-    alert("สมัครสมาชิกสำเร็จ");
 
-    window.location.href = "/login";
-  } catch (error) {
-    console.error("Register connection error:", error);
 
-    alert("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้");
-  }
+
+    const button =
+        document.createElement("button");
+
+
+    button.type = "button";
+
+
+    button.className = "interest";
+
+
+    button.textContent = "🎮 " + gameName;
+
+
+
+
+    button.onclick = function () {
+
+
+        toggleInterest(this);
+
+
+    };
+
+
+
+
+    gameList.appendChild(button);
+
+
+    input.value = "";
 }
 
-/* =========================
-   CREATE OTHER INTEREST
-========================= */
 
-function addCustomInterest() {
-  const input = document.getElementById("customInterest");
 
-  const interestName = input.value.trim();
 
-  if (interestName === "") {
-    return;
-  }
+/*  CREATE OTHER ACTIVITY */
 
-  const interestList = document.getElementById("customList");
 
-  const button = document.createElement("button");
+function addCustomActivity() {
 
-  button.type = "button";
 
-  button.className = "interest";
+    const input =
+        document.getElementById("customActivity");
 
-  button.textContent = "✨ " + interestName;
 
-  button.onclick = function () {
-    toggleInterest(this);
-  };
+    const activityName =
+        input.value.trim();
 
-  interestList.appendChild(button);
 
-  input.value = "";
+    if (activityName === "") {
+        return;
+    }
+
+
+    const activityList =
+        document.getElementById("customActivityList");
+
+
+
+
+    const button =
+        document.createElement("button");
+
+
+    button.type = "button";
+
+
+    button.className = "interest";
+
+
+    button.textContent = "💡 " + activityName;
+
+
+
+
+    button.onclick = function () {
+
+
+        toggleInterest(this);
+
+
+    };
+
+
+
+
+    activityList.appendChild(button);
+
+
+    input.value = "";
 }
+
+
+
+
+/*  CREATE OTHER ENTERTAINMENT */
+
+
+function addCustomEntertainment() {
+
+
+    const input =
+        document.getElementById("customEntertainment");
+
+
+    const entertainmentName =
+        input.value.trim();
+
+
+    if (entertainmentName === "") {
+        return;
+    }
+
+
+    const entertainmentList =
+        document.getElementById(
+            "customEntertainmentList"
+        );
+
+
+
+
+    const button =
+        document.createElement("button");
+
+
+    button.type = "button";
+
+
+    button.className = "interest";
+
+
+    button.textContent =
+        "⭐ " + entertainmentName;
+
+
+
+
+    button.onclick = function () {
+
+
+        toggleInterest(this);
+
+
+    };
+
+
+
+
+    entertainmentList.appendChild(button);
+
+
+    input.value = "";
+}
+

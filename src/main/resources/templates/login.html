@@ -1,88 +1,102 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Login - CP Friend Finder</title>
 
-    <link rel="stylesheet" th:href="@{/css/login.css}" />
-  </head>
+    <link rel="stylesheet" th:href="@{/css/login.css}">
+</head>
 
-  <body class="login-body">
+<body class="login-body">
+
     <div class="login-page">
-      <!-- Left Section -->
-      <div class="login-section">
-        <!-- Logo -->
-        <img
-          th:src="@{/images/Full_logo.png}"
-          alt="CP Friend Finder"
-          class="login-logo"
-        />
 
-        <h1>Welcome Back!</h1>
+        <!-- Left Section -->
+        <div class="login-section">
 
-        <p class="login-subtitle">Login to find your friends</p>
+            <!-- Logo -->
+            <img th:src="@{/images/Full_logo.png}" alt="CP Friend Finder" class="login-logo">
 
-        <!-- Login Form -->
-        <form id="loginForm" class="login-form">
-          <!-- Email -->
-          <label for="email"> Email address </label>
+            <h1>Welcome Back!</h1>
 
-          <div class="input-wrapper">
-            <img th:src="@{/images/email.png}" alt="Email" class="input-icon" />
-            <input
-              id="email"
-              type="email"
-              placeholder="Enter your email"
-              required
-            />
-          </div>
+            <p class="login-subtitle">
+                Login to find your friends
+            </p>
 
-          <!-- Password -->
-          <label for="password"> Password </label>
 
-          <div class="input-wrapper">
-            <img
-              th:src="@{/images/padlock.png}"
-              alt="Password"
-              class="input-icon"
-            />
-            <input
-              id="password"
-              type="password"
-              placeholder="Enter your password"
-              required
-            />
+            <!-- Login Form -->
+            <form class="login-form">
 
-            <button type="button" id="showPassword" class="show-password">
-              Show
-            </button>
-          </div>
+                <!-- Email -->
+                <label for="email">
+                    Email address
+                </label>
 
-          <!-- Login Button -->
-          <button type="submit" class="login-button">Login now →</button>
-        </form>
+                <div class="input-wrapper">
 
-        <!-- OR -->
-        <div class="or-divider">
-          <span>OR</span>
+                    <img th:src="@{/images/email.png}" alt="Email" class="input-icon">
+                    <input id="email" type="email" placeholder="Enter your email" required>
+
+                </div>
+
+
+                <!-- Password -->
+                <label for="password">
+                    Password
+                </label>
+
+                <div class="input-wrapper">
+
+                    <img th:src="@{/images/padlock.png}" alt="Password" class="input-icon">
+                    <input id="password" type="password" placeholder="Enter your password" required>
+
+                    <button type="button" id="showPassword" class="show-password">
+                        Show
+                    </button>
+
+                </div>
+
+
+                <!-- Login Button -->
+                <button type="submit" class="login-button">
+                    Login now →
+                </button>
+
+            </form>
+
+
+            <!-- OR -->
+            <div class="or-divider">
+                <span>OR</span>
+            </div>
+
+
+            <!-- Register -->
+            <div class="signup-link">
+                <span>Don't have an account?</span>
+
+                <a th:href="@{/register}">
+                    Signup now
+                </a>
+            </div>
         </div>
 
-        <!-- Register -->
-        <div class="signup-link">
-          <span>Don't have an account?</span>
 
-          <a th:href="@{/register}"> Signup now </a>
+        <!-- Right Section -->
+        <div class="login-image-section">
+
+            <img th:src="@{/images/login.jpg}" alt="Friend Finder">
+
         </div>
-      </div>
 
-      <!-- Right Section -->
-      <div class="login-image-section">
-        <img th:src="@{/images/login.jpg}" alt="Friend Finder" />
-      </div>
     </div>
 
+
     <script th:src="@{/js/login.js}"></script>
-  </body>
+
+</body>
+
 </html>
