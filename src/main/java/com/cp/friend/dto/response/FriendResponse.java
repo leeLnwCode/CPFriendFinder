@@ -1,6 +1,7 @@
 package com.cp.friend.dto.response;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.UUID;
 
 public record FriendResponse(
@@ -10,6 +11,8 @@ public record FriendResponse(
         String imageUrl,
         Short year,
         String department,
+        String bio,
+        List<InterestResponse> interests,
         Instant friendsSince
 ) {
 }
