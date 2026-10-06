@@ -13,7 +13,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
-import com.cp.friend.config.S3Config;
+import com.cp.friend.dto.request.CallInviteRequest;
 import com.cp.friend.dto.request.CallSignalRequest;
 import com.cp.friend.dto.request.ChatMessagePayload;
 import com.cp.friend.dto.response.CallSignalResponse;
@@ -21,10 +21,12 @@ import com.cp.friend.dto.response.ChatMessageResponse;
 import com.cp.friend.model.ChatRoom;
 import com.cp.friend.model.Message;
 import com.cp.friend.model.RoomMember;
+import com.cp.friend.model.User;
 import com.cp.friend.repository.ChatRoomRepository;
 import com.cp.friend.repository.MessageRepository;
 import com.cp.friend.repository.RoomMemberRepository;
-import com.cp.friend.tools.StorageTool;
+import com.cp.friend.repository.UserRepository;
+import com.cp.friend.service.strategy.MessageContentStrategyResolver;
 
 import lombok.RequiredArgsConstructor;
 
@@ -33,14 +35,13 @@ import lombok.RequiredArgsConstructor;
 public class ChatMessageService {
 
     private static final int MAX_PAGE_SIZE = 100;
-    private static final int MAX_IMAGE_BASE64_LENGTH = 4_000_000; // ~3MB binary
 
     private final MessageRepository messageRepository;
     private final ChatRoomRepository chatRoomRepository;
     private final RoomMemberRepository roomMemberRepository;
+    private final UserRepository userRepository;
     private final NotificationService notificationService;
-    private final StorageTool storageTool;
-    private final S3Config s3Config;
+    private final MessageContentStrategyResolver contentStrategyResolver;
     private final SimpMessagingTemplate messagingTemplate;
 
     // =========================================================
@@ -93,20 +94,10 @@ public class ChatMessageService {
         ChatRoom room = chatRoomRepository.findById(roomId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Room not found"));
 
-        String content = payload.getContent() == null ? "" : payload.getContent().trim();
-        if (content.isEmpty()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Message content is required");
-        }
+        // Strategy Pattern — เลือก strategy ตาม messageType แล้วปล่อยให้มันจัดการ
+        // validation + transformation (TEXT: trim/ว่าง, IMAGE: base64 → S3, ...)
         Message.MessageType messageType = parseMessageType(payload.getMessageType());
-
-        // รูป: รับ base64 แล้วอัปโหลดขึ้น S3 — ทั้งห้องกลุ่มและ direct ส่ง URL ต่อให้ผู้รับเหมือนกัน
-        if (messageType == Message.MessageType.IMAGE) {
-            if (content.length() > MAX_IMAGE_BASE64_LENGTH) {
-                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Image is too large (max ~3MB)");
-            }
-            String key = storageTool.uploadBase64(content);
-            content = s3Config.getEndpoint().concat("/storage/").concat(key);
-        }
+        String content = contentStrategyResolver.resolve(messageType).process(payload.getContent());
 
         // ห้องกลุ่ม: broadcast อย่างเดียว — ไม่บันทึก DB, ไม่มี notification, ไม่มี unread
         // (ข้อความมีชีวิตอยู่เฉพาะตอนที่คนในห้องออนไลน์อยู่ด้วยกัน)
@@ -144,34 +135,57 @@ public class ChatMessageService {
     }
 
     // =========================================================
-    // WebRTC signaling — backend เป็นแค่สายส่ง ไม่เก็บสถานะการคอลใดๆ
-    //
-    // ฝั่ง client:
-    // - ส่ง: /app/rooms/{roomId}/call  พร้อม {type, targetUserId?, payload}
-    // - รับ broadcast (JOIN/LEAVE): /topic/rooms/{roomId}/call
-    // - รับส่งตรง (OFFER/ANSWER/ICE): /user/queue/call
+    // สายเรียกเข้า (call ring) — relay สัญญาณ INVITE/ACCEPT/DECLINE/CANCEL
+    // ไปยัง /topic/call/{toUserId} ซึ่งทุกหน้าของผู้รับ subscribe อยู่
     // =========================================================
+
+    public void relayCallInvite(UUID userId, CallInviteRequest req) {
+        if (req.getToUserId() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "toUserId is required");
+        }
+        String type = req.getType() == null ? "" : req.getType().trim().toUpperCase(Locale.ROOT);
+
+        String fromName = null;
+        String fromImage = null;
+        if ("INVITE".equals(type)) {
+            if (req.getRoomId() == null) {
+                throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "roomId is required for INVITE");
+            }
+            // INVITE ต้องเป็นสมาชิกห้องจริงเท่านั้น กันสแปมข้ามห้อง
+            requireActiveMember(req.getRoomId(), userId);
+            // ดึง User ตรงจาก repository — RoomMember.user เป็น lazy proxy
+            // และ WS handler ทำงานนอก Hibernate session จึงเรียก getter ผ่าน proxy ไม่ได้
+            User caller = userRepository.findById(userId)
+                    .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+            fromName = (caller.getFirstname() == null ? "" : caller.getFirstname()) + " "
+                    + (caller.getLastname() == null ? "" : caller.getLastname());
+            fromImage = caller.getImageUrl();
+        }
+
+        messagingTemplate.convertAndSend(
+                "/topic/call/" + req.getToUserId(),
+                new com.cp.friend.dto.response.CallInviteSignal(
+                        type, userId, req.getToUserId(), req.getRoomId(), fromName, fromImage));
+    }
 
     public void relayCallSignal(UUID userId, UUID roomId, CallSignalRequest signal) {
         requireActiveMember(roomId, userId);
 
         String type = signal.getType() == null ? "" : signal.getType().trim().toUpperCase(Locale.ROOT);
-        UUID fromUserId = userId;
 
         switch (type) {
             case "JOIN", "LEAVE" -> messagingTemplate.convertAndSend(
                     "/topic/rooms/" + roomId + "/call",
-                    new CallSignalResponse(type, fromUserId, null));
+                    new CallSignalResponse(type, userId, null, null));
 
             case "OFFER", "ANSWER", "ICE" -> {
                 if (signal.getTargetUserId() == null) {
                     throw new ResponseStatusException(
                             HttpStatus.BAD_REQUEST, type + " requires targetUserId");
                 }
-                messagingTemplate.convertAndSendToUser(
-                        signal.getTargetUserId().toString(),
-                        "/queue/call",
-                        new CallSignalResponse(type, fromUserId, signal.getPayload()));
+                messagingTemplate.convertAndSend(
+                        "/topic/rooms/" + roomId + "/call",
+                        new CallSignalResponse(type, userId, signal.getTargetUserId(), signal.getPayload()));
             }
 
             default -> throw new ResponseStatusException(

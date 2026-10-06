@@ -3,6 +3,7 @@ package com.cp.friend.service;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
@@ -10,6 +11,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.cp.friend.dto.response.NotificationResponse;
+import com.cp.friend.event.FriendRequestAcceptedEvent;
+import com.cp.friend.event.FriendRequestSentEvent;
+import com.cp.friend.factory.NotificationFactory;
 import com.cp.friend.model.ChatRoom;
 import com.cp.friend.model.FriendRequest;
 import com.cp.friend.model.Notification;
@@ -20,48 +24,37 @@ import com.cp.friend.repository.RoomMemberRepository;
 
 import lombok.RequiredArgsConstructor;
 
+// Observer Pattern — NotificationService เป็น Listener ของ domain events
+// (FriendRequestService publish event แล้วไม่รู้จัก service นี้เลย — decouple ผ่าน ApplicationEvent)
 @Service
 @RequiredArgsConstructor
 public class NotificationService {
 
     private final NotificationRepository notificationRepository;
     private final RoomMemberRepository roomMemberRepository;
+    private final NotificationFactory notificationFactory;
     private final SimpMessagingTemplate messagingTemplate;
 
     // =========================================================
-    // สร้าง notification จาก event ต่างๆ — บันทึกลง DB แล้ว push แบบ real-time
+    // Observers — รับ domain events แล้วสร้าง notification ผ่าน Factory
     // =========================================================
 
+    @EventListener
     @Transactional
-    public void notifyFriendRequestReceived(FriendRequest request) {
-        create(
-                request.getReceiver(),
-                request.getSender(),
-                Notification.Type.FRIEND_REQUEST,
-                "New friend request",
-                "%s sent you a friend request".formatted(
-                        fullName(request.getSender())),
-                request,
-                null
-        );
+    public void onFriendRequestSent(FriendRequestSentEvent event) {
+        FriendRequest request = event.request();
+        saveAndPush(notificationFactory.friendRequestReceived(request));
     }
 
+    @EventListener
     @Transactional
-    public void notifyFriendRequestAccepted(FriendRequest request) {
-        create(
-                request.getSender(),
-                request.getReceiver(),
-                Notification.Type.FRIEND_REQUEST,
-                "Friend request accepted",
-                "%s accepted your friend request".formatted(
-                        fullName(request.getReceiver())),
-                request,
-                null
-        );
+    public void onFriendRequestAccepted(FriendRequestAcceptedEvent event) {
+        FriendRequest request = event.request();
+        saveAndPush(notificationFactory.friendRequestAccepted(request));
     }
 
     // แจ้งเตือนข้อความใหม่ให้สมาชิกทุกคนในห้อง (ยกเว้นผู้ส่ง)
-    // ถ้ามี notification ที่ยังไม่อ่านของห้องนี้อยู่แล้ว จะอัปเดตรายการเดิม ไม่สร้างใหม่ — กันสแปมเวลาคุยกันรัวๆ
+    // ถ้ามี notification ที่ยังไม่อ่านของห้องนี้อยู่แล้ว จะอัปเดตรายการเดิม ไม่สร้างใหม่ — กันสแปม
     @Transactional
     public void notifyNewMessage(com.cp.friend.model.Message message) {
         ChatRoom room = message.getRoom();
@@ -76,22 +69,12 @@ public class NotificationService {
             Notification notification = notificationRepository
                     .findFirstByUserIdAndRoomIdAndTypeAndIsReadFalse(
                             recipient.getId(), room.getId(), Notification.Type.NEW_MESSAGE)
-                    .orElseGet(() -> {
-                        Notification n = new Notification();
-                        n.setUser(recipient);
-                        n.setActor(sender);
-                        n.setType(Notification.Type.NEW_MESSAGE);
-                        n.setRoom(room);
-                        return n;
-                    });
+                    .orElseGet(() -> notificationFactory.newMessage(message, recipient));
 
             notification.setTitle("New message");
             notification.setMessage("%s sent a message in %s".formatted(
                     fullName(sender), room.getRoomName()));
-            NotificationResponse response = toResponse(notificationRepository.save(notification));
-
-            messagingTemplate.convertAndSendToUser(
-                    recipient.getId().toString(), "/queue/notifications", response);
+            saveAndPush(notification);
         }
     }
 
@@ -129,23 +112,13 @@ public class NotificationService {
     // helpers
     // =========================================================
 
-    private void create(User user, User actor, Notification.Type type,
-                        String title, String message,
-                        FriendRequest friendRequest, ChatRoom room) {
-        Notification notification = new Notification();
-        notification.setUser(user);
-        notification.setActor(actor);
-        notification.setType(type);
-        notification.setTitle(title);
-        notification.setMessage(message);
-        notification.setFriendRequest(friendRequest);
-        notification.setRoom(room);
+    private void saveAndPush(Notification notification) {
         NotificationResponse response = toResponse(notificationRepository.save(notification));
 
-        // push แบบ real-time — client subscribe /user/queue/notifications
-        // (user ที่ offline จะไม่ได้ push แต่ข้อมูลอยู่ใน DB รอเปิดหน้าแล้วโหลด)
-        messagingTemplate.convertAndSendToUser(
-                user.getId().toString(), "/queue/notifications", response);
+        // push แบบ real-time — client subscribe /topic/notifications/{userId}
+        // (broadcast ต่อ user แทน /user/queue — convertAndSendToUser ยังส่งไม่ได้ใน Spring Boot 4.1.1)
+        messagingTemplate.convertAndSend(
+                "/topic/notifications/" + notification.getUser().getId(), response);
     }
 
     private static String fullName(User user) {

@@ -10,6 +10,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import com.cp.friend.dto.response.FriendRequestResponse;
+import com.cp.friend.event.FriendRequestAcceptedEvent;
+import com.cp.friend.event.FriendRequestSentEvent;
 import com.cp.friend.model.FriendRequest;
 import com.cp.friend.model.Friendship;
 import com.cp.friend.model.User;
@@ -26,7 +28,9 @@ public class FriendRequestService {
     private final FriendRequestRepository friendRequestRepository;
     private final FriendshipRepository friendshipRepository;
     private final UserRepository userRepository;
-    private final NotificationService notificationService;
+    // Observer Pattern — publish domain event แทนการเรียก NotificationService ตรง
+    // (service นี้ไม่รู้จักระบบแจ้งเตือนเลย — ใครสนใจ event ก็มาฟังเอง)
+    private final org.springframework.context.ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public FriendRequestResponse send(UUID senderId, UUID receiverId) {
@@ -49,7 +53,7 @@ public class FriendRequestService {
         request.setStatus(FriendRequest.Status.PENDING);
         request = friendRequestRepository.save(request);
 
-        notificationService.notifyFriendRequestReceived(request);
+        eventPublisher.publishEvent(new FriendRequestSentEvent(request));
         return toResponse(request, receiver);
     }
 
@@ -90,7 +94,7 @@ public class FriendRequestService {
         request.setRespondedAt(Instant.now());
         FriendRequest acceptedRequest = friendRequestRepository.save(request);
 
-        notificationService.notifyFriendRequestAccepted(acceptedRequest);
+        eventPublisher.publishEvent(new FriendRequestAcceptedEvent(acceptedRequest));
         return toResponse(acceptedRequest, sender);
     }
 

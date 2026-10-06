@@ -137,25 +137,26 @@ public class ChatRoomService {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Room not found"));
 
         List<RoomMember> members = roomMemberRepository.findActiveMembers(roomId);
-        return new ChatRoomDetailResponse(
-                room.getId(),
-                room.getRoomName(),
-                room.getDescription(),
-                room.getRoomType(),
-                room.isPrivate(),
-                room.getMaxMembers(),
-                members.size(),
-                toInterestDtos(roomId),
-                members.stream()
+        // Builder Pattern — ประกอบ response หลาย field แบบอ่านง่าย
+        return ChatRoomDetailResponse.builder()
+                .id(room.getId())
+                .roomName(room.getRoomName())
+                .description(room.getDescription())
+                .roomType(room.getRoomType())
+                .isPrivate(room.isPrivate())
+                .maxMembers(room.getMaxMembers())
+                .memberCount(members.size())
+                .interests(toInterestDtos(roomId))
+                .members(members.stream()
                         .map(m -> new ChatRoomDetailResponse.MemberDto(
                                 m.getUser().getId(),
                                 m.getUser().getFirstname(),
                                 m.getUser().getLastname(),
                                 m.getUser().getImageUrl(),
                                 m.getRole()))
-                        .toList(),
-                room.getCreatedAt()
-        );
+                        .toList())
+                .createdAt(room.getCreatedAt())
+                .build();
     }
 
     // =========================================================

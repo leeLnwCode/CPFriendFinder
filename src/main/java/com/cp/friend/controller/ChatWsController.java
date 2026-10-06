@@ -7,6 +7,7 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.stereotype.Controller;
 
+import com.cp.friend.dto.request.CallInviteRequest;
 import com.cp.friend.dto.request.CallSignalRequest;
 import com.cp.friend.dto.request.ChatMessagePayload;
 import com.cp.friend.service.ChatMessageService;
@@ -46,5 +47,15 @@ public class ChatWsController {
             throw new IllegalStateException("Authentication required");
         }
         chatMessageService.relayCallSignal(UUID.fromString(principal.getName()), roomId, signal);
+    }
+
+    // สายเรียกเข้า: INVITE/ACCEPT/DECLINE/CANCEL → ส่งตรงถึง /topic/call/{toUserId}
+    // client ทุกหน้า subscribe ช่องนี้ผ่าน call-ring.js
+    @MessageMapping("/call")
+    public void handleCallInvite(CallInviteRequest request, Principal principal) {
+        if (principal == null) {
+            throw new IllegalStateException("Authentication required");
+        }
+        chatMessageService.relayCallInvite(UUID.fromString(principal.getName()), request);
     }
 }
