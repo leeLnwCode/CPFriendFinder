@@ -201,6 +201,8 @@ public class ChatRoomService {
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND, "You are not a member of this room"));
         member.setLeftAt(Instant.now());
+
+        roomMemberRepository.save(member);
     }
 
     // =========================================================
