@@ -1,228 +1,463 @@
 document.addEventListener("DOMContentLoaded", function () {
   // =========================
-  // Room Data
+  // Room ID
   // =========================
 
   const params = new URLSearchParams(window.location.search);
+  const roomId = params.get("id");
 
-  const roomName = params.get("name") || "ห้องพูดคุย";
-  const members = params.get("members") || "1";
-  const max = params.get("max") || "10";
-
-  const roomCode = params.get("code") || "";
-  const isOwner = params.get("isOwner") === "true";
-
-  // =========================
-  // Owner Data
-  // =========================
-
-  const owner = params.get("owner") || "เจ้าของห้อง";
-
-  const ownerYear = params.get("ownerYear") || "-";
-
-  const ownerImage = params.get("ownerImage") || "/images/man2.jpg";
-
-  // =========================
-  // Current User Data
-  // =========================
-
-  const currentUser = params.get("currentUser") || "";
-
-  const currentUserYear = params.get("currentUserYear") || "";
-
-  const currentUserImage = params.get("currentUserImage") || "/images/man.jpg";
+  if (!roomId) {
+    alert("ไม่พบรหัสห้อง");
+    window.location.href = "/home";
+    return;
+  }
 
   // =========================
   // Elements
   // =========================
 
   const roomTitle = document.getElementById("roomTitle");
-
   const roomMembers = document.getElementById("roomMembers");
-
   const chatMembers = document.getElementById("chatMembers");
-
   const membersGrid = document.getElementById("membersGrid");
 
   const roomCodeElement = document.getElementById("roomCode");
-
   const ownerRoomCode = document.getElementById("ownerRoomCode");
 
-  // =========================
-  // Room Header
-  // =========================
-
-  roomTitle.textContent = roomName;
-
-  roomMembers.textContent = members + "/" + max + " คนกำลังคุย";
-
-  chatMembers.textContent = members + " คน";
-
-  // =========================
-  // Room Code
-  // เจ้าของเท่านั้นที่เห็น
-  // =========================
-
-  if (isOwner && roomCode) {
-    roomCodeElement.textContent = roomCode;
-
-    ownerRoomCode.style.display = "block";
-  } else {
-    ownerRoomCode.style.display = "none";
-  }
-
-  // =========================
-  // Members
-  // =========================
-
-  membersGrid.innerHTML = "";
-
-  // =========================
-  // Owner Card
-  // =========================
-
-  const ownerCard = document.createElement("article");
-
-  ownerCard.className = "member-card friend-profile-trigger";
-
-  ownerCard.setAttribute("data-profile", "");
-  ownerCard.setAttribute("data-name", owner);
-  ownerCard.setAttribute("data-year", ownerYear);
-  ownerCard.setAttribute("data-image", ownerImage);
-
-  ownerCard.innerHTML = `
-  <img
-    src="${ownerImage}"
-    alt="${owner}"
-  />
-
-  <h3>${owner}</h3>
-
-  <p>${ownerYear}</p>
-
-  <small>(เจ้าของห้อง)</small>
-`;
-
-  membersGrid.appendChild(ownerCard);
-
-  // =========================
-  // Current User Card
-  // =========================
-
-  if (!isOwner && currentUser) {
-    const currentUserCard = document.createElement("article");
-
-    currentUserCard.className = "member-card";
-
-    currentUserCard.innerHTML = `
-      <img
-        src="${currentUserImage}"
-        alt="${currentUser}"
-      />
-
-      <h3>${currentUser}</h3>
-
-      <p>${currentUserYear}</p>
-
-      <small>(คุณ)</small>
-    `;
-
-    membersGrid.appendChild(currentUserCard);
-  }
-
-  // =========================
-  // Chat
-  // =========================
+  const leaveRoomButton = document.getElementById("leaveRoomButton");
 
   const chatInput = document.getElementById("chatInput");
-
   const sendMessageButton = document.getElementById("sendMessageButton");
-
   const chatMessages = document.getElementById("chatMessages");
 
-  function sendMessage() {
+  const imageButton = document.getElementById("imageButton");
+  const imageInput = document.getElementById("imageInput");
+
+  // =========================
+  // Room Data
+  // =========================
+
+  let room = null;
+
+  // =========================
+  // Helpers
+  // =========================
+
+  function escapeHtml(value) {
+    const div = document.createElement("div");
+    div.textContent = value ?? "";
+    return div.innerHTML;
+  }
+
+  function getFullName(member) {
+    const firstname = member.firstname || "";
+    const lastname = member.lastname || "";
+
+    const fullname = `${firstname} ${lastname}`.trim();
+
+    return fullname || "ไม่ระบุชื่อ";
+  }
+
+  function getImageUrl(imageUrl) {
+    return imageUrl || "/images/man.jpg";
+  }
+
+  // =========================
+  // LOAD ROOM
+  // =========================
+
+  async function loadRoom() {
+    try {
+      const response = await fetch(`/api/chats/${roomId}`, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+        },
+        credentials: "include",
+      });
+
+      if (!response.ok) {
+        throw new Error(`โหลดข้อมูลห้องไม่สำเร็จ (${response.status})`);
+      }
+
+      room = await response.json();
+
+      renderRoom();
+      renderMembers();
+      await loadMessages();
+
+    } catch (error) {
+      console.error("โหลดข้อมูลห้องล้มเหลว:", error);
+
+      alert("ไม่สามารถโหลดข้อมูลห้องได้");
+      window.location.href = "/home";
+    }
+  }
+
+  // =========================
+  // RENDER ROOM
+  // =========================
+
+  function renderRoom() {
+    if (!room) return;
+
+    roomTitle.textContent = room.roomName || "ห้องพูดคุย";
+
+    roomMembers.textContent =
+      `${room.memberCount || 0}/${room.maxMembers || 10} คนกำลังคุย`;
+
+    chatMembers.textContent =
+      `${room.memberCount || 0} คน`;
+
+    ownerRoomCode.style.display = "none";
+    roomCodeElement.textContent = "-";
+  }
+
+  // =========================
+  // RENDER MEMBERS
+  // =========================
+
+  function renderMembers() {
+    if (!membersGrid) return;
+
+    membersGrid.innerHTML = "";
+
+    const members = room?.members || [];
+
+    if (members.length === 0) {
+      membersGrid.innerHTML = `
+        <div>
+          ยังไม่มีสมาชิกในห้อง
+        </div>
+      `;
+      return;
+    }
+
+    members.forEach(function (member) {
+      createMemberCard(member);
+    });
+  }
+
+  // =========================
+  // MEMBER CARD
+  // =========================
+
+  function createMemberCard(member) {
+    const card = document.createElement("article");
+
+    card.className = "member-card";
+
+    const fullname = getFullName(member);
+    const imageUrl = getImageUrl(member.imageUrl);
+
+    const role = member.role || "";
+
+    const isOwner =
+      role === "OWNER" ||
+      role === "owner";
+
+    /*
+     * เจ้าของห้องเปิด Profile Popup ได้
+     */
+    if (isOwner) {
+      card.classList.add("friend-profile-trigger");
+
+      card.setAttribute("data-profile", "");
+      card.setAttribute("data-name", fullname);
+      card.setAttribute("data-image", imageUrl);
+    }
+
+    card.innerHTML = `
+      <img
+        src="${escapeHtml(imageUrl)}"
+        alt="${escapeHtml(fullname)}"
+      />
+
+      <h3>
+        ${escapeHtml(fullname)}
+      </h3>
+
+      <p>
+        ${isOwner ? "เจ้าของห้อง" : "สมาชิก"}
+      </p>
+
+      ${
+        isOwner
+          ? `<small>(เจ้าของห้อง)</small>`
+          : `<small>(สมาชิก)</small>`
+      }
+    `;
+
+    membersGrid.appendChild(card);
+  }
+
+  // =========================
+  // LOAD MESSAGES
+  // =========================
+
+  async function loadMessages() {
+    if (!chatMessages) return;
+
+    try {
+      const response = await fetch(
+        `/api/chats/${roomId}/messages`,
+        {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+          },
+          credentials: "include",
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          `โหลดข้อความไม่สำเร็จ (${response.status})`
+        );
+      }
+
+      const messages = await response.json();
+
+      chatMessages.innerHTML = "";
+
+      if (!messages || messages.length === 0) {
+        chatMessages.innerHTML = `
+          <div class="chat-empty">
+            ยังไม่มีข้อความ
+          </div>
+        `;
+        return;
+      }
+
+      messages.forEach(function (message) {
+        createMessageElement(message);
+      });
+
+      scrollChatToBottom();
+
+    } catch (error) {
+      console.error("โหลดข้อความล้มเหลว:", error);
+
+      chatMessages.innerHTML = `
+        <div class="chat-empty">
+          ยังไม่มีข้อความ
+        </div>
+      `;
+    }
+  }
+
+  // =========================
+  // MESSAGE
+  // =========================
+
+  function createMessageElement(message) {
+    const messageElement = document.createElement("div");
+
+    messageElement.className = "message";
+
+    /*
+     * รองรับชื่อจาก field ที่อาจมีอยู่ใน response
+     */
+    const firstname =
+      message.firstname ||
+      message.senderFirstname ||
+      "";
+
+    const lastname =
+      message.lastname ||
+      message.senderLastname ||
+      "";
+
+    const senderName =
+      `${firstname} ${lastname}`.trim() ||
+      message.senderName ||
+      "สมาชิก";
+
+    const content =
+      message.content ||
+      message.message ||
+      "";
+
+    messageElement.innerHTML = `
+      <strong>
+        ${escapeHtml(senderName)}
+      </strong>
+
+      ${
+        content
+          ? `<p>${escapeHtml(content)}</p>`
+          : ""
+      }
+    `;
+
+    chatMessages.appendChild(messageElement);
+  }
+
+  // =========================
+  // SEND MESSAGE
+  // =========================
+
+  async function sendMessage() {
     const message = chatInput.value.trim();
 
     if (message === "") {
       return;
     }
 
-    const messageElement = document.createElement("div");
+    console.warn(
+      "ยังไม่ได้เชื่อม POST สำหรับส่งข้อความ เพราะยังไม่มี ChatMessageController endpoint สำหรับส่งข้อความ"
+    );
 
-    messageElement.className = "message";
+    alert("ระบบส่งข้อความยังไม่ได้เชื่อมต่อ Backend");
 
-    messageElement.innerHTML = `
-      <strong>Singha</strong>
-      <p>${message}</p>
-    `;
-
-    chatMessages.appendChild(messageElement);
-
-    chatInput.value = "";
-
-    chatMessages.scrollTop = chatMessages.scrollHeight;
+    return;
   }
 
-  sendMessageButton.addEventListener("click", sendMessage);
+  if (sendMessageButton) {
+    sendMessageButton.addEventListener(
+      "click",
+      sendMessage
+    );
+  }
 
-  chatInput.addEventListener("keydown", function (event) {
-    if (event.key === "Enter") {
-      sendMessage();
-    }
-  });
+  if (chatInput) {
+    chatInput.addEventListener(
+      "keydown",
+      function (event) {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          sendMessage();
+        }
+      }
+    );
+  }
 
   // =========================
-  // Leave Room
+  // LEAVE ROOM
   // =========================
 
-  const leaveRoomButton = document.getElementById("leaveRoomButton");
-
-  leaveRoomButton.addEventListener("click", function () {
-    window.location.href = "/home";
-  });
-
-  // =========================
-  // Image
-  // =========================
-
-  const imageButton = document.getElementById("imageButton");
-  const imageInput = document.getElementById("imageInput");
-
-  imageButton.addEventListener("click", function () {
-    imageInput.click();
-  });
-
-  imageInput.addEventListener("change", function () {
-    const file = this.files[0];
-
-    if (!file) {
+  async function leaveRoom() {
+    if (!roomId) {
+      window.location.href = "/home";
       return;
     }
 
-    const imageUrl = URL.createObjectURL(file);
+    const confirmed = confirm(
+      "คุณต้องการออกจากห้องนี้ใช่หรือไม่?"
+    );
 
-    const messageElement = document.createElement("div");
+    if (!confirmed) {
+      return;
+    }
 
-    messageElement.className = "message";
+    try {
+      leaveRoomButton.disabled = true;
 
-    messageElement.innerHTML = `
-    <strong>Singha</strong>
+      const response = await fetch(
+        `/api/chats/${roomId}/leave`,
+        {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+          },
+          credentials: "include",
+        }
+      );
 
-    <img
-      src="${imageUrl}"
-      alt="รูปภาพ"
-      style="
-        max-width: 200px;
-        border-radius: 10px;
-        margin-top: 5px;
-      "
-    >
-  `;
+      if (!response.ok) {
+        throw new Error(
+          `ออกจากห้องไม่สำเร็จ (${response.status})`
+        );
+      }
 
-    chatMessages.appendChild(messageElement);
+      window.location.href = "/home";
 
-    chatMessages.scrollTop = chatMessages.scrollHeight;
+    } catch (error) {
+      console.error("ออกจากห้องล้มเหลว:", error);
 
-    imageInput.value = "";
-  });
+      leaveRoomButton.disabled = false;
+
+      alert("ไม่สามารถออกจากห้องได้");
+    }
+  }
+
+  if (leaveRoomButton) {
+    leaveRoomButton.addEventListener(
+      "click",
+      leaveRoom
+    );
+  }
+
+  // =========================
+  // IMAGE
+  // =========================
+
+  if (imageButton && imageInput) {
+    imageButton.addEventListener(
+      "click",
+      function () {
+        imageInput.click();
+      }
+    );
+
+    imageInput.addEventListener(
+      "change",
+      function () {
+        const file = this.files[0];
+
+        if (!file) {
+          return;
+        }
+
+
+        const imageUrl =
+          URL.createObjectURL(file);
+
+        const messageElement =
+          document.createElement("div");
+
+        messageElement.className =
+          "message";
+
+        messageElement.innerHTML = `
+          <strong>คุณ</strong>
+
+          <img
+            src="${escapeHtml(imageUrl)}"
+            alt="รูปภาพ"
+            style="
+              max-width: 200px;
+              border-radius: 10px;
+              margin-top: 5px;
+            "
+          />
+        `;
+
+        chatMessages.appendChild(
+          messageElement
+        );
+
+        scrollChatToBottom();
+
+        imageInput.value = "";
+      }
+    );
+  }
+
+  // =========================
+  // SCROLL CHAT
+  // =========================
+
+  function scrollChatToBottom() {
+    if (!chatMessages) return;
+
+    chatMessages.scrollTop =
+      chatMessages.scrollHeight;
+  }
+
+  // =========================
+  // START
+  // =========================
+
+  loadRoom();
 });
