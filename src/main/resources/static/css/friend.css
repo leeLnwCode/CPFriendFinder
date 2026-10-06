@@ -1,0 +1,717 @@
+/* =========================================================
+   CP FRIEND FINDER
+   FRIEND PAGE
+========================================================= */
+
+* {
+  box-sizing: border-box;
+}
+
+.friend-content {
+  padding: 28px 34px 40px;
+  overflow: hidden;
+}
+
+/* =========================================================
+   PAGE
+========================================================= */
+
+.friend-page {
+  width: 100%;
+  height: calc(100vh - 68px);
+
+  display: grid;
+  grid-template-columns: 335px minmax(0, 1fr);
+
+  gap: 28px;
+}
+
+/* =========================================================
+   FRIEND LIST
+========================================================= */
+
+.friend-list-section {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.friend-list-header {
+  margin-bottom: 20px;
+}
+
+.friend-list-header h1 {
+  margin: 0;
+  font-size: 25px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--text-color);
+}
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+.friend-search {
+  width: 100%;
+  height: 44px;
+
+  display: flex;
+  align-items: center;
+
+  padding: 0 14px;
+
+  background: var(--surface-color);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+
+  margin-bottom: 20px;
+}
+
+.search-icon {
+  width: 22px;
+  min-width: 22px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 25px;
+  color: var(--secondary-text-color);
+
+  line-height: 1;
+}
+
+.friend-search input {
+  width: 100%;
+
+  border: none;
+  outline: none;
+
+  background: transparent;
+  color: var(--text-color);
+
+  font-family: inherit;
+  font-size: 14px;
+
+  padding: 0 0 0 8px;
+}
+
+.friend-search input::placeholder {
+  color: var(--secondary-text-color);
+}
+
+/* =========================================================
+   FRIEND LIST
+========================================================= */
+
+.friend-list {
+  display: flex;
+  flex-direction: column;
+
+  gap: 10px;
+
+  overflow-y: auto;
+
+  padding-right: 5px;
+}
+
+.friend-list::-webkit-scrollbar {
+  width: 5px;
+}
+
+.friend-list::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 10px;
+}
+
+/* =========================================================
+   FRIEND ITEM
+========================================================= */
+
+.friend-list-item {
+  width: 100%;
+  min-height: 60px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 12px;
+
+  padding: 9px 14px;
+
+  border: none;
+  border-radius: 20px;
+
+  background: var(--surface-color);
+
+  color: var(--text-color);
+
+  cursor: pointer;
+
+  text-align: left;
+
+  font-family: inherit;
+
+  transition:
+    background-color 0.2s ease,
+    transform 0.15s ease;
+}
+
+.friend-list-item:hover {
+  background: var(--hover-bg);
+}
+
+.friend-list-item.active {
+  background: var(--surface-color);
+}
+
+.friend-list-avatar {
+  width: 38px;
+  height: 38px;
+
+  min-width: 38px;
+
+  border-radius: 50%;
+
+  object-fit: cover;
+}
+
+.friend-list-info {
+  min-width: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 2px;
+}
+
+.friend-list-name {
+  font-size: 12px;
+  font-weight: 500;
+
+  color: var(--text-color);
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.friend-list-year {
+  font-size: 10px;
+
+  color: var(--secondary-text-color);
+}
+
+/* =========================================================
+   CHAT
+========================================================= */
+
+.chat-section {
+  min-width: 0;
+  min-height: 0;
+}
+
+.chat-container {
+  width: 100%;
+  height: 100%;
+
+  display: flex;
+  flex-direction: column;
+
+  background: var(--surface-color);
+
+  border-radius: 20px;
+
+  overflow: hidden;
+}
+
+/* =========================================================
+   CHAT HEADER
+========================================================= */
+
+.chat-header {
+  height: 68px;
+  min-height: 68px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 14px;
+
+  border-bottom: 1px solid var(--border-color);
+}
+
+.chat-user {
+  display: flex;
+  align-items: center;
+
+  gap: 10px;
+
+  min-width: 0;
+}
+
+.chat-user-avatar {
+  width: 38px;
+  height: 38px;
+
+  border-radius: 50%;
+
+  object-fit: cover;
+
+  flex-shrink: 0;
+}
+
+.chat-user-info {
+  min-width: 0;
+}
+
+.chat-user-name {
+  font-size: 13px;
+  font-weight: 500;
+
+  color: var(--text-color);
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.chat-user-year {
+  margin-top: 2px;
+
+  font-size: 10px;
+
+  color: var(--secondary-text-color);
+}
+
+/* =========================================================
+   CHAT ACTIONS
+========================================================= */
+
+.chat-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.chat-icon-button {
+  width: 34px;
+  height: 34px;
+
+  padding: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  background: transparent;
+
+  border-radius: 50%;
+
+  cursor: pointer;
+}
+
+.chat-icon-button:hover {
+  background: var(--hover-bg);
+}
+
+.chat-icon-button img {
+  width: 24px;
+  height: 24px;
+
+  object-fit: contain;
+
+  display: block;
+}
+
+/* =========================================================
+   CHAT MESSAGES
+========================================================= */
+
+.chat-messages {
+  flex: 1;
+
+  min-height: 0;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 12px;
+
+  padding: 24px 14px;
+
+  overflow-y: auto;
+}
+
+.chat-messages::-webkit-scrollbar {
+  width: 5px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: 10px;
+}
+
+/* =========================================================
+   MESSAGE ROW
+========================================================= */
+
+.message-row {
+  display: flex;
+  align-items: flex-end;
+
+  gap: 8px;
+
+  max-width: 80%;
+}
+
+.message-row.received {
+  align-self: flex-start;
+}
+
+.message-row.sent {
+  align-self: flex-end;
+}
+
+/* =========================================================
+   MESSAGE AVATAR
+========================================================= */
+
+.message-avatar {
+  width: 24px;
+  height: 24px;
+
+  min-width: 24px;
+
+  border-radius: 50%;
+
+  object-fit: cover;
+}
+
+/* =========================================================
+   MESSAGE BUBBLE
+========================================================= */
+
+.message-bubble {
+  max-width: 100%;
+
+  padding: 8px 12px;
+
+  border-radius: 14px;
+
+  font-size: 12px;
+  line-height: 1.4;
+
+  word-break: break-word;
+}
+
+.message-row.received .message-bubble {
+  background: var(--hover-bg);
+  color: var(--text-color);
+
+  border-top-left-radius: 5px;
+}
+
+.message-row.sent .message-bubble {
+  background: var(--active-text);
+  color: #ffffff;
+
+  border-top-right-radius: 5px;
+}
+
+/* =========================================================
+   CHAT INPUT
+========================================================= */
+
+.chat-input-area {
+  min-height: 52px;
+
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  padding: 7px 12px;
+
+  border-top: 1px solid var(--border-color);
+}
+
+.chat-input-area input {
+  flex: 1;
+
+  min-width: 0;
+
+  height: 32px;
+
+  border: 1px solid var(--border-color);
+  border-radius: 17px;
+
+  outline: none;
+
+  padding: 0 13px;
+
+  background: var(--input-bg);
+  color: var(--text-color);
+
+  font-family: inherit;
+  font-size: 12px;
+}
+
+.chat-input-area input:focus {
+  border-color: var(--active-text);
+}
+
+.chat-input-area input::placeholder {
+  color: var(--secondary-text-color);
+}
+
+/* =========================================================
+   ATTACH
+========================================================= */
+
+.attach-button {
+  width: 28px;
+  height: 28px;
+
+  min-width: 28px;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  border: none;
+  background: transparent;
+
+  color: var(--text-color);
+
+  font-size: 21px;
+
+  cursor: pointer;
+}
+
+/* =========================================================
+   IMAGE BUTTON
+========================================================= */
+
+.image-button {
+  width: 34px;
+  height: 34px;
+
+  min-width: 34px;
+
+  padding: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border: none;
+  background: transparent;
+
+  border-radius: 8px;
+
+  cursor: pointer;
+}
+
+.image-button:hover {
+  background: var(--hover-bg);
+}
+
+.image-button img {
+  width: 30px;
+  height: 30px;
+
+  object-fit: contain;
+
+  display: block;
+}
+
+.image-button .theme-icon {
+  width: 30px;
+  height: 30px;
+}
+
+/* =========================================================
+   SEND
+========================================================= */
+
+.send-button {
+  height: 30px;
+
+  padding: 0 16px;
+
+  border: none;
+  border-radius: 16px;
+
+  background: var(--active-text);
+  color: #ffffff;
+
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 500;
+
+  cursor: pointer;
+}
+
+.send-button:hover {
+  opacity: 0.88;
+}
+
+/* =========================================================
+   EMPTY SEARCH
+========================================================= */
+
+.friend-empty {
+  padding: 30px 10px;
+
+  text-align: center;
+
+  color: var(--secondary-text-color);
+
+  font-size: 14px;
+}
+
+/* =========================================================
+   CHAT MORE MENU
+========================================================= */
+
+.chat-more {
+  position: relative;
+}
+
+.chat-more-menu {
+  position: absolute;
+
+  top: 40px;
+  right: 0;
+
+  width: 150px;
+
+  background: var(--surface-color);
+
+  border: 1px solid var(--border-color);
+
+  border-radius: 10px;
+
+  box-shadow: 0 6px 20px var(--shadow-color);
+
+  padding: 6px;
+
+  display: none;
+
+  z-index: 20;
+}
+
+.chat-more-menu.show {
+  display: block;
+}
+
+.chat-more-menu button {
+  width: 100%;
+
+  height: 38px;
+
+  border: none;
+  border-radius: 7px;
+
+  background: transparent;
+
+  color: var(--text-color);
+
+  text-align: left;
+
+  padding: 0 12px;
+
+  font-family: inherit;
+  font-size: 13px;
+
+  cursor: pointer;
+}
+
+.chat-more-menu button:hover {
+  background: var(--hover-bg);
+}
+
+/* =========================================================
+   SENT IMAGE
+========================================================= */
+
+.sent-chat-image {
+  display: block;
+
+  max-width: 220px;
+  max-height: 220px;
+
+  width: auto;
+  height: auto;
+
+  border-radius: 10px;
+
+  object-fit: contain;
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 1100px) {
+  .friend-page {
+    grid-template-columns: 280px minmax(0, 1fr);
+    gap: 20px;
+  }
+
+  .friend-content {
+    padding-left: 25px;
+    padding-right: 25px;
+  }
+}
+
+@media (max-width: 800px) {
+  .friend-page {
+    height: auto;
+
+    grid-template-columns: 1fr;
+
+    gap: 20px;
+  }
+
+  .friend-list-section {
+    max-height: 360px;
+  }
+
+  .chat-section {
+    height: 600px;
+  }
+}
+
+@media (max-width: 650px) {
+  .friend-content {
+    padding: 20px 16px 30px;
+    overflow: visible;
+  }
+
+  .friend-list-section {
+    max-height: none;
+  }
+
+  .friend-list {
+    max-height: 300px;
+  }
+
+  .chat-section {
+    height: 550px;
+  }
+
+  .chat-actions {
+    gap: 4px;
+  }
+
+  .message-row {
+    max-width: 90%;
+  }
+}

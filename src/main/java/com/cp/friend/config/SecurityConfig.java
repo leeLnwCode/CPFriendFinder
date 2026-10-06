@@ -33,7 +33,7 @@ public class SecurityConfig {
                                                                 "/register", 
                                                                 "/room",
                                                                 "/setting",
-                                                                "/notification")
+                                                                "/notification", "/friend")
                                                 .permitAll()
 
                                                 .requestMatchers(

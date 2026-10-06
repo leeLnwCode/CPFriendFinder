@@ -1,9 +1,9 @@
 .home-content {
-    flex: 1;
-    min-width: 0;
+  flex: 1;
+  min-width: 0;
 
-    background: var(--bg-color);
-    color: var(--text-color);
+  background: var(--bg-color);
+  color: var(--text-color);
 }
 
 /* ================= BANNER ================= */

@@ -36,4 +36,8 @@ public class PageController {
         return "notification";
     }
 
+    @GetMapping("/friend")
+    public String friend() {
+        return "friend";
+    }
 }
