@@ -1,4 +1,4 @@
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", async () => {
   const friendSearch = document.getElementById("friendSearch");
   const friendList = document.getElementById("friendList");
 
@@ -18,34 +18,14 @@ document.addEventListener("DOMContentLoaded", () => {
   const imageButton = document.getElementById("imageButton");
   const imageInput = document.getElementById("imageInput");
 
-  /*
-   * =========================================================
-   * STATE
-   * =========================================================
-   */
-
-  let currentUserId = null;
-
   let currentFriendId = null;
   let currentRoomId = null;
-
   let currentFriendName = "";
   let currentFriendImage = "/images/man.jpg";
+  let currentUserId = null;
 
   let socket = null;
   let stompConnected = false;
-
-  /*
-   * ใช้สำหรับป้องกันข้อความซ้ำ
-   * จาก REST response + WebSocket
-   */
-  const renderedMessageIds = new Set();
-
-  /*
-   * ใช้ระบุ connection ปัจจุบัน
-   * ป้องกัน WebSocket ห้องเก่ามารบกวนห้องใหม่
-   */
-  let roomConnectionToken = 0;
 
   /*
    * =========================================================
@@ -57,9 +37,7 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       const response = await fetch("/api/users/me", {
         method: "GET",
-        headers: {
-          Accept: "application/json",
-        },
+        headers: { Accept: "application/json" },
         credentials: "include",
       });
 
@@ -70,20 +48,9 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       const user = await response.json();
-
-      /*
-       * รองรับทั้ง id และ userId
-       */
       currentUserId = user.id || user.userId || user.user?.id || null;
-
-      if (!currentUserId) {
-        console.warn("ไม่พบ user ID จาก /api/users/me", user);
-      } else {
-        console.log("Current User ID:", currentUserId);
-      }
     } catch (error) {
       console.error("โหลด current user ล้มเหลว:", error);
-
       currentUserId = null;
     }
   }
@@ -114,9 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       if (!friends || friends.length === 0) {
         friendList.innerHTML = `
-          <div class="friend-empty">
-            ยังไม่มีเพื่อน
-          </div>
+          <div class="friend-empty">ยังไม่มีเพื่อน</div>
         `;
 
         clearChat();
@@ -156,30 +121,23 @@ document.addEventListener("DOMContentLoaded", () => {
 
     friendItem.className = "friend-list-item";
 
-    /*
-     * FriendResponse อาจใช้ friendId หรือ id
-     */
     const friendId = friend.friendId || friend.id;
 
     const fullname =
       `${friend.firstname || ""} ${friend.lastname || ""}`.trim() ||
       "ไม่ระบุชื่อ";
 
-    const image = friend.imageUrl || friend.image_url || "/images/man.jpg";
+    const image = friend.imageUrl || "/images/man.jpg";
 
     friendItem.dataset.id = friendId || "";
-
     friendItem.dataset.name = fullname;
-
     friendItem.dataset.year =
       friend.year !== null && friend.year !== undefined
         ? `ปี ${friend.year}`
         : "";
 
     friendItem.dataset.image = image;
-
     friendItem.dataset.interests = formatInterests(friend.interests);
-
     friendItem.dataset.bio = friend.bio || "";
 
     friendItem.innerHTML = `
@@ -221,16 +179,6 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    /*
-     * ปิด WebSocket ห้องเดิมก่อน
-     */
-    disconnectRoomWebSocket();
-
-    /*
-     * สร้าง token ใหม่สำหรับการเปิดห้อง
-     */
-    const connectionToken = ++roomConnectionToken;
-
     document.querySelectorAll(".friend-list-item").forEach((item) => {
       item.classList.remove("active");
     });
@@ -238,48 +186,24 @@ document.addEventListener("DOMContentLoaded", () => {
     friend.classList.add("active");
 
     currentFriendId = friendId;
-
     currentFriendName = friend.dataset.name || "เพื่อน";
-
     currentFriendImage = friend.dataset.image || "/images/man.jpg";
 
-    currentRoomId = null;
-
-    /*
-     * Header
-     */
     chatUserName.textContent = currentFriendName;
-
     chatUserYear.textContent = friend.dataset.year || "";
-
     chatUserImage.src = currentFriendImage;
 
     /*
-     * =====================================================
-     * FRIEND PROFILE POPUP
-     * =====================================================
+     * ข้อมูลสำหรับ Friend Profile Popup
      */
-
     chatUserProfile.dataset.profile = "";
-
     chatUserProfile.dataset.id = currentFriendId;
-
     chatUserProfile.dataset.name = currentFriendName;
-
     chatUserProfile.dataset.year = friend.dataset.year || "";
-
     chatUserProfile.dataset.image = currentFriendImage;
-
     chatUserProfile.dataset.interests = friend.dataset.interests || "";
-
     chatUserProfile.dataset.bio = friend.dataset.bio || "";
-
     chatUserProfile.dataset.status = "friend";
-
-    /*
-     * Clear message ID cache
-     */
-    renderedMessageIds.clear();
 
     chatMessages.innerHTML = `
       <div class="friend-empty">
@@ -291,15 +215,9 @@ document.addEventListener("DOMContentLoaded", () => {
 
     try {
       /*
-       * =====================================================
-       * GET /api/chats/direct/{friendId}
-       *
-       * Backend จะ:
-       * - คืนห้องเดิม ถ้ามี
-       * - สร้างห้องใหม่ ถ้ายังไม่มี
-       * =====================================================
+       * ถ้ามีห้องอยู่แล้ว Backend จะคืนห้องเดิม
+       * ถ้ายังไม่มี Backend จะสร้างห้องใหม่
        */
-
       const response = await fetch(`/api/chats/direct/${friendId}`, {
         method: "POST",
         headers: {
@@ -317,15 +235,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       const room = await response.json();
-
-      /*
-       * ถ้าผู้ใช้กดเปลี่ยนเพื่อน
-       * ระหว่างที่ request เดิมยังไม่เสร็จ
-       * ให้หยุด request เดิม
-       */
-      if (connectionToken !== roomConnectionToken) {
-        return;
-      }
 
       /*
        * ChatRoomSummaryResponse:
@@ -351,32 +260,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
       console.log("เปิด Direct Room:", currentRoomId);
 
-      /*
-       * โหลดประวัติข้อความก่อน
-       */
       await loadMessages();
 
-      /*
-       * ตรวจอีกครั้งว่าผู้ใช้ยังอยู่ห้องเดิม
-       */
-      if (connectionToken !== roomConnectionToken) {
-        return;
-      }
-
-      /*
-       * เปิด WebSocket
-       */
-      connectRoomWebSocket(connectionToken);
+      connectRoomWebSocket();
     } catch (error) {
       console.error("เปิดห้องแชทล้มเหลว:", error);
-
-      /*
-       * ถ้าเป็น request ห้องเก่า
-       * ไม่ต้องเขียนทับห้องใหม่
-       */
-      if (connectionToken !== roomConnectionToken) {
-        return;
-      }
 
       chatMessages.innerHTML = `
         <div class="friend-empty">
@@ -416,11 +304,6 @@ document.addEventListener("DOMContentLoaded", () => {
       const messages = await response.json();
 
       chatMessages.innerHTML = "";
-
-      /*
-       * reset กันข้อความซ้ำ
-       */
-      renderedMessageIds.clear();
 
       if (!messages || messages.length === 0) {
         chatMessages.innerHTML = `
@@ -468,14 +351,8 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    /*
-     * เก็บ room ที่กำลังส่ง
-     * ป้องกันผู้ใช้เปลี่ยนห้องระหว่าง request
-     */
-    const sendingRoomId = currentRoomId;
-
     try {
-      const response = await fetch(`/api/chats/${sendingRoomId}/messages`, {
+      const response = await fetch(`/api/chats/${currentRoomId}/messages`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -500,45 +377,34 @@ document.addEventListener("DOMContentLoaded", () => {
       const message = await response.json();
 
       /*
-       * ถ้า WebSocket ยังไม่ connected
-       * จะไม่มี broadcast ให้เรา
+       * ถ้า WebSocket ทำงานปกติ
+       * ข้อความจะถูกส่งกลับมาทาง WebSocket
        *
-       * ดังนั้นต้องแสดง response เอง
+       * ถ้า WebSocket ยังไม่ทัน connect
+       * ให้แสดง response ที่ได้จาก POST เอง
        */
-      if (!stompConnected && sendingRoomId === currentRoomId) {
+      if (!stompConnected) {
+        removeEmptyMessage();
         appendMessage(message);
+        scrollToBottom();
       }
-
-      /*
-       * ถ้า WebSocket connected:
-       *
-       * Backend จะ broadcast message
-       * ผ่าน /topic/rooms/{roomId}
-       *
-       * แล้ว appendMessage()
-       * จะถูกเรียกจาก WebSocket
-       */
 
       messageInput.value = "";
       messageInput.focus();
     } catch (error) {
       console.error("ส่งข้อความล้มเหลว:", error);
-
       alert("ไม่สามารถส่งข้อความได้");
     }
   });
 
   /*
-   * =========================================================
-   * ENTER = SEND
-   * SHIFT + ENTER = NEW LINE
-   * =========================================================
+   * Enter = ส่ง
+   * Shift + Enter = ขึ้นบรรทัดใหม่
    */
 
   messageInput.addEventListener("keydown", (event) => {
     if (event.key === "Enter" && !event.shiftKey) {
       event.preventDefault();
-
       messageForm.requestSubmit();
     }
   });
@@ -555,22 +421,10 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     /*
-     * ตอนนี้หน้า Friend รองรับ TEXT
+     * ถ้าไม่ใช่ TEXT ตอนนี้ยังไม่ render
      */
     if (message.messageType && message.messageType !== "TEXT") {
       return;
-    }
-
-    /*
-     * ถ้ามี ID และเคย render แล้ว
-     * ไม่ต้อง render ซ้ำ
-     */
-    if (message.id && renderedMessageIds.has(String(message.id))) {
-      return;
-    }
-
-    if (message.id) {
-      renderedMessageIds.add(String(message.id));
     }
 
     removeEmptyMessage();
@@ -578,24 +432,14 @@ document.addEventListener("DOMContentLoaded", () => {
     const wrapper = document.createElement("div");
 
     /*
-     * =====================================================
-     * แยกข้อความของเรา / ของเพื่อน
+     * ใช้ senderId เพื่อแยกข้อความของเรา / ของเพื่อน
      *
-     * ChatMessageResponse:
-     *
-     * senderId
-     * senderFirstname
-     * senderLastname
-     * senderImageUrl
-     * content
-     * messageType
-     * createdAt
-     * =====================================================
+     * ถ้าไม่มี current user id
+     * ใช้ class received เป็นค่าเริ่มต้น
      */
-
     const isMine =
-      currentUserId &&
-      message.senderId &&
+      currentUserId != null &&
+      message.senderId != null &&
       String(message.senderId) === String(currentUserId);
 
     wrapper.className = isMine
@@ -627,57 +471,33 @@ document.addEventListener("DOMContentLoaded", () => {
    * =========================================================
    * WEBSOCKET / STOMP
    * =========================================================
-   *
-   * Backend จริง:
-   *
-   * REST POST
-   *   /api/chats/{roomId}/messages
-   *
-   * Backend broadcast:
-   *   /topic/rooms/{roomId}
-   *
-   * ดังนั้นตรงนี้ใช้ WebSocket
-   * สำหรับ CONNECT + SUBSCRIBE + RECEIVE
-   *
-   * ไม่ส่งข้อความผ่าน /app
-   * =========================================================
    */
 
-  function connectRoomWebSocket(connectionToken) {
+  function connectRoomWebSocket() {
     if (!currentRoomId) {
       return;
     }
 
     /*
-     * ถ้าเป็น connection เก่า
-     * ไม่ต้องเปิด
+     * ปิด connection เก่าก่อน
      */
-    if (connectionToken !== roomConnectionToken) {
-      return;
-    }
+    if (socket) {
+      try {
+        socket.close();
+      } catch (error) {
+        console.warn("ปิด WebSocket เดิมไม่ได้:", error);
+      }
 
-    disconnectRoomWebSocket();
+      socket = null;
+    }
 
     stompConnected = false;
 
-    const roomId = currentRoomId;
-
-    const socketUrl = `${
-      window.location.protocol === "https:" ? "wss" : "ws"
-    }://${window.location.host}/ws`;
-
-    socket = new WebSocket(socketUrl);
+    socket = new WebSocket(
+      `${window.location.protocol === "https:" ? "wss" : "ws"}://${window.location.host}/ws`,
+    );
 
     socket.onopen = () => {
-      /*
-       * ตรวจว่า connection นี้
-       * ยังเป็นห้องปัจจุบันหรือไม่
-       */
-      if (connectionToken !== roomConnectionToken) {
-        socket.close();
-        return;
-      }
-
       console.log("Friend WebSocket connected");
 
       sendStompFrame("CONNECT", {
@@ -687,14 +507,6 @@ document.addEventListener("DOMContentLoaded", () => {
     };
 
     socket.onmessage = (event) => {
-      /*
-       * ถ้าเป็น connection เก่า
-       * ไม่รับ message
-       */
-      if (connectionToken !== roomConnectionToken) {
-        return;
-      }
-
       const frame = parseStompFrame(event.data);
 
       if (!frame) {
@@ -702,22 +514,16 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       /*
-       * =====================================================
        * STOMP CONNECTED
-       * =====================================================
        */
-
       if (frame.command === "CONNECTED") {
         stompConnected = true;
 
         console.log("Friend STOMP connected");
 
-        /*
-         * Subscribe ห้องปัจจุบัน
-         */
         sendStompFrame("SUBSCRIBE", {
-          id: `friend-room-${roomId}`,
-          destination: `/topic/rooms/${roomId}`,
+          id: `friend-room-${currentRoomId}`,
+          destination: `/topic/rooms/${currentRoomId}`,
           ack: "auto",
         });
 
@@ -725,11 +531,8 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       /*
-       * =====================================================
        * STOMP MESSAGE
-       * =====================================================
        */
-
       if (frame.command === "MESSAGE") {
         try {
           const message = JSON.parse(frame.body);
@@ -746,13 +549,6 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
           }
 
-          /*
-           * เพิ่มข้อความ
-           *
-           * appendMessage()
-           * มี renderedMessageIds
-           * ป้องกัน duplicate
-           */
           appendMessage(message);
         } catch (error) {
           console.error("อ่าน WebSocket message ไม่ได้:", error);
@@ -762,56 +558,14 @@ document.addEventListener("DOMContentLoaded", () => {
 
     socket.onerror = (error) => {
       console.error("Friend WebSocket error:", error);
-
       stompConnected = false;
     };
 
     socket.onclose = () => {
       console.log("Friend WebSocket disconnected");
-
       stompConnected = false;
     };
   }
-
-  /*
-   * =========================================================
-   * DISCONNECT WEBSOCKET
-   * =========================================================
-   */
-
-  function disconnectRoomWebSocket() {
-    stompConnected = false;
-
-    if (!socket) {
-      return;
-    }
-
-    try {
-      /*
-       * ถ้า STOMP connected
-       * ส่ง DISCONNECT ก่อนปิด
-       */
-      if (socket.readyState === WebSocket.OPEN && stompConnected) {
-        sendStompFrame("DISCONNECT");
-      }
-    } catch (error) {
-      console.warn("ส่ง STOMP DISCONNECT ไม่ได้:", error);
-    }
-
-    try {
-      socket.close();
-    } catch (error) {
-      console.warn("ปิด WebSocket เดิมไม่ได้:", error);
-    }
-
-    socket = null;
-  }
-
-  /*
-   * =========================================================
-   * SEND STOMP FRAME
-   * =========================================================
-   */
 
   function sendStompFrame(command, headers = {}, body = "") {
     if (!socket || socket.readyState !== WebSocket.OPEN) {
@@ -831,12 +585,6 @@ document.addEventListener("DOMContentLoaded", () => {
     socket.send(frame);
   }
 
-  /*
-   * =========================================================
-   * PARSE STOMP FRAME
-   * =========================================================
-   */
-
   function parseStompFrame(data) {
     if (!data) {
       return null;
@@ -851,7 +599,6 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     const headerPart = cleanData.substring(0, separatorIndex);
-
     let body = cleanData.substring(separatorIndex + 2);
 
     body = body.replace(/\0+$/, "");
@@ -870,7 +617,6 @@ document.addEventListener("DOMContentLoaded", () => {
       }
 
       const key = line.substring(0, index);
-
       const value = line.substring(index + 1);
 
       headers[key] = value;
@@ -917,9 +663,7 @@ document.addEventListener("DOMContentLoaded", () => {
         emptyMessage = document.createElement("div");
 
         emptyMessage.id = "friendEmpty";
-
         emptyMessage.className = "friend-empty";
-
         emptyMessage.textContent = "ไม่พบเพื่อนที่ค้นหา";
 
         friendList.appendChild(emptyMessage);
@@ -956,6 +700,9 @@ document.addEventListener("DOMContentLoaded", () => {
    */
 
   unfriendButton.addEventListener("click", async () => {
+    if (!currentFriendId) {
+      return;
+    }
 
     const confirmUnfriend = confirm(
       `ต้องการเลิกเป็นเพื่อนกับ ${currentFriendName} หรือไม่?`,
@@ -982,43 +729,33 @@ document.addEventListener("DOMContentLoaded", () => {
         );
       }
 
-      /*
-       * ปิด WebSocket
-       */
-      roomConnectionToken++;
-
-      disconnectRoomWebSocket();
+      if (socket) {
+        try {
+          socket.close();
+        } catch (error) {
+          console.warn(error);
+        }
+      }
 
       currentFriendId = null;
-
       currentRoomId = null;
-
-      currentFriendName = "";
-
-      currentFriendImage = "/images/man.jpg";
-
-      renderedMessageIds.clear();
 
       await loadFriends();
 
       chatMoreMenu.classList.remove("show");
     } catch (error) {
       console.error("เลิกเป็นเพื่อนล้มเหลว:", error);
-
       alert("ไม่สามารถเลิกเป็นเพื่อนได้");
     }
   });
 
   /*
    * =========================================================
-   * IMAGE PREVIEW
+   * IMAGE
    * =========================================================
    *
-   * ตอนนี้เป็น preview prototype
-   *
-   * ยังไม่ได้ POST รูปเข้า backend
-   * เพราะ endpoint upload รูปโดยตรงยังไม่ได้กำหนด
-   * =========================================================
+   * ตอนนี้ยังเป็น preview prototype
+   * เพราะ backend ยังไม่มี endpoint upload image โดยตรง
    */
 
   imageButton.addEventListener("click", () => {
@@ -1034,9 +771,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!file.type.startsWith("image/")) {
       alert("กรุณาเลือกไฟล์รูปภาพ");
-
       imageInput.value = "";
-
       return;
     }
 
@@ -1047,19 +782,13 @@ document.addEventListener("DOMContentLoaded", () => {
 
       const wrapper = document.createElement("div");
 
-      /*
-       * รูปนี้เป็นของเรา
-       */
       wrapper.className = "friend-chat-message sent";
 
       const image = document.createElement("img");
 
       image.src = reader.result;
-
       image.alt = "รูปภาพที่ส่ง";
-
       image.style.maxWidth = "240px";
-
       image.style.borderRadius = "12px";
 
       wrapper.appendChild(image);
@@ -1081,41 +810,15 @@ document.addEventListener("DOMContentLoaded", () => {
    */
 
   function clearChat() {
-    roomConnectionToken++;
-
-    disconnectRoomWebSocket();
-
     currentFriendId = null;
-
     currentRoomId = null;
 
-    currentFriendName = "";
-
-    currentFriendImage = "/images/man.jpg";
-
-    renderedMessageIds.clear();
-
     chatUserName.textContent = "เลือกเพื่อน";
-
     chatUserYear.textContent = "";
-
     chatUserImage.src = "/images/man.jpg";
 
     chatUserProfile.removeAttribute("data-profile");
-
     chatUserProfile.removeAttribute("data-id");
-
-    chatUserProfile.removeAttribute("data-name");
-
-    chatUserProfile.removeAttribute("data-year");
-
-    chatUserProfile.removeAttribute("data-image");
-
-    chatUserProfile.removeAttribute("data-interests");
-
-    chatUserProfile.removeAttribute("data-bio");
-
-    chatUserProfile.removeAttribute("data-status");
 
     chatMessages.innerHTML = `
       <div class="friend-empty">
@@ -1166,340 +869,456 @@ document.addEventListener("DOMContentLoaded", () => {
 
   /*
    * =========================================================
-   * VIDEO CALL
+   * CALL UI ELEMENTS
    * =========================================================
    */
+  const voiceCallButton = document.getElementById("voiceCallButton");
+  const voiceCallOverlay = document.getElementById("voiceCallOverlay");
+  const voiceCallClose = document.getElementById("voiceCallClose");
+  const voiceCallEnd = document.getElementById("voiceCallEnd");
+  const voiceCallImage = document.getElementById("voiceCallImage");
+  const voiceCallName = document.getElementById("voiceCallName");
+  const voiceCallStatus = document.getElementById("voiceCallStatus");
+  const voiceCallMute = document.getElementById("voiceCallMute");
+  const voiceCallSpeaker = document.getElementById("voiceCallSpeaker");
+  const voiceCallAccept = document.getElementById("voiceCallAccept");
+  const voiceCallDecline = document.getElementById("voiceCallDecline");
+  const incomingVoiceActions = document.getElementById("incomingVoiceActions");
 
   const videoCallButton = document.getElementById("videoCallButton");
   const videoCallOverlay = document.getElementById("videoCallOverlay");
   const videoCallClose = document.getElementById("videoCallClose");
   const videoCallEnd = document.getElementById("videoCallEnd");
-
   const videoCallMute = document.getElementById("videoCallMute");
   const videoCallCamera = document.getElementById("videoCallCamera");
-
   const videoCallUserName = document.getElementById("videoCallUserName");
-
   const videoCallUserImage = document.getElementById("videoCallUserImage");
-
   const videoCallRemoteImage = document.getElementById("videoCallRemoteImage");
-
   const videoCallDuration = document.getElementById("videoCallDuration");
+  const videoCallAccept = document.getElementById("videoCallAccept");
+  const videoCallDecline = document.getElementById("videoCallDecline");
+  const incomingVideoActions = document.getElementById("incomingVideoActions");
+  const videoCallRemoteVideo = document.getElementById("videoCallRemoteVideo");
+  const videoCallLocalVideo = document.getElementById("videoCallLocalVideo");
 
-  let videoCallTimer = null;
-  let videoCallSeconds = 0;
-
+  let currentCallMode = null;
+  let incomingCallSignal = null;
   let microphoneMuted = false;
   let cameraOff = false;
+  let speakerMuted = false;
+  let callTimer = null;
+  let callSeconds = 0;
 
-  /*
-   * =========================================================
-   * OPEN VIDEO CALL
-   * =========================================================
-   */
+  function resetCallControls() {
+    microphoneMuted = false;
+    cameraOff = false;
+    speakerMuted = false;
 
-  if (videoCallButton) {
-    videoCallButton.addEventListener("click", () => {
-      /*
-       * ต้องเลือกเพื่อนก่อน
-       */
-      if (!currentFriendId) {
-        alert("กรุณาเลือกเพื่อนก่อน");
-        return;
-      }
+    [voiceCallMute, voiceCallSpeaker, videoCallMute, videoCallCamera].forEach(
+      (button) => {
+        button?.classList.remove("muted");
+      },
+    );
 
-      /*
-       * ใช้ข้อมูลเพื่อนที่มีอยู่แล้ว
-       * จาก loadConversation()
-       */
-      const friendName = currentFriendName || "เพื่อน";
+    voiceCallMute
+      ?.querySelector(".voice-call-slash")
+      ?.style.setProperty("display", "none");
+    voiceCallSpeaker
+      ?.querySelector(".voice-call-slash")
+      ?.style.setProperty("display", "none");
+    videoCallMute
+      ?.querySelector(".video-call-slash")
+      ?.style.setProperty("display", "none");
+    videoCallCamera
+      ?.querySelector(".video-call-slash")
+      ?.style.setProperty("display", "none");
 
-      const friendImage = currentFriendImage || "/images/man.jpg";
-
-      /*
-       * ชื่อเพื่อน
-       */
-      if (videoCallUserName) {
-        videoCallUserName.textContent = friendName;
-      }
-
-      /*
-       * รูปเพื่อน
-       */
-      if (videoCallUserImage) {
-        videoCallUserImage.src = friendImage;
-      }
-
-      if (videoCallRemoteImage) {
-        videoCallRemoteImage.src = friendImage;
-      }
-
-      /*
-       * Reset เวลา
-       */
-      videoCallSeconds = 0;
-
-      if (videoCallDuration) {
-        videoCallDuration.textContent = "00:00";
-      }
-
-      /*
-       * Reset สถานะไมค์ / กล้อง
-       */
-      microphoneMuted = false;
-      cameraOff = false;
-
-      /*
-       * Reset ไอคอนไมค์
-       */
-      if (videoCallMute) {
-        videoCallMute.classList.remove("muted");
-
-        const muteIcon = videoCallMute.querySelector("img");
-
-        const muteSlash = videoCallMute.querySelector(".video-call-slash");
-
-        const muteLabel = videoCallMute.querySelector("span:last-child");
-
-        if (muteIcon) {
-          muteIcon.src = "/images/microphone-black-shape.png";
-        }
-
-        if (muteSlash) {
-          muteSlash.style.display = "none";
-        }
-
-        if (muteLabel) {
-          muteLabel.textContent = "ไมค์";
-        }
-      }
-
-      /*
-       * Reset ไอคอนกล้อง
-       */
-      if (videoCallCamera) {
-        videoCallCamera.classList.remove("muted");
-
-        const cameraIcon = videoCallCamera.querySelector("img");
-
-        const cameraSlash = videoCallCamera.querySelector(".video-call-slash");
-
-        const cameraLabel = videoCallCamera.querySelector("span:last-child");
-
-        if (cameraIcon) {
-          cameraIcon.src = "/images/video-camera.png";
-        }
-
-        if (cameraSlash) {
-          cameraSlash.style.display = "none";
-        }
-
-        if (cameraLabel) {
-          cameraLabel.textContent = "กล้อง";
-        }
-      }
-
-      /*
-       * เปิด Overlay
-       */
-      if (videoCallOverlay) {
-        videoCallOverlay.classList.add("show");
-        videoCallOverlay.classList.add("active");
-      }
-
-      /*
-       * เริ่มเวลา
-       */
-      startVideoCallTimer();
-    });
+    if (videoCallMute)
+      videoCallMute
+        .querySelector("span:last-child")
+        ?.replaceChildren(document.createTextNode("ไมค์"));
+    if (videoCallCamera)
+      videoCallCamera
+        .querySelector("span:last-child")
+        ?.replaceChildren(document.createTextNode("กล้อง"));
   }
 
-  /*
-   * =========================================================
-   * TIMER
-   * =========================================================
-   */
-
-  function startVideoCallTimer() {
-    stopVideoCallTimer();
-
-    videoCallTimer = setInterval(() => {
-      videoCallSeconds++;
-
-      const minutes = String(Math.floor(videoCallSeconds / 60)).padStart(
-        2,
-        "0",
-      );
-
-      const seconds = String(videoCallSeconds % 60).padStart(2, "0");
-
-      if (videoCallDuration) {
+  function startCallTimer() {
+    stopCallTimer();
+    callSeconds = 0;
+    if (videoCallDuration) videoCallDuration.textContent = "00:00";
+    callTimer = setInterval(() => {
+      callSeconds += 1;
+      const minutes = String(Math.floor(callSeconds / 60)).padStart(2, "0");
+      const seconds = String(callSeconds % 60).padStart(2, "0");
+      if (videoCallDuration)
         videoCallDuration.textContent = `${minutes}:${seconds}`;
-      }
     }, 1000);
   }
 
-  function stopVideoCallTimer() {
-    if (videoCallTimer) {
-      clearInterval(videoCallTimer);
+  function stopCallTimer() {
+    if (callTimer) clearInterval(callTimer);
+    callTimer = null;
+    callSeconds = 0;
+  }
 
-      videoCallTimer = null;
+  function openVoiceCallUI(name, image, status, incoming = false) {
+    closeVideoCall(false);
+    resetCallControls();
+    if (voiceCallName) voiceCallName.textContent = name || "เพื่อน";
+    if (voiceCallImage) voiceCallImage.src = image || "/images/man.jpg";
+    if (voiceCallStatus) voiceCallStatus.textContent = status || "";
+    if (incomingVoiceActions)
+      incomingVoiceActions.style.display = incoming ? "flex" : "none";
+    if (voiceCallEnd) voiceCallEnd.style.display = incoming ? "none" : "";
+    if (voiceCallMute) voiceCallMute.style.display = incoming ? "none" : "";
+    if (voiceCallSpeaker)
+      voiceCallSpeaker.style.display = incoming ? "none" : "";
+    voiceCallOverlay?.classList.add("show", "active");
+  }
+
+  function openVideoCallUI(name, image, status, incoming = false) {
+    closeVoiceCall(false);
+    resetCallControls();
+    if (videoCallUserName) videoCallUserName.textContent = name || "เพื่อน";
+    if (videoCallUserImage) videoCallUserImage.src = image || "/images/man.jpg";
+    if (videoCallRemoteImage)
+      videoCallRemoteImage.src = image || "/images/man.jpg";
+    if (videoCallDuration) videoCallDuration.textContent = "00:00";
+    if (incomingVideoActions)
+      incomingVideoActions.style.display = incoming ? "flex" : "none";
+    if (videoCallEnd) videoCallEnd.style.display = incoming ? "none" : "";
+    if (videoCallMute) videoCallMute.style.display = incoming ? "none" : "";
+    if (videoCallCamera) videoCallCamera.style.display = incoming ? "none" : "";
+    if (videoCallRemoteVideo) videoCallRemoteVideo.style.display = "none";
+    if (videoCallLocalVideo) videoCallLocalVideo.style.display = "none";
+    stopCallTimer();
+    videoCallOverlay?.classList.add("show", "active");
+  }
+
+  function closeVoiceCall(stopTimer = true) {
+    voiceCallOverlay?.classList.remove("show", "active");
+    if (incomingVoiceActions) incomingVoiceActions.style.display = "none";
+    if (voiceCallEnd) voiceCallEnd.style.display = "";
+    if (voiceCallMute) voiceCallMute.style.display = "";
+    if (voiceCallSpeaker) voiceCallSpeaker.style.display = "";
+    if (stopTimer) stopCallTimer();
+  }
+
+  function closeVideoCall(stopTimer = true) {
+    videoCallOverlay?.classList.remove("show", "active");
+    if (incomingVideoActions) incomingVideoActions.style.display = "none";
+    if (videoCallEnd) videoCallEnd.style.display = "";
+    if (videoCallMute) videoCallMute.style.display = "";
+    if (videoCallCamera) videoCallCamera.style.display = "";
+    if (stopTimer) stopCallTimer();
+  }
+
+  async function startVoiceCall() {
+    if (!currentFriendId || !currentRoomId)
+      return alert("กรุณาเลือกเพื่อนก่อนโทร");
+    try {
+      currentCallMode = "VOICE";
+      await CPCall.startFriendCall(currentFriendId, currentRoomId, "VOICE");
+      openVoiceCallUI(
+        currentFriendName,
+        currentFriendImage,
+        "กำลังโทร...",
+        false,
+      );
+    } catch (error) {
+      console.error("เริ่มโทรเสียงไม่สำเร็จ:", error);
+      currentCallMode = null;
+      alert("ไม่สามารถเริ่มโทรได้");
     }
   }
 
-  /*
-   * =========================================================
-   * CLOSE VIDEO CALL
-   * =========================================================
-   */
+  async function startVideoCall() {
+    if (!currentFriendId || !currentRoomId)
+      return alert("กรุณาเลือกเพื่อนก่อนโทร");
+    try {
+      currentCallMode = "VIDEO";
+      await CPCall.startFriendCall(currentFriendId, currentRoomId, "VIDEO");
+      openVideoCallUI(
+        currentFriendName,
+        currentFriendImage,
+        "กำลังโทร...",
+        false,
+      );
+    } catch (error) {
+      console.error("เริ่มวิดีโอคอลไม่สำเร็จ:", error);
+      currentCallMode = null;
+      alert("ไม่สามารถเริ่มโทรได้");
+    }
+  }
 
-  function closeVideoCall() {
-    if (videoCallOverlay) {
-      videoCallOverlay.classList.remove("show");
-      videoCallOverlay.classList.remove("active");
+  async function cancelOutgoingCall() {
+    try {
+      await CPCall.cancelFriendCall();
+    } catch (error) {
+      console.warn("ส่ง CANCEL ไม่สำเร็จ:", error);
+    }
+    currentCallMode = null;
+    incomingCallSignal = null;
+    closeVoiceCall();
+    closeVideoCall();
+  }
+
+  window.addEventListener("cp-call-connected", (event) => {
+    const mode = event.detail?.mode;
+    if (mode === "VOICE" && voiceCallStatus)
+      voiceCallStatus.textContent = "กำลังสนทนา";
+    if (mode === "VIDEO") startCallTimer();
+  });
+
+  window.addEventListener("cp-call-signal", async (event) => {
+    const signal = event.detail;
+    if (!signal) return;
+
+    if (signal.type === "INVITE") {
+      if (CPCall.isActive?.() || incomingCallSignal) return;
+      incomingCallSignal = signal;
+      const mode = signal.mode === "VIDEO" ? "VIDEO" : "VOICE";
+      currentCallMode = mode;
+      if (mode === "VIDEO") {
+        openVideoCallUI(
+          signal.fromName,
+          signal.fromImage,
+          "สายวิดีโอเข้า",
+          true,
+        );
+      } else {
+        openVoiceCallUI(
+          signal.fromName,
+          signal.fromImage,
+          "สายเรียกเข้า",
+          true,
+        );
+      }
+      return;
     }
 
-    stopVideoCallTimer();
+    if (signal.type === "ACCEPT") {
+      const roomId = signal.roomId || currentRoomId;
+      const mode =
+        signal.mode === "VIDEO" ? "VIDEO" : currentCallMode || "VOICE";
+      if (!roomId) return;
+      currentRoomId = roomId;
+      currentCallMode = mode;
+      try {
+        await CPCall.joinRoomCall(roomId, mode);
+        if (mode === "VOICE" && voiceCallStatus)
+          voiceCallStatus.textContent = "กำลังเชื่อมต่อ...";
+        if (mode === "VIDEO" && videoCallDuration)
+          videoCallDuration.textContent = "00:00";
+      } catch (error) {
+        console.error("เริ่ม WebRTC ไม่สำเร็จ:", error);
+        closeVoiceCall();
+        closeVideoCall();
+        currentCallMode = null;
+      }
+      return;
+    }
 
-    videoCallSeconds = 0;
-  }
+    if (signal.type === "DECLINE") {
+      if (currentCallMode === "VOICE") {
+        if (voiceCallStatus) voiceCallStatus.textContent = "ไม่รับสาย";
+        setTimeout(() => closeVoiceCall(), 500);
+      } else if (currentCallMode === "VIDEO") {
+        setTimeout(() => closeVideoCall(), 500);
+      }
+      if (CPCall.isActive?.()) CPCall.leaveCall();
+      currentCallMode = null;
+      incomingCallSignal = null;
+      stopCallTimer();
+      return;
+    }
 
-  /*
-   * =========================================================
-   * CLOSE BUTTON
-   * =========================================================
-   */
+    if (signal.type === "CANCEL") {
+      incomingCallSignal = null;
+      if (CPCall.isActive?.()) CPCall.leaveCall();
+      closeVoiceCall(false);
+      closeVideoCall(false);
+      currentCallMode = null;
+      currentRoomId = null;
+      stopCallTimer();
+    }
+  });
 
-  if (videoCallClose) {
-    videoCallClose.addEventListener("click", closeVideoCall);
-  }
+  if (voiceCallButton)
+    voiceCallButton.addEventListener("click", startVoiceCall);
+  if (videoCallButton)
+    videoCallButton.addEventListener("click", startVideoCall);
 
-  /*
-   * =========================================================
-   * END CALL
-   * =========================================================
-   */
+  if (voiceCallAccept)
+    voiceCallAccept.addEventListener("click", async () => {
+      if (!incomingCallSignal) return;
+      const signal = incomingCallSignal;
+      try {
+        await CPCall.acceptFriendCall(signal);
+        incomingCallSignal = null;
+        if (incomingVoiceActions) incomingVoiceActions.style.display = "none";
+        if (voiceCallEnd) voiceCallEnd.style.display = "";
+        if (voiceCallMute) voiceCallMute.style.display = "";
+        if (voiceCallSpeaker) voiceCallSpeaker.style.display = "";
+        if (voiceCallStatus) voiceCallStatus.textContent = "กำลังเชื่อมต่อ...";
+      } catch (error) {
+        console.error("รับสายเสียงไม่สำเร็จ:", error);
+        if (voiceCallStatus) voiceCallStatus.textContent = "เชื่อมต่อไม่สำเร็จ";
+      }
+    });
 
-  if (videoCallEnd) {
-    videoCallEnd.addEventListener("click", () => {
+  if (voiceCallDecline)
+    voiceCallDecline.addEventListener("click", async () => {
+      const signal = incomingCallSignal;
+      if (signal) {
+        try {
+          await CPCall.declineFriendCall(signal);
+        } catch (error) {
+          console.error("ปฏิเสธสายไม่สำเร็จ:", error);
+        }
+      }
+      incomingCallSignal = null;
+      currentCallMode = null;
+      closeVoiceCall();
+    });
+
+  if (videoCallAccept)
+    videoCallAccept.addEventListener("click", async () => {
+      if (!incomingCallSignal) return;
+      const signal = incomingCallSignal;
+      try {
+        await CPCall.acceptFriendCall(signal);
+        incomingCallSignal = null;
+        if (incomingVideoActions) incomingVideoActions.style.display = "none";
+        if (videoCallEnd) videoCallEnd.style.display = "";
+        if (videoCallMute) videoCallMute.style.display = "";
+        if (videoCallCamera) videoCallCamera.style.display = "";
+        if (videoCallDuration) videoCallDuration.textContent = "00:00";
+      } catch (error) {
+        console.error("รับสายวิดีโอไม่สำเร็จ:", error);
+        closeVideoCall();
+      }
+    });
+
+  if (videoCallDecline)
+    videoCallDecline.addEventListener("click", async () => {
+      const signal = incomingCallSignal;
+      if (signal) {
+        try {
+          await CPCall.declineFriendCall(signal);
+        } catch (error) {
+          console.error("ปฏิเสธวิดีโอไม่สำเร็จ:", error);
+        }
+      }
+      incomingCallSignal = null;
+      currentCallMode = null;
       closeVideoCall();
     });
-  }
 
-  /*
-   * =========================================================
-   * CLICK OUTSIDE
-   * =========================================================
-   */
-
-  if (videoCallOverlay) {
-    videoCallOverlay.addEventListener("click", (event) => {
-      if (event.target === videoCallOverlay) {
-        closeVideoCall();
-      }
+  if (voiceCallClose)
+    voiceCallClose.addEventListener("click", async () => {
+      if (CPCall.isActive?.()) CPCall.leaveCall();
+      else if (currentCallMode === "VOICE") await cancelOutgoingCall();
+      closeVoiceCall();
+      currentCallMode = null;
+      incomingCallSignal = null;
     });
-  }
 
-  /*
-   * =========================================================
-   * MUTE MICROPHONE
-   * =========================================================
-   */
+  if (voiceCallEnd)
+    voiceCallEnd.addEventListener("click", () => {
+      CPCall.leaveCall();
+      closeVoiceCall();
+      currentCallMode = null;
+      incomingCallSignal = null;
+    });
 
-  if (videoCallMute) {
+  if (videoCallClose)
+    videoCallClose.addEventListener("click", async () => {
+      if (CPCall.isActive?.()) CPCall.leaveCall();
+      else if (currentCallMode === "VIDEO") await cancelOutgoingCall();
+      closeVideoCall();
+      currentCallMode = null;
+      incomingCallSignal = null;
+    });
+
+  if (videoCallEnd)
+    videoCallEnd.addEventListener("click", () => {
+      CPCall.leaveCall();
+      closeVideoCall();
+      currentCallMode = null;
+      incomingCallSignal = null;
+    });
+
+  if (voiceCallMute)
+    voiceCallMute.addEventListener("click", () => {
+      const enabled = CPCall.toggleMicrophone();
+      microphoneMuted = !enabled;
+      voiceCallMute.classList.toggle("muted", microphoneMuted);
+      voiceCallMute
+        .querySelector(".voice-call-slash")
+        ?.style.setProperty("display", microphoneMuted ? "block" : "none");
+    });
+
+  if (voiceCallSpeaker)
+    voiceCallSpeaker.addEventListener("click", () => {
+      speakerMuted = !speakerMuted;
+      voiceCallSpeaker.classList.toggle("muted", speakerMuted);
+      voiceCallSpeaker
+        .querySelector(".voice-call-slash")
+        ?.style.setProperty("display", speakerMuted ? "block" : "none");
+      const audio = document.getElementById("remoteCallAudio");
+      if (audio) audio.muted = speakerMuted;
+    });
+
+  if (videoCallMute)
     videoCallMute.addEventListener("click", () => {
-      microphoneMuted = !microphoneMuted;
-
-      const icon = videoCallMute.querySelector("img");
-
-      const slash = videoCallMute.querySelector(".video-call-slash");
-
+      const enabled = CPCall.toggleMicrophone();
+      microphoneMuted = !enabled;
+      videoCallMute.classList.toggle("muted", microphoneMuted);
+      videoCallMute
+        .querySelector(".video-call-slash")
+        ?.style.setProperty("display", microphoneMuted ? "block" : "none");
       const label = videoCallMute.querySelector("span:last-child");
-
-      if (microphoneMuted) {
-        /*
-         * แสดงขีดทับ
-         */
-        if (slash) {
-          slash.style.display = "block";
-        }
-
-        if (label) {
-          label.textContent = "เปิดไมค์";
-        }
-      } else {
-        /*
-         * ซ่อนขีดทับ
-         */
-        if (slash) {
-          slash.style.display = "none";
-        }
-
-        if (label) {
-          label.textContent = "ไมค์";
-        }
-      }
+      if (label) label.textContent = microphoneMuted ? "เปิดไมค์" : "ไมค์";
     });
-  }
 
-  /*
-   * =========================================================
-   * CAMERA
-   * =========================================================
-   */
-
-  if (videoCallCamera) {
+  if (videoCallCamera)
     videoCallCamera.addEventListener("click", () => {
-      cameraOff = !cameraOff;
-
-      const icon = videoCallCamera.querySelector("img");
-
-      const slash = videoCallCamera.querySelector(".video-call-slash");
-
+      const enabled = CPCall.toggleCamera();
+      cameraOff = !enabled;
+      videoCallCamera.classList.toggle("muted", cameraOff);
+      videoCallCamera
+        .querySelector(".video-call-slash")
+        ?.style.setProperty("display", cameraOff ? "block" : "none");
       const label = videoCallCamera.querySelector("span:last-child");
-
-      if (cameraOff) {
-        /*
-         * ปิดกล้อง
-         */
-        if (slash) {
-          slash.style.display = "block";
-        }
-
-        if (label) {
-          label.textContent = "เปิดกล้อง";
-        }
-      } else {
-        /*
-         * เปิดกล้อง
-         */
-        if (slash) {
-          slash.style.display = "none";
-        }
-
-        if (label) {
-          label.textContent = "กล้อง";
-        }
-      }
+      if (label) label.textContent = cameraOff ? "เปิดกล้อง" : "กล้อง";
+      if (videoCallLocalVideo)
+        videoCallLocalVideo.style.display = cameraOff ? "none" : "block";
     });
-  }
 
-  /*
-   * =========================================================
-   * ESC
-   * =========================================================
-   */
+  if (voiceCallOverlay)
+    voiceCallOverlay.addEventListener("click", (event) => {
+      if (event.target === voiceCallOverlay && !CPCall.isActive?.())
+        closeVoiceCall();
+    });
+
+  if (videoCallOverlay)
+    videoCallOverlay.addEventListener("click", (event) => {
+      if (event.target === videoCallOverlay && !CPCall.isActive?.())
+        closeVideoCall();
+    });
 
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") {
-      if (
-        videoCallOverlay &&
-        (videoCallOverlay.classList.contains("show") ||
-          videoCallOverlay.classList.contains("active"))
-      ) {
-        closeVideoCall();
-      }
-    }
+    if (event.key !== "Escape") return;
+    if (CPCall.isActive?.()) return;
+    if (videoCallOverlay?.classList.contains("show")) closeVideoCall();
+    if (voiceCallOverlay?.classList.contains("show")) closeVoiceCall();
+  });
+
+  window.addEventListener("pagehide", () => {
+    disconnectRoomWebSocket();
+    if (typeof CPCall !== "undefined" && CPCall.leaveCall) CPCall.leaveCall();
   });
 
   /*
@@ -1508,168 +1327,6 @@ document.addEventListener("DOMContentLoaded", () => {
    * =========================================================
    */
 
-  async function startFriendPage() {
-    /*
-     * ต้องรู้ ID ของ user ก่อน
-     * เพื่อแยก sent / received
-     */
-    await loadCurrentUser();
-
-    /*
-     * จากนั้นโหลดเพื่อน
-     */
-    await loadFriends();
-  }
-
-  startFriendPage();
+  await loadCurrentUser();
+  loadFriends();
 });
-
-/*
- * =========================================================
- * VOICE CALL
- * =========================================================
- */
-
-const voiceCallButton = document.getElementById("voiceCallButton");
-
-const voiceCallOverlay = document.getElementById("voiceCallOverlay");
-
-const voiceCallClose = document.getElementById("voiceCallClose");
-
-const voiceCallEnd = document.getElementById("voiceCallEnd");
-
-const voiceCallImage = document.getElementById("voiceCallImage");
-
-const voiceCallName = document.getElementById("voiceCallName");
-
-const voiceCallStatus = document.getElementById("voiceCallStatus");
-
-const voiceCallMute = document.getElementById("voiceCallMute");
-
-const voiceCallSpeaker = document.getElementById("voiceCallSpeaker");
-
-/*
- * =========================================================
- * OPEN VOICE CALL
- * =========================================================
- */
-
-if (voiceCallButton) {
-  voiceCallButton.addEventListener("click", () => {
-    const image = document.getElementById("chatUserImage");
-
-    const name = document.getElementById("chatUserName");
-
-    if (image && voiceCallImage) {
-      voiceCallImage.src = image.src;
-    }
-
-    if (name && voiceCallName) {
-      voiceCallName.textContent = name.textContent.trim();
-    }
-
-    if (voiceCallStatus) {
-      voiceCallStatus.textContent = "กำลังโทร...";
-    }
-
-    if (voiceCallMute) {
-      voiceCallMute.classList.remove("muted");
-    }
-
-    if (voiceCallSpeaker) {
-      voiceCallSpeaker.classList.remove("muted");
-    }
-
-    if (voiceCallOverlay) {
-      voiceCallOverlay.classList.add("show");
-    }
-  });
-}
-
-/*
- * =========================================================
- * CLOSE VOICE CALL
- * =========================================================
- */
-
-function closeVoiceCall() {
-  if (voiceCallOverlay) {
-    voiceCallOverlay.classList.remove("show");
-  }
-}
-
-/*
- * =========================================================
- * CLOSE BUTTON
- * =========================================================
- */
-
-if (voiceCallClose) {
-  voiceCallClose.addEventListener("click", closeVoiceCall);
-}
-
-/*
- * =========================================================
- * END CALL
- * =========================================================
- */
-
-if (voiceCallEnd) {
-  voiceCallEnd.addEventListener("click", () => {
-    if (voiceCallStatus) {
-      voiceCallStatus.textContent = "สิ้นสุดการโทร";
-    }
-
-    setTimeout(closeVoiceCall, 500);
-  });
-}
-
-/*
- * =========================================================
- * CLICK OUTSIDE
- * =========================================================
- */
-
-if (voiceCallOverlay) {
-  voiceCallOverlay.addEventListener("click", (event) => {
-    if (event.target === voiceCallOverlay) {
-      closeVoiceCall();
-    }
-  });
-}
-
-/*
- * =========================================================
- * ESC
- * =========================================================
- */
-
-document.addEventListener("keydown", (event) => {
-  if (event.key === "Escape") {
-    closeVoiceCall();
-  }
-});
-
-/*
- * =========================================================
- * MUTE
- * =========================================================
- */
-
-if (voiceCallMute) {
-  voiceCallMute.addEventListener("click", () => {
-    voiceCallMute.classList.toggle("muted");
-  });
-}
-
-/*
- * =========================================================
- * SPEAKER
- * =========================================================
- */
-
-if (voiceCallSpeaker) {
-  voiceCallSpeaker.addEventListener("click", () => {
-    voiceCallSpeaker.classList.toggle("muted");
-  });
-}
