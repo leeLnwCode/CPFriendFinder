@@ -14,9 +14,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -30,6 +32,9 @@ class AuthSecurityWebMvcTest {
     @Autowired
     private SecurityFilterChain securityFilterChain;
 
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @MockitoBean
     private AuthService authService;
 
@@ -39,20 +44,30 @@ class AuthSecurityWebMvcTest {
                 "/",
                 "/login",
                 "/home",
-                "/register"
+                "/register",
+                "/room",
+                "/setting",
+                "/notification",
+                "/friend",
+                "/random"
         };
 
         for (String path : paths) {
             mockMvc.perform(get(path))
                     .andExpect(result -> {
                         int status = result.getResponse().getStatus();
-                        assertTrue(status != 401 && status != 403);
+                        assertTrue(
+                                status != 401 && status != 403,
+                                path + " should not be blocked by security"
+                        );
                     });
         }
     }
 
     @Test
-    void apiLogin_withoutAuthentication_reachesControllerLayer() throws Exception {
+    void apiLogin_withoutAuthentication_reachesControllerLayer()
+            throws Exception {
+
         mockMvc.perform(post("/api/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{}"))
@@ -63,6 +78,25 @@ class AuthSecurityWebMvcTest {
     void apiPost_doesNotRequireCsrfToken() throws Exception {
         mockMvc.perform(post("/api/auth/logout"))
                 .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void websocketRoutes_areNotBlockedBySecurity() throws Exception {
+        String[] paths = {
+                "/ws",
+                "/ws/test"
+        };
+
+        for (String path : paths) {
+            mockMvc.perform(get(path))
+                    .andExpect(result -> {
+                        int status = result.getResponse().getStatus();
+                        assertTrue(
+                                status != 401 && status != 403,
+                                path + " should not be blocked by security"
+                        );
+                    });
+        }
     }
 
     @Test
@@ -106,6 +140,15 @@ class AuthSecurityWebMvcTest {
     }
 
     @Test
+    void csrfFilter_isDisabled() {
+        boolean hasCsrfFilter = securityFilterChain.getFilters()
+                .stream()
+                .anyMatch(filter -> filter instanceof CsrfFilter);
+
+        assertFalse(hasCsrfFilter);
+    }
+
+    @Test
     void formLoginAndHttpBasic_areDisabled() {
         boolean hasFormLoginFilter = securityFilterChain.getFilters()
                 .stream()
@@ -119,5 +162,14 @@ class AuthSecurityWebMvcTest {
 
         assertFalse(hasFormLoginFilter);
         assertFalse(hasBasicAuthFilter);
+    }
+
+    @Test
+    void passwordEncoder_usesSecureHashing() {
+        String rawPassword = "12345678";
+        String encoded = passwordEncoder.encode(rawPassword);
+
+        assertFalse(rawPassword.equals(encoded));
+        assertTrue(passwordEncoder.matches(rawPassword, encoded));
     }
 }
