@@ -12,6 +12,7 @@
     <link rel="stylesheet" th:href="@{/css/layout.css}" />
     <link rel="stylesheet" th:href="@{/css/friend-profile-popup.css}" />
     <link rel="stylesheet" th:href="@{/css/profile-popup.css}" />
+    <link rel="stylesheet" th:href="@{/css/video-call.css}">
 
     <!-- Page -->
     <link rel="stylesheet" th:href="@{/css/friend.css}" />
@@ -392,6 +393,96 @@
           </button>
         </div>
 
+        <!-- Video Call Overlay -->
+        <div id="videoCallOverlay" class="video-call-overlay">
+          <div class="video-call-window">
+            <!-- วิดีโอของเพื่อน -->
+            <div class="remote-video">
+              <div class="video-placeholder">
+                <img
+                  id="videoCallRemoteImage"
+                  src="/image/default-profile.png"
+                  alt="Friend"
+                />
+              </div>
+
+              <!-- ข้อมูลเพื่อน -->
+              <div class="video-call-user-info">
+                <img
+                  id="videoCallUserImage"
+                  src="/image/default-profile.png"
+                  alt="Profile"
+                />
+
+                <div>
+                  <div id="videoCallUserName">ชื่อเพื่อน</div>
+
+                  <div class="video-call-time">
+                    <span class="video-call-camera-icon">▮</span>
+                    <span id="videoCallDuration">00:00</span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- ปุ่มปิด -->
+              <button
+                id="videoCallClose"
+                class="video-call-close"
+                type="button"
+              >
+                ×
+              </button>
+
+              <!-- กล้องของเรา -->
+              <div class="local-video">
+                <div class="local-video-placeholder">
+                  <span>คุณ</span>
+                </div>
+              </div>
+
+              <!-- ปุ่มควบคุม -->
+              <div class="video-call-actions">
+                <!-- ปิดไมค์ -->
+                <button
+                  type="button"
+                  id="videoCallMute"
+                  class="video-call-action"
+                >
+                  <span class="video-call-icon">
+                    <img
+                      src="/images/microphone-black-shape.png"
+                      alt="ไมโครโฟน"
+                    />
+                    <span class="video-call-slash"></span>
+                  </span>
+                  <span>ไมค์</span>
+                </button>
+
+                <!-- วางสาย -->
+                <button type="button" id="videoCallEnd" class="video-call-end">
+                  <span class="video-call-end-icon">
+                    <img src="/images/phone-call.png" alt="วางสาย" />
+                  </span>
+                  <span>วางสาย</span>
+                </button>
+
+                <!-- ปิดกล้อง -->
+                <button
+                  type="button"
+                  id="videoCallCamera"
+                  class="video-call-action"
+                >
+                  <span class="video-call-icon">
+                    <img src="/images/video-camera.png" alt="กล้อง" />
+                    <span class="video-call-slash"></span>
+                  </span>
+                  <span>กล้อง</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <div
           th:replace="~{fragments/friend-profile-popup :: friendProfilePopup}"
         ></div>
@@ -403,5 +494,6 @@
     <script th:src="@{/js/friend.js}"></script>
     <script th:src="@{/js/sidebar.js}"></script>
     <script th:src="@{/js/profile-popup.js}"></script>
+    <link rel="stylesheet" th:href="@{/css/video-call.css}">
   </body>
 </html>

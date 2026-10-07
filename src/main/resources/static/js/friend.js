@@ -956,9 +956,6 @@ document.addEventListener("DOMContentLoaded", () => {
    */
 
   unfriendButton.addEventListener("click", async () => {
-    if (!currentFriendId) {
-      return;
-    }
 
     const confirmUnfriend = confirm(
       `ต้องการเลิกเป็นเพื่อนกับ ${currentFriendName} หรือไม่?`,
@@ -1166,6 +1163,344 @@ document.addEventListener("DOMContentLoaded", () => {
       .replace(/"/g, "&quot;")
       .replace(/'/g, "&#039;");
   }
+
+  /*
+   * =========================================================
+   * VIDEO CALL
+   * =========================================================
+   */
+
+  const videoCallButton = document.getElementById("videoCallButton");
+  const videoCallOverlay = document.getElementById("videoCallOverlay");
+  const videoCallClose = document.getElementById("videoCallClose");
+  const videoCallEnd = document.getElementById("videoCallEnd");
+
+  const videoCallMute = document.getElementById("videoCallMute");
+  const videoCallCamera = document.getElementById("videoCallCamera");
+
+  const videoCallUserName = document.getElementById("videoCallUserName");
+
+  const videoCallUserImage = document.getElementById("videoCallUserImage");
+
+  const videoCallRemoteImage = document.getElementById("videoCallRemoteImage");
+
+  const videoCallDuration = document.getElementById("videoCallDuration");
+
+  let videoCallTimer = null;
+  let videoCallSeconds = 0;
+
+  let microphoneMuted = false;
+  let cameraOff = false;
+
+  /*
+   * =========================================================
+   * OPEN VIDEO CALL
+   * =========================================================
+   */
+
+  if (videoCallButton) {
+    videoCallButton.addEventListener("click", () => {
+      /*
+       * ต้องเลือกเพื่อนก่อน
+       */
+      if (!currentFriendId) {
+        alert("กรุณาเลือกเพื่อนก่อน");
+        return;
+      }
+
+      /*
+       * ใช้ข้อมูลเพื่อนที่มีอยู่แล้ว
+       * จาก loadConversation()
+       */
+      const friendName = currentFriendName || "เพื่อน";
+
+      const friendImage = currentFriendImage || "/images/man.jpg";
+
+      /*
+       * ชื่อเพื่อน
+       */
+      if (videoCallUserName) {
+        videoCallUserName.textContent = friendName;
+      }
+
+      /*
+       * รูปเพื่อน
+       */
+      if (videoCallUserImage) {
+        videoCallUserImage.src = friendImage;
+      }
+
+      if (videoCallRemoteImage) {
+        videoCallRemoteImage.src = friendImage;
+      }
+
+      /*
+       * Reset เวลา
+       */
+      videoCallSeconds = 0;
+
+      if (videoCallDuration) {
+        videoCallDuration.textContent = "00:00";
+      }
+
+      /*
+       * Reset สถานะไมค์ / กล้อง
+       */
+      microphoneMuted = false;
+      cameraOff = false;
+
+      /*
+       * Reset ไอคอนไมค์
+       */
+      if (videoCallMute) {
+        videoCallMute.classList.remove("muted");
+
+        const muteIcon = videoCallMute.querySelector("img");
+
+        const muteSlash = videoCallMute.querySelector(".video-call-slash");
+
+        const muteLabel = videoCallMute.querySelector("span:last-child");
+
+        if (muteIcon) {
+          muteIcon.src = "/images/microphone-black-shape.png";
+        }
+
+        if (muteSlash) {
+          muteSlash.style.display = "none";
+        }
+
+        if (muteLabel) {
+          muteLabel.textContent = "ไมค์";
+        }
+      }
+
+      /*
+       * Reset ไอคอนกล้อง
+       */
+      if (videoCallCamera) {
+        videoCallCamera.classList.remove("muted");
+
+        const cameraIcon = videoCallCamera.querySelector("img");
+
+        const cameraSlash = videoCallCamera.querySelector(".video-call-slash");
+
+        const cameraLabel = videoCallCamera.querySelector("span:last-child");
+
+        if (cameraIcon) {
+          cameraIcon.src = "/images/video-camera.png";
+        }
+
+        if (cameraSlash) {
+          cameraSlash.style.display = "none";
+        }
+
+        if (cameraLabel) {
+          cameraLabel.textContent = "กล้อง";
+        }
+      }
+
+      /*
+       * เปิด Overlay
+       */
+      if (videoCallOverlay) {
+        videoCallOverlay.classList.add("show");
+        videoCallOverlay.classList.add("active");
+      }
+
+      /*
+       * เริ่มเวลา
+       */
+      startVideoCallTimer();
+    });
+  }
+
+  /*
+   * =========================================================
+   * TIMER
+   * =========================================================
+   */
+
+  function startVideoCallTimer() {
+    stopVideoCallTimer();
+
+    videoCallTimer = setInterval(() => {
+      videoCallSeconds++;
+
+      const minutes = String(Math.floor(videoCallSeconds / 60)).padStart(
+        2,
+        "0",
+      );
+
+      const seconds = String(videoCallSeconds % 60).padStart(2, "0");
+
+      if (videoCallDuration) {
+        videoCallDuration.textContent = `${minutes}:${seconds}`;
+      }
+    }, 1000);
+  }
+
+  function stopVideoCallTimer() {
+    if (videoCallTimer) {
+      clearInterval(videoCallTimer);
+
+      videoCallTimer = null;
+    }
+  }
+
+  /*
+   * =========================================================
+   * CLOSE VIDEO CALL
+   * =========================================================
+   */
+
+  function closeVideoCall() {
+    if (videoCallOverlay) {
+      videoCallOverlay.classList.remove("show");
+      videoCallOverlay.classList.remove("active");
+    }
+
+    stopVideoCallTimer();
+
+    videoCallSeconds = 0;
+  }
+
+  /*
+   * =========================================================
+   * CLOSE BUTTON
+   * =========================================================
+   */
+
+  if (videoCallClose) {
+    videoCallClose.addEventListener("click", closeVideoCall);
+  }
+
+  /*
+   * =========================================================
+   * END CALL
+   * =========================================================
+   */
+
+  if (videoCallEnd) {
+    videoCallEnd.addEventListener("click", () => {
+      closeVideoCall();
+    });
+  }
+
+  /*
+   * =========================================================
+   * CLICK OUTSIDE
+   * =========================================================
+   */
+
+  if (videoCallOverlay) {
+    videoCallOverlay.addEventListener("click", (event) => {
+      if (event.target === videoCallOverlay) {
+        closeVideoCall();
+      }
+    });
+  }
+
+  /*
+   * =========================================================
+   * MUTE MICROPHONE
+   * =========================================================
+   */
+
+  if (videoCallMute) {
+    videoCallMute.addEventListener("click", () => {
+      microphoneMuted = !microphoneMuted;
+
+      const icon = videoCallMute.querySelector("img");
+
+      const slash = videoCallMute.querySelector(".video-call-slash");
+
+      const label = videoCallMute.querySelector("span:last-child");
+
+      if (microphoneMuted) {
+        /*
+         * แสดงขีดทับ
+         */
+        if (slash) {
+          slash.style.display = "block";
+        }
+
+        if (label) {
+          label.textContent = "เปิดไมค์";
+        }
+      } else {
+        /*
+         * ซ่อนขีดทับ
+         */
+        if (slash) {
+          slash.style.display = "none";
+        }
+
+        if (label) {
+          label.textContent = "ไมค์";
+        }
+      }
+    });
+  }
+
+  /*
+   * =========================================================
+   * CAMERA
+   * =========================================================
+   */
+
+  if (videoCallCamera) {
+    videoCallCamera.addEventListener("click", () => {
+      cameraOff = !cameraOff;
+
+      const icon = videoCallCamera.querySelector("img");
+
+      const slash = videoCallCamera.querySelector(".video-call-slash");
+
+      const label = videoCallCamera.querySelector("span:last-child");
+
+      if (cameraOff) {
+        /*
+         * ปิดกล้อง
+         */
+        if (slash) {
+          slash.style.display = "block";
+        }
+
+        if (label) {
+          label.textContent = "เปิดกล้อง";
+        }
+      } else {
+        /*
+         * เปิดกล้อง
+         */
+        if (slash) {
+          slash.style.display = "none";
+        }
+
+        if (label) {
+          label.textContent = "กล้อง";
+        }
+      }
+    });
+  }
+
+  /*
+   * =========================================================
+   * ESC
+   * =========================================================
+   */
+
+  document.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      if (
+        videoCallOverlay &&
+        (videoCallOverlay.classList.contains("show") ||
+          videoCallOverlay.classList.contains("active"))
+      ) {
+        closeVideoCall();
+      }
+    }
+  });
 
   /*
    * =========================================================
