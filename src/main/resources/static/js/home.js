@@ -381,7 +381,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
   interestCheckboxes.forEach(function (checkbox) {
     checkbox.addEventListener("change", function () {
-      const selected = checkedValues(interestCheckboxes);
+      const selected = Array.from(interestCheckboxes)
+        .filter(function (item) {
+          return item.checked;
+        })
+        .map(function (item) {
+          return item.parentElement.textContent.trim();
+        });
 
       selectedInterestText.textContent =
         selected.length === 0 ? "เลือกความสนใจ" : selected.join(", ");
@@ -446,9 +452,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const type = roomType.value || "Public";
 
-    const selectedYears = checkedValues(yearCheckboxes);
-
     const selectedInterests = checkedValues(interestCheckboxes);
+
+    const selectedYears = Array.from(yearCheckboxes)
+      .filter(function (checkbox) {
+        return checkbox.checked;
+      })
+      .map(function (checkbox) {
+        return checkbox.value;
+      });
 
     // -----------------------------------------------
     // VALIDATION
@@ -476,7 +488,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // -----------------------------------------------
-    // MAP INTEREST NAME → UUID
+    // GET INTEREST UUIDs
     // -----------------------------------------------
 
     const interestIds = Array.from(interestCheckboxes)
@@ -519,16 +531,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const requestBody = {
       roomName: name,
-
       description: description || null,
-
+      targetYear: Number(selectedYears[0]),
       interestIds: interestIds,
-
       maxMembers: maxPeople,
-
-      isPrivate: type === "Private",
-
-      password: password,
+      password: type === "Private" ? password : null,
+      private: type === "Private",
     };
 
     try {
