@@ -40,6 +40,117 @@ document.addEventListener("DOMContentLoaded", function () {
   let room = null;
 
   // =========================
+  // WebSocket
+  // =========================
+
+  let socket = null;
+  let webSocketConnected = false;
+
+  function connectWebSocket() {
+    const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+
+    const socketUrl = `${protocol}//${window.location.host}/ws`;
+
+    console.log("กำลังเชื่อม WebSocket:", socketUrl);
+
+    socket = new WebSocket(socketUrl);
+
+    socket.onopen = function () {
+      console.log("WebSocket connected");
+
+      /*
+       * Spring STOMP CONNECT frame
+       */
+      socket.send(
+        "CONNECT\n" +
+          "accept-version:1.2\n" +
+          "heart-beat:10000,10000\n" +
+          "\n" +
+          "\0",
+      );
+    };
+
+    socket.onmessage = function (event) {
+      const frame = event.data;
+
+      console.log("WebSocket frame:", frame);
+
+      /*
+       * Spring ตอบ CONNECTED
+       */
+      if (frame.startsWith("CONNECTED")) {
+        webSocketConnected = true;
+
+        console.log("STOMP connected");
+
+        subscribeRoom();
+        return;
+      }
+
+      /*
+       * MESSAGE จาก /topic/rooms/{roomId}
+       */
+      if (frame.startsWith("MESSAGE")) {
+        handleWebSocketMessage(frame);
+      }
+    };
+
+    socket.onerror = function (error) {
+      console.error("WebSocket error:", error);
+
+      webSocketConnected = false;
+    };
+
+    socket.onclose = function () {
+      console.log("WebSocket disconnected");
+
+      webSocketConnected = false;
+    };
+  }
+
+  function subscribeRoom() {
+    if (!socket || socket.readyState !== WebSocket.OPEN) {
+      return;
+    }
+
+    const frame =
+      "SUBSCRIBE\n" +
+      `id:room-${roomId}\n` +
+      `destination:/topic/rooms/${roomId}\n` +
+      "\n" +
+      "\0";
+
+    socket.send(frame);
+
+    console.log("Subscribed:", `/topic/rooms/${roomId}`);
+  }
+
+  function handleWebSocketMessage(frame) {
+    try {
+      const separatorIndex = frame.indexOf("\n\n");
+
+      if (separatorIndex === -1) {
+        return;
+      }
+
+      const body = frame.substring(separatorIndex + 2).replace(/\0$/, "");
+
+      if (!body) {
+        return;
+      }
+
+      const message = JSON.parse(body);
+
+      console.log("ข้อความจาก Backend:", message);
+
+      createMessageElement(message);
+      scrollChatToBottom();
+    } catch (error) {
+      console.error("อ่าน WebSocket message ไม่สำเร็จ:", error);
+    }
+  }
+
+  // =========================
   // Helpers
   // =========================
 
@@ -85,7 +196,6 @@ document.addEventListener("DOMContentLoaded", function () {
       renderRoom();
       renderMembers();
       await loadMessages();
-
     } catch (error) {
       console.error("โหลดข้อมูลห้องล้มเหลว:", error);
 
@@ -103,11 +213,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     roomTitle.textContent = room.roomName || "ห้องพูดคุย";
 
-    roomMembers.textContent =
-      `${room.memberCount || 0}/${room.maxMembers || 10} คนกำลังคุย`;
+    roomMembers.textContent = `${room.memberCount || 0}/${room.maxMembers || 10} คนกำลังคุย`;
 
-    chatMembers.textContent =
-      `${room.memberCount || 0} คน`;
+    chatMembers.textContent = `${room.memberCount || 0} คน`;
 
     ownerRoomCode.style.display = "none";
     roomCodeElement.textContent = "-";
@@ -152,20 +260,27 @@ document.addEventListener("DOMContentLoaded", function () {
 
     const role = member.role || "";
 
-    const isOwner =
-      role === "OWNER" ||
-      role === "owner";
+    const department = member.department || "";
+    const year = member.year || "";
+
+    const isOwner = role === "OWNER" || role === "owner";
 
     /*
      * เจ้าของห้องเปิด Profile Popup ได้
      */
-    if (isOwner) {
-      card.classList.add("friend-profile-trigger");
+    card.classList.add("friend-profile-trigger");
 
-      card.setAttribute("data-profile", "");
-      card.setAttribute("data-name", fullname);
-      card.setAttribute("data-image", imageUrl);
-    }
+    card.setAttribute("data-profile", "");
+    card.setAttribute("data-id", member.userId || "");
+    card.setAttribute("data-name", fullname);
+    card.setAttribute("data-image", imageUrl);
+    card.setAttribute(
+      "data-year",
+      year ? `ปี ${year} ${department ? department : ""}`.trim() : "",
+    );
+    card.setAttribute("data-bio", member.bio || "");
+    card.setAttribute("data-interests", member.interests || "");
+    card.setAttribute("data-status", member.friendStatus || "none");
 
     card.innerHTML = `
       <img
@@ -181,11 +296,7 @@ document.addEventListener("DOMContentLoaded", function () {
         ${isOwner ? "เจ้าของห้อง" : "สมาชิก"}
       </p>
 
-      ${
-        isOwner
-          ? `<small>(เจ้าของห้อง)</small>`
-          : `<small>(สมาชิก)</small>`
-      }
+      ${isOwner ? `<small>(เจ้าของห้อง)</small>` : `<small>(สมาชิก)</small>`}
     `;
 
     membersGrid.appendChild(card);
@@ -199,21 +310,16 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!chatMessages) return;
 
     try {
-      const response = await fetch(
-        `/api/chats/${roomId}/messages`,
-        {
-          method: "GET",
-          headers: {
-            Accept: "application/json",
-          },
-          credentials: "include",
-        }
-      );
+      const response = await fetch(`/api/chats/${roomId}/messages`, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+        },
+        credentials: "include",
+      });
 
       if (!response.ok) {
-        throw new Error(
-          `โหลดข้อความไม่สำเร็จ (${response.status})`
-        );
+        throw new Error(`โหลดข้อความไม่สำเร็จ (${response.status})`);
       }
 
       const messages = await response.json();
@@ -234,7 +340,6 @@ document.addEventListener("DOMContentLoaded", function () {
       });
 
       scrollChatToBottom();
-
     } catch (error) {
       console.error("โหลดข้อความล้มเหลว:", error);
 
@@ -251,43 +356,38 @@ document.addEventListener("DOMContentLoaded", function () {
   // =========================
 
   function createMessageElement(message) {
+    if (!chatMessages) {
+      return;
+    }
+
+    /*
+     * ถ้าเป็น empty state
+     * ให้เอา "ยังไม่มีข้อความ" ออกก่อน
+     */
+    const emptyMessage = chatMessages.querySelector(".chat-empty");
+
+    if (emptyMessage) {
+      emptyMessage.remove();
+    }
+
     const messageElement = document.createElement("div");
 
     messageElement.className = "message";
 
-    /*
-     * รองรับชื่อจาก field ที่อาจมีอยู่ใน response
-     */
-    const firstname =
-      message.firstname ||
-      message.senderFirstname ||
-      "";
+    const firstname = message.senderFirstname || "";
 
-    const lastname =
-      message.lastname ||
-      message.senderLastname ||
-      "";
+    const lastname = message.senderLastname || "";
 
-    const senderName =
-      `${firstname} ${lastname}`.trim() ||
-      message.senderName ||
-      "สมาชิก";
+    const senderName = `${firstname} ${lastname}`.trim() || "สมาชิก";
 
-    const content =
-      message.content ||
-      message.message ||
-      "";
+    const content = message.content || "";
 
     messageElement.innerHTML = `
       <strong>
         ${escapeHtml(senderName)}
       </strong>
 
-      ${
-        content
-          ? `<p>${escapeHtml(content)}</p>`
-          : ""
-      }
+      ${content ? `<p>${escapeHtml(content)}</p>` : ""}
     `;
 
     chatMessages.appendChild(messageElement);
@@ -298,38 +398,80 @@ document.addEventListener("DOMContentLoaded", function () {
   // =========================
 
   async function sendMessage() {
+    if (!chatInput) {
+      return;
+    }
+
     const message = chatInput.value.trim();
 
     if (message === "") {
       return;
     }
 
-    console.warn(
-      "ยังไม่ได้เชื่อม POST สำหรับส่งข้อความ เพราะยังไม่มี ChatMessageController endpoint สำหรับส่งข้อความ"
-    );
+    try {
+      sendMessageButton.disabled = true;
 
-    alert("ระบบส่งข้อความยังไม่ได้เชื่อมต่อ Backend");
+      const response = await fetch(`/api/chats/${roomId}/messages`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        credentials: "include",
+        body: JSON.stringify({
+          content: message,
+          messageType: "TEXT",
+        }),
+      });
 
-    return;
+      if (!response.ok) {
+        const errorText = await response.text();
+
+        throw new Error(
+          `ส่งข้อความไม่สำเร็จ (${response.status}) ${errorText}`,
+        );
+      }
+
+      const sentMessage = await response.json();
+
+      console.log("ส่งข้อความสำเร็จ:", sentMessage);
+
+      /*
+       * ถ้า WebSocket ยังเชื่อมไม่ได้
+       * ให้แสดงข้อความจาก REST response เอง
+       *
+       * ถ้า WebSocket เชื่อมได้แล้ว
+       * ไม่ต้องแสดงตรงนี้ เพราะ Backend
+       * จะ broadcast กลับมาให้ผ่าน WebSocket
+       */
+      if (!webSocketConnected && sentMessage) {
+        createMessageElement(sentMessage);
+        scrollChatToBottom();
+      }
+
+      chatInput.value = "";
+    } catch (error) {
+      console.error("ส่งข้อความล้มเหลว:", error);
+
+      alert("ไม่สามารถส่งข้อความได้");
+    } finally {
+      sendMessageButton.disabled = false;
+
+      chatInput.focus();
+    }
   }
 
   if (sendMessageButton) {
-    sendMessageButton.addEventListener(
-      "click",
-      sendMessage
-    );
+    sendMessageButton.addEventListener("click", sendMessage);
   }
 
   if (chatInput) {
-    chatInput.addEventListener(
-      "keydown",
-      function (event) {
-        if (event.key === "Enter") {
-          event.preventDefault();
-          sendMessage();
-        }
+    chatInput.addEventListener("keydown", function (event) {
+      if (event.key === "Enter") {
+        event.preventDefault();
+        sendMessage();
       }
-    );
+    });
   }
 
   // =========================
@@ -342,9 +484,7 @@ document.addEventListener("DOMContentLoaded", function () {
       return;
     }
 
-    const confirmed = confirm(
-      "คุณต้องการออกจากห้องนี้ใช่หรือไม่?"
-    );
+    const confirmed = confirm("คุณต้องการออกจากห้องนี้ใช่หรือไม่?");
 
     if (!confirmed) {
       return;
@@ -353,25 +493,19 @@ document.addEventListener("DOMContentLoaded", function () {
     try {
       leaveRoomButton.disabled = true;
 
-      const response = await fetch(
-        `/api/chats/${roomId}/leave`,
-        {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-          },
-          credentials: "include",
-        }
-      );
+      const response = await fetch(`/api/chats/${roomId}/leave`, {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+        },
+        credentials: "include",
+      });
 
       if (!response.ok) {
-        throw new Error(
-          `ออกจากห้องไม่สำเร็จ (${response.status})`
-        );
+        throw new Error(`ออกจากห้องไม่สำเร็จ (${response.status})`);
       }
 
       window.location.href = "/home";
-
     } catch (error) {
       console.error("ออกจากห้องล้มเหลว:", error);
 
@@ -382,10 +516,7 @@ document.addEventListener("DOMContentLoaded", function () {
   }
 
   if (leaveRoomButton) {
-    leaveRoomButton.addEventListener(
-      "click",
-      leaveRoom
-    );
+    leaveRoomButton.addEventListener("click", leaveRoom);
   }
 
   // =========================
@@ -393,33 +524,24 @@ document.addEventListener("DOMContentLoaded", function () {
   // =========================
 
   if (imageButton && imageInput) {
-    imageButton.addEventListener(
-      "click",
-      function () {
-        imageInput.click();
+    imageButton.addEventListener("click", function () {
+      imageInput.click();
+    });
+
+    imageInput.addEventListener("change", function () {
+      const file = this.files[0];
+
+      if (!file) {
+        return;
       }
-    );
 
-    imageInput.addEventListener(
-      "change",
-      function () {
-        const file = this.files[0];
+      const imageUrl = URL.createObjectURL(file);
 
-        if (!file) {
-          return;
-        }
+      const messageElement = document.createElement("div");
 
+      messageElement.className = "message";
 
-        const imageUrl =
-          URL.createObjectURL(file);
-
-        const messageElement =
-          document.createElement("div");
-
-        messageElement.className =
-          "message";
-
-        messageElement.innerHTML = `
+      messageElement.innerHTML = `
           <strong>คุณ</strong>
 
           <img
@@ -433,15 +555,12 @@ document.addEventListener("DOMContentLoaded", function () {
           />
         `;
 
-        chatMessages.appendChild(
-          messageElement
-        );
+      chatMessages.appendChild(messageElement);
 
-        scrollChatToBottom();
+      scrollChatToBottom();
 
-        imageInput.value = "";
-      }
-    );
+      imageInput.value = "";
+    });
   }
 
   // =========================
@@ -451,13 +570,13 @@ document.addEventListener("DOMContentLoaded", function () {
   function scrollChatToBottom() {
     if (!chatMessages) return;
 
-    chatMessages.scrollTop =
-      chatMessages.scrollHeight;
+    chatMessages.scrollTop = chatMessages.scrollHeight;
   }
 
   // =========================
   // START
   // =========================
 
+  connectWebSocket();
   loadRoom();
 });

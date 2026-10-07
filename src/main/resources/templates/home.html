@@ -11,6 +11,7 @@
     <link rel="stylesheet" th:href="@{/css/layout.css}" />
     <link rel="stylesheet" th:href="@{/css/home.css}" />
     <link rel="stylesheet" th:href="@{/css/friend-profile-popup.css}" />
+    <link rel="stylesheet" th:href="@{/css/profile-popup.css}" />
   </head>
 
   <body>
@@ -24,7 +25,7 @@
         </div>
 
         <!-- Profile -->
-        <div class="sidebar-profile">
+        <div class="sidebar-profile" id="sidebarProfileButton">
           <img
             id="sidebarProfileImage"
             th:src="@{/images/man.jpg}"
@@ -71,6 +72,114 @@
           </a>
         </nav>
       </aside>
+
+      <div class="profile-modal" id="profileModal">
+        <div class="profile-modal-overlay" id="profileModalOverlay"></div>
+
+        <div class="profile-modal-content">
+          <div class="profile-modal-header">
+            <h2>แก้ไขโปรไฟล์</h2>
+
+            <button
+              type="button"
+              class="profile-modal-close"
+              id="closeProfileModal"
+            >
+              ×
+            </button>
+          </div>
+
+          <div class="profile-edit-form">
+            <!-- รูปโปรไฟล์ -->
+            <div class="profile-image-edit">
+              <img
+                id="editProfileImage"
+                th:src="@{/images/man.jpg}"
+                alt="Profile"
+              />
+
+              <button
+                type="button"
+                class="change-image-button"
+                id="changeProfileImage"
+              >
+                เปลี่ยนรูป
+              </button>
+
+              <input
+                type="file"
+                id="profileImageInput"
+                accept="image/*"
+                hidden
+              />
+            </div>
+
+            <!-- ชื่อ -->
+            <div class="profile-field">
+              <label for="editFirstname">ชื่อ</label>
+              <input type="text" id="editFirstname" placeholder="กรอกชื่อ" />
+            </div>
+
+            <!-- นามสกุล -->
+            <div class="profile-field">
+              <label for="editLastname">นามสกุล</label>
+              <input type="text" id="editLastname" placeholder="กรอกนามสกุล" />
+            </div>
+
+            <!-- Bio -->
+            <div class="profile-field">
+              <label for="editBio">เกี่ยวกับฉัน</label>
+              <textarea
+                id="editBio"
+                rows="4"
+                placeholder="บอกเกี่ยวกับตัวคุณ..."
+              ></textarea>
+            </div>
+
+            <div class="profile-field">
+              <label for="editDateOfBirth">วันเกิด</label>
+              <input type="date" id="editDateOfBirth" />
+            </div>
+
+            <!-- ปี -->
+            <div class="profile-field">
+              <label for="editYear">ชั้นปี</label>
+              <select id="editYear">
+                <option value="">เลือกชั้นปี</option>
+                <option value="1">ปี 1</option>
+                <option value="2">ปี 2</option>
+                <option value="3">ปี 3</option>
+                <option value="4">ปี 4</option>
+              </select>
+            </div>
+
+            <!-- สาขา -->
+            <div class="profile-field">
+              <label for="editDepartment">สาขา</label>
+              <input type="text" id="editDepartment" placeholder="กรอกสาขา" />
+            </div>
+
+            <!-- ปุ่ม -->
+            <div class="profile-modal-actions">
+              <button
+                type="button"
+                class="profile-cancel-button"
+                id="cancelProfileEdit"
+              >
+                ยกเลิก
+              </button>
+
+              <button
+                type="button"
+                class="profile-save-button"
+                id="saveProfileEdit"
+              >
+                บันทึก
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- ================= MAIN ================= -->
 
@@ -127,17 +236,16 @@
 
           <select id="interestFilter">
             <option value="">ทุกความสนใจ</option>
-            <option value="GAMING">Gaming</option>
+            <option value="Gaming">Gaming</option>
             <option value="ROV">ROV</option>
-            <option value="MINECRAFT">Minecraft</option>
-            <option value="VALORANT">Valorant</option>
-            <option value="PROGRAMMING">Programming</option>
-            <option value="PROJECT">Project</option>
-            <option value="HACKATHON">Hackathon</option>
-            <option value="ANIME">Anime</option>
-            <option value="MOVIE">Movie</option>
-            <option value="MUSIC">Music</option>
-            <option value="CHILL">Chill</option>
+            <option value="Minecraft">Minecraft</option>
+            <option value="Valorant">Valorant</option>
+            <option value="Programming">Programming</option>
+            <option value="Project">Project</option>
+            <option value="Hackathon">Hackathon</option>
+            <option value="Anime">Anime</option>
+            <option value="Book">Book</option>
+            <option value="Calculus1">Calculus 1</option>
           </select>
 
           <button
@@ -185,58 +293,83 @@
 
                   <div class="multi-select-options">
                     <label>
-                      <input type="checkbox" value="GAMING" />
+                      <input
+                        type="checkbox"
+                        value="550e8400-e29b-41d4-a716-446655440000"
+                      />
                       Gaming
                     </label>
 
                     <label>
-                      <input type="checkbox" value="ROV" />
+                      <input
+                        type="checkbox"
+                        value="7c9e6679-7425-40de-944b-e07fc1f90ae7"
+                      />
                       ROV
                     </label>
 
                     <label>
-                      <input type="checkbox" value="MINECRAFT" />
+                      <input
+                        type="checkbox"
+                        value="3f2504e0-4f89-41d3-9a0c-0305e82c3301"
+                      />
                       Minecraft
                     </label>
 
                     <label>
-                      <input type="checkbox" value="VALORANT" />
+                      <input
+                        type="checkbox"
+                        value="6ba7b810-9dad-41d1-80b4-00c04fd430c8"
+                      />
                       Valorant
                     </label>
 
                     <label>
-                      <input type="checkbox" value="PROGRAMMING" />
+                      <input
+                        type="checkbox"
+                        value="a8098c1a-f86e-41da-bdbd-1b9f4c5a7e22"
+                      />
                       Programming
                     </label>
 
                     <label>
-                      <input type="checkbox" value="PROJECT" />
+                      <input
+                        type="checkbox"
+                        value="1b4e28ba-2fa1-41d2-9c3a-8f7e6d5b4a10"
+                      />
                       Project
                     </label>
 
                     <label>
-                      <input type="checkbox" value="HACKATHON" />
+                      <input
+                        type="checkbox"
+                        value="c56a4180-65aa-42ec-a945-5fd21dec0538"
+                      />
                       Hackathon
                     </label>
 
                     <label>
-                      <input type="checkbox" value="ANIME" />
+                      <input
+                        type="checkbox"
+                        value="9f8c7b6a-5d4e-43f2-a1b0-c9d8e7f6a5b4"
+                      />
                       Anime
                     </label>
 
                     <label>
-                      <input type="checkbox" value="MOVIE" />
-                      Movie
+                      <input
+                        type="checkbox"
+                        value="2a1b3c4d-5e6f-47a8-9b0c-1d2e3f4a5b6c"
+                      />
+                      Book
                     </label>
 
                     <label>
-                      <input type="checkbox" value="MUSIC" />
-                      Music
-                    </label>
-
-                    <label>
-                      <input type="checkbox" value="CHILL" />
-                      Chill
+                      <input
+                        type="checkbox"
+                        value="631bf629-8201-4565-83f3-282742bc0503"
+                      />
+                      Calculus 1
                     </label>
                   </div>
                 </details>
@@ -319,149 +452,7 @@
 
         <!-- ================= ROOM GRID ================= -->
 
-        <section class="room-grid" id="roomGrid">
-          <!-- Room 1 -->
-
-          <article
-            class="room-card"
-            data-year="2, 3"
-            data-interest="GAMING, MINECRAFT"
-            data-members="6"
-            data-max="10"
-            data-owner="Prashant Kumar Singh"
-            data-owner-year="ปี 3 CS-VIP"
-            data-owner-image="/images/man2.jpg"
-            data-type="Private"
-            data-code="123456"
-          >
-            <h3>Minecraft Hardcore</h3>
-
-            <p class="room-description">
-              6/10 คนกำลังคุย &nbsp;&nbsp; Minecraft, Speed Run
-            </p>
-
-            <div class="room-tags">
-              <span>GAMING</span>
-              <span>MINECRAFT</span>
-              <span>ปี 2</span>
-              <span>ปี 3</span>
-            </div>
-
-            <div
-              class="room-owner friend-profile-trigger"
-              data-name="Prashant Kumar Singh"
-              data-year="ปี 3 CS-VIP"
-              data-image="/images/man2.jpg"
-            >
-              <img th:src="@{/images/man2.jpg}" alt="Owner" />
-
-              <div>
-                <strong>Prashant Kumar Singh</strong>
-
-                <small> ปี 3 CS-VIP (เจ้าของห้อง) </small>
-              </div>
-            </div>
-
-            <div class="room-bottom">
-              <span class="room-type"> Private </span>
-
-              <button type="button" class="join-button">เข้าห้อง</button>
-            </div>
-          </article>
-
-          <!-- Room 2 -->
-
-          <article
-            class="room-card"
-            data-year="1"
-            data-interest="PROJECT"
-            data-members="6"
-            data-max="10"
-            data-owner="Napha Sriprasert"
-            data-owner-year="ปี 2 CS"
-            data-owner-image="/images/napha.jpg"
-            data-type="Public"
-          >
-            <h3>หาเพื่อนปั่นโปรเจค</h3>
-
-            <p class="room-description">
-              6/10 คนกำลังคุย &nbsp;&nbsp; ทำโปรเจค, การบ้าน
-            </p>
-
-            <div class="room-tags">
-              <span>PROJECT</span>
-              <span>ปี 1</span>
-              <span>ปี 2</span>
-            </div>
-
-            <div
-              class="room-owner friend-profile-trigger"
-              data-name="Napha Sriprasert"
-              data-year="ปี 2 CS"
-              data-image="/images/napha.jpg"
-            >
-              <img th:src="@{/images/napha.jpg}" alt="Owner" />
-
-              <div>
-                <strong>Napha Sriprasert</strong>
-
-                <small> ปี 2 CS (เจ้าของห้อง) </small>
-              </div>
-            </div>
-
-            <div class="room-bottom">
-              <span class="room-type"> Public </span>
-
-              <button type="button" class="join-button">เข้าห้อง</button>
-            </div>
-          </article>
-
-          <!-- Room 3 -->
-
-          <article
-            class="room-card"
-            data-year="2"
-            data-interest="CHILL"
-            data-members="10"
-            data-max="10"
-            data-owner="Worawut Suwanarat"
-            data-owner-year="ปี 3 GIS"
-            data-owner-image="/images/worawut.jpg"
-            data-type="Public"
-          >
-            <h3>ริมบึงสีฐานออนไลน์</h3>
-
-            <p class="room-description">
-              10/10 คนกำลังคุย &nbsp;&nbsp; ฟังเพลง, คุยเล่น
-            </p>
-
-            <div class="room-tags">
-              <span>CHILL</span>
-              <span>ปี 2</span>
-            </div>
-
-            <div
-              class="room-owner friend-profile-trigger"
-              data-name="Worawut Suwanarat"
-              data-year="ปี 3 GIS"
-              data-image="/images/worawut.jpg"
-            >
-              <img th:src="@{/images/worawut.jpg}" alt="Owner" />
-
-              <div>
-                <strong>Worawut Suwanarat</strong>
-
-                <small> ปี 3 GIS (เจ้าของห้อง) </small>
-              </div>
-            </div>
-
-            <div class="room-bottom">
-              <span class="room-type"> Public </span>
-
-              <button type="button" class="join-button">เข้าห้อง</button>
-            </div>
-          </article>
-        </section>
+        <section class="room-grid" id="roomGrid"></section>
       </main>
     </div>
 
@@ -498,5 +489,6 @@
     <script th:src="@{/js/home.js(v=2)}"></script>
     <script th:src="@{/js/theme.js}"></script>
     <script th:src="@{/js/sidebar.js}"></script>
+    <script th:src="@{/js/profile-popup.js}"></script>
   </body>
 </html>
