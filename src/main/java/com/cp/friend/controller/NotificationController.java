@@ -60,4 +60,6 @@ public class NotificationController extends SessionController {
         notificationService.markAllAsRead(currentUserId(session));
         return ResponseEntity.noContent().build();
     }
+
+    
 }
