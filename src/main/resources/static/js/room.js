@@ -268,13 +268,19 @@ document.addEventListener("DOMContentLoaded", function () {
     /*
      * เจ้าของห้องเปิด Profile Popup ได้
      */
-    if (isOwner) {
-      card.classList.add("friend-profile-trigger");
+    card.classList.add("friend-profile-trigger");
 
-      card.setAttribute("data-profile", "");
-      card.setAttribute("data-name", fullname);
-      card.setAttribute("data-image", imageUrl);
-    }
+    card.setAttribute("data-profile", "");
+    card.setAttribute("data-id", member.userId || "");
+    card.setAttribute("data-name", fullname);
+    card.setAttribute("data-image", imageUrl);
+    card.setAttribute(
+      "data-year",
+      year ? `ปี ${year} ${department ? department : ""}`.trim() : "",
+    );
+    card.setAttribute("data-bio", member.bio || "");
+    card.setAttribute("data-interests", member.interests || "");
+    card.setAttribute("data-status", member.friendStatus || "none");
 
     card.innerHTML = `
       <img
