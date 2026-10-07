@@ -12,6 +12,7 @@ import org.springframework.web.server.ResponseStatusException;
 import com.cp.friend.dto.response.FriendRequestResponse;
 import com.cp.friend.dto.response.InterestResponse;
 import com.cp.friend.event.FriendRequestAcceptedEvent;
+import com.cp.friend.event.FriendRequestDeclinedEvent;
 import com.cp.friend.event.FriendRequestSentEvent;
 import com.cp.friend.mapper.InterestMapper;
 import com.cp.friend.model.FriendRequest;
@@ -116,6 +117,8 @@ public class FriendRequestService {
         request.setStatus(FriendRequest.Status.DECLINED);
         request.setRespondedAt(Instant.now());
         FriendRequest declinedRequest = friendRequestRepository.save(request);
+
+        eventPublisher.publishEvent(new FriendRequestDeclinedEvent(declinedRequest));
         return toResponse(declinedRequest, declinedRequest.getSender());
     }
 
