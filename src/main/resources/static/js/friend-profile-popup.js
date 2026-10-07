@@ -179,7 +179,7 @@ document.addEventListener("DOMContentLoaded", () => {
        SEND FRIEND REQUEST
     ===================================================== */
 
-  actionButton.addEventListener("click", () => {
+  actionButton.addEventListener("click", async () => {
     if (!currentProfileId) {
       return;
     }
@@ -194,15 +194,46 @@ document.addEventListener("DOMContentLoaded", () => {
       return;
     }
 
-    /*
-     * Prototype
-     * เปลี่ยนสถานะเป็นส่งคำขอแล้ว
-     */
+    try {
+  actionButton.disabled = true;
 
-    currentStatus = "pending";
+  const response = await fetch("/api/friend-requests", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    credentials: "include",
+    body: JSON.stringify({
+      receiverId: currentProfileId,
+    }),
+  });
 
-    updateActionButton();
+  if (!response.ok) {
+    const errorText = await response.text();
 
-    alert("ส่งคำขอเป็นเพื่อนแล้ว");
+    throw new Error(
+      `ส่งคำขอไม่สำเร็จ (${response.status}) ${errorText}`
+    );
+  }
+
+  const result = await response.json();
+
+  console.log("ส่งคำขอเป็นเพื่อนสำเร็จ:", result);
+
+  currentStatus = "pending";
+
+  updateActionButton();
+
+  alert("ส่งคำขอเป็นเพื่อนแล้ว");
+
+} catch (error) {
+  console.error("ส่งคำขอเป็นเพื่อนล้มเหลว:", error);
+
+  alert("ไม่สามารถส่งคำขอเป็นเพื่อนได้");
+
+} finally {
+  actionButton.disabled = false;
+}
   });
 });

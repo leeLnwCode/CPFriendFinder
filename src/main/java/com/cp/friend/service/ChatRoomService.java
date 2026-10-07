@@ -127,6 +127,7 @@ public class ChatRoomService {
         }
 
         return toSummaries(rooms.stream()
+                .filter(room -> roomMemberRepository.countActiveMembers(room.getId()) > 0)
                 .skip((long) Math.max(page, 0) * Math.min(Math.max(size, 1), 50))
                 .limit(Math.min(Math.max(size, 1), 50))
                 .toList());
@@ -190,8 +191,7 @@ public class ChatRoomService {
         roomMemberRepository.findFirstByRoomIdAndUserIdOrderByJoinedAtDesc(roomId, userId)
                 .ifPresentOrElse(
                         member -> member.setLeftAt(null),
-                        () -> roomMemberRepository.save(newMember(room, user, RoomMember.Role.MEMBER))
-                );
+                        () -> roomMemberRepository.save(newMember(room, user, RoomMember.Role.MEMBER)));
 
         return getRoom(roomId);
     }
@@ -359,7 +359,8 @@ public class ChatRoomService {
         Set<UUID> uniqueIds = new LinkedHashSet<>(interestIds);
         List<Interest> interests = interestRepository.findByIdInAndIsActiveTrue(uniqueIds);
         if (interests.size() != uniqueIds.size()) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "One or more interests do not exist or are inactive");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "One or more interests do not exist or are inactive");
         }
         for (Interest interest : interests) {
             RoomInterest roomInterest = new RoomInterest();
@@ -400,7 +401,7 @@ public class ChatRoomService {
     }
 
     private ChatRoomSummaryResponse toSummary(ChatRoom room, long memberCount, long unreadCount,
-                                              List<RoomInterest> roomInterests) {
+            List<RoomInterest> roomInterests) {
         return new ChatRoomSummaryResponse(
                 room.getId(),
                 room.getRoomName(),
@@ -414,8 +415,7 @@ public class ChatRoomService {
                                 ri.getInterest().getId(),
                                 ri.getInterest().getName()))
                         .toList(),
-                room.getCreatedAt()
-        );
+                room.getCreatedAt());
     }
 
     private long countUnread(UUID userId, ChatRoom room) {
