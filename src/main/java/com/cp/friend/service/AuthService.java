@@ -1,11 +1,10 @@
 package com.cp.friend.service;
 
-import com.cp.friend.config.S3Config;
 import com.cp.friend.dto.request.LoginRequest;
 import com.cp.friend.dto.request.RegisterRequest;
 import com.cp.friend.model.User;
+import com.cp.friend.port.StoragePort;
 import com.cp.friend.repository.UserRepository;
-import com.cp.friend.tools.StorageTool;
 
 import lombok.RequiredArgsConstructor;
 
@@ -16,13 +15,13 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Locale;
 
 @Service
-@RequiredArgsConstructor 
+@RequiredArgsConstructor
 public class AuthService {
 
         private final UserRepository userRepository;
         private final PasswordEncoder passwordEncoder;
-        private final StorageTool storageTool;
-        private final S3Config s3config;
+        // Dependency Inversion — พึ่ง interface StoragePort ไม่ใช่ S3 SDK โดยตรง
+        private final StoragePort storagePort;
 
         // Register
         @Transactional
@@ -51,16 +50,15 @@ public class AuthService {
 
                 // Profile
                 if (request.getImageBase64() != null && !request.getImageBase64().isBlank()) {
-                        String fileName = storageTool.uploadBase64(request.getImageBase64());
-                        user.setImageUrl(fileName);
+                        String fileName = storagePort.uploadBase64(request.getImageBase64());
+                        user.setImageUrl(storagePort.publicUrl(fileName));
                 }
                 user.setFirstname(request.getFirstname());
                 user.setLastname(request.getLastname());
                 user.setDateOfBirth(request.getDateOfBirth());
                 user.setYear(request.getYear());
                 user.setDepartment(request.getDepartment());
-                user.setImageUrl(s3config.getEndpoint().concat("/storage/").concat(user.getImageUrl()));
-                
+
                 return userRepository.save(user);
         }
 

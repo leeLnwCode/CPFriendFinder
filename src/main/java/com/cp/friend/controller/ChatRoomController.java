@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -16,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cp.friend.dto.request.CreateChatRoomRequest;
 import com.cp.friend.dto.request.JoinChatRoomRequest;
+import com.cp.friend.dto.request.UpdateChatRoomRequest;
+import com.cp.friend.dto.request.UpdateMemberRoleRequest;
 import com.cp.friend.dto.response.ChatRoomDetailResponse;
 import com.cp.friend.dto.response.ChatRoomSummaryResponse;
 import com.cp.friend.service.ChatRoomService;
@@ -62,6 +65,28 @@ public class ChatRoomController extends SessionController {
     @GetMapping("/{roomId}")
     public ResponseEntity<ChatRoomDetailResponse> getRoom(@PathVariable UUID roomId) {
         return ResponseEntity.ok(chatRoomService.getRoom(roomId));
+    }
+
+    // แก้ไขห้อง (OWNER / MODERATOR) — ส่งมาแค่ field ที่ต้องการแก้
+    @PutMapping("/{roomId}")
+    public ResponseEntity<ChatRoomDetailResponse> updateRoom(
+            @PathVariable UUID roomId,
+            @Valid @RequestBody UpdateChatRoomRequest request,
+            HttpSession session
+    ) {
+        return ResponseEntity.ok(chatRoomService.updateRoom(currentUserId(session), roomId, request));
+    }
+
+    // เปลี่ยน role ของสมาชิก (OWNER เท่านั้น) — body: {"role": "MODERATOR"} หรือ "MEMBER"
+    @PutMapping("/{roomId}/members/{memberUserId}/role")
+    public ResponseEntity<ChatRoomDetailResponse> updateMemberRole(
+            @PathVariable UUID roomId,
+            @PathVariable UUID memberUserId,
+            @Valid @RequestBody UpdateMemberRoleRequest request,
+            HttpSession session
+    ) {
+        return ResponseEntity.ok(chatRoomService.updateMemberRole(
+                currentUserId(session), roomId, memberUserId, request.getRole()));
     }
 
     // เข้าห้อง (ห้อง private ต้องส่ง password)

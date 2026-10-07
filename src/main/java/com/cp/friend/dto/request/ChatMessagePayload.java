@@ -5,13 +5,15 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 
-// Payload ที่ client ส่งเข้ามาทาง WebSocket (/app/rooms/{roomId}/messages)
+// Payload สำหรับส่งข้อความ — ทาง WebSocket (/app/rooms/{roomId}/messages)
+// หรือ REST (POST /api/chats/{roomId}/messages)
+// รูป (messageType = IMAGE) ส่งเป็น base64 ใน content — แนะนำให้ใช้ REST เพราะขนาดใหญ่
 @Getter
 @Setter
 public class ChatMessagePayload {
 
     @NotBlank(message = "content is required")
-    @Size(max = 2000, message = "content must be at most 2000 characters")
+    @Size(max = 4_000_000, message = "content is too large (max ~3MB image)")
     private String content;
 
     // "TEXT" | "IMAGE" | "FILE" — ไม่ส่งมาเป็น TEXT

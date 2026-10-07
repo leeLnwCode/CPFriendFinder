@@ -389,37 +389,49 @@ document.addEventListener("DOMContentLoaded", function () {
   });
 
   // =====================================================
-  // YEAR CHECKBOX
+  // YEAR CHECKBOX - เลือกได้แค่ 1 ชั้นปี
   // =====================================================
 
   function updateSelectedYearText() {
-    const selected = Array.from(yearCheckboxes)
-      .filter((item) => item.checked)
-      .map(function (item) {
-        return item.parentElement.textContent.trim();
-      });
+    const selected = Array.from(yearCheckboxes).find(function (item) {
+      return item.checked;
+    });
 
-    selectedYearText.textContent =
-      selected.length === 0 ? "เลือกชั้นปี" : selected.join(", ");
+    if (!selected) {
+      selectedYearText.textContent = "เลือกชั้นปี";
+      return;
+    }
+
+    if (selected.value === "all") {
+      selectedYearText.textContent = "ทุกชั้นปี";
+    } else if (selected.value === "other") {
+      selectedYearText.textContent = "ปีลึก";
+    } else {
+      selectedYearText.textContent = "ปี " + selected.value;
+    }
   }
 
   yearCheckboxes.forEach(function (checkbox) {
     checkbox.addEventListener("change", function () {
+      // ถ้าเลือกอันใหม่
       if (this.checked) {
-        yearCheckboxes.forEach(function (item) {
-          const isAll = item.value === "all";
-
-          const thisIsAll = checkbox.value === "all";
-
-          if (isAll !== thisIsAll) {
-            item.checked = false;
+        yearCheckboxes.forEach(function (otherCheckbox) {
+          if (otherCheckbox !== checkbox) {
+            otherCheckbox.checked = false;
           }
         });
+      }
+
+      // ห้ามไม่มีอันไหนถูกเลือก
+      else {
+        this.checked = true;
       }
 
       updateSelectedYearText();
     });
   });
+
+  updateSelectedYearText();
 
   // =====================================================
   // CREATE ROOM - BACKEND
@@ -467,22 +479,13 @@ document.addEventListener("DOMContentLoaded", function () {
     // MAP INTEREST NAME → UUID
     // -----------------------------------------------
 
-    const interestIds = selectedInterests
-      .map(function (selectedName) {
-        const found = interestList.find(function (interest) {
-          return (
-            String(interest.name || "")
-              .trim()
-              .toUpperCase() ===
-            String(selectedName || "")
-              .trim()
-              .toUpperCase()
-          );
-        });
-
-        return found ? found.id : null;
+    const interestIds = Array.from(interestCheckboxes)
+      .filter(function (checkbox) {
+        return checkbox.checked;
       })
-      .filter(Boolean);
+      .map(function (checkbox) {
+        return checkbox.value;
+      });
 
     if (interestIds.length !== selectedInterests.length) {
       alert("ไม่สามารถจับคู่ความสนใจบางรายการได้");

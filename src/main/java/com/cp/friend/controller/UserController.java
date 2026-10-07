@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.cp.friend.dto.request.UpdateProfileRequest;
 import com.cp.friend.dto.response.UpdateProfileResponse;
+import com.cp.friend.mapper.UserMapper;
 import com.cp.friend.model.User;
 import com.cp.friend.service.UserService;
 
@@ -16,19 +17,20 @@ import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
+// ใช้ UserMapper แปลง Entity → DTO — controller ไม่ประกอบ response เอง
 @RestController
 @RequestMapping("/api/users")
 @RequiredArgsConstructor
 public class UserController extends SessionController {
 
     private final UserService userService;
+    private final UserMapper userMapper;
 
     // Get own profile
     @GetMapping("/me")
     public ResponseEntity<UpdateProfileResponse> getMe(HttpSession session) {
         User user = userService.getProfile(currentUserId(session));
-        UpdateProfileResponse response = new UpdateProfileResponse(user);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(userMapper.toProfileResponse(user));
     }
 
     // Update own profile
@@ -38,7 +40,6 @@ public class UserController extends SessionController {
             HttpSession session
     ) {
         User user = userService.updateProfile(currentUserId(session), request);
-        UpdateProfileResponse response = new UpdateProfileResponse(user);
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(userMapper.toProfileResponse(user));
     }
 }

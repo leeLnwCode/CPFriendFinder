@@ -1,9 +1,10 @@
 package com.cp.friend.tools;
 
+import com.cp.friend.config.S3Config;
+import com.cp.friend.port.StoragePort;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import lombok.RequiredArgsConstructor;
 import software.amazon.awssdk.core.sync.RequestBody;
 import software.amazon.awssdk.services.s3.S3Client;
 import software.amazon.awssdk.services.s3.model.PutObjectRequest;
@@ -11,16 +12,23 @@ import software.amazon.awssdk.services.s3.model.PutObjectRequest;
 import java.util.Base64;
 import java.util.UUID;
 
+// Adapter Pattern — Adapter หุ้ม AWS S3 SDK ให้โค้ดภายในเห็นแค่ StoragePort
+// (ผู้ใช้ interface ไม่ต้องรู้ว่าข้างหลังคือ S3/Neon Storage)
 @Component
-@RequiredArgsConstructor 
-public class StorageTool {
+public class StorageTool implements StoragePort {
 
     private final S3Client s3Client;
+    private final S3Config s3Config;
 
     @Value("storage")
     private String bucket;
 
+    public StorageTool(S3Client s3Client, S3Config s3Config) {
+        this.s3Client = s3Client;
+        this.s3Config = s3Config;
+    }
 
+    @Override
     public String uploadBase64(String base64) {
         String contentType = "image/png";
         if (base64.startsWith("data:")) {
@@ -48,6 +56,11 @@ public class StorageTool {
                 RequestBody.fromBytes(fileBytes)
         );
         return key;
+    }
+
+    @Override
+    public String publicUrl(String key) {
+        return s3Config.getEndpoint().concat("/storage/").concat(key);
     }
 
     private String getExtension(String contentType) {

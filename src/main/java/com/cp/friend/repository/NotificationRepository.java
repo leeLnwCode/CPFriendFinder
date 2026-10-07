@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
+import java.util.Optional;
 import java.util.UUID;
 
 // Repository ของตาราง notifications
@@ -45,4 +46,8 @@ public interface NotificationRepository extends JpaRepository<Notification, UUID
     @Modifying(clearAutomatically = true, flushAutomatically = true)
     @Query("UPDATE Notification n SET n.isRead = true WHERE n.user.id = :userId AND n.isRead = false")
     int markAllAsRead(@Param("userId") UUID userId);
+
+    // notification "ข้อความใหม่ในห้อง" ที่ยังไม่อ่าน — ใช้รวมหลายข้อความเป็นรายการเดียว (กันสแปม)
+    Optional<Notification> findFirstByUserIdAndRoomIdAndTypeAndIsReadFalse(
+            UUID userId, UUID roomId, Notification.Type type);
 }
