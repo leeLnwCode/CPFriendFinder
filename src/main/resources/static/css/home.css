@@ -396,7 +396,10 @@
   position: fixed;
   inset: 0;
 
-  background: rgba(0, 0, 0, 0.35);
+  padding: 16px;
+
+  background: rgba(12, 24, 34, 0.58);
+  backdrop-filter: blur(4px);
 
   justify-content: center;
   align-items: center;
@@ -404,60 +407,140 @@
   z-index: 1000;
 }
 
+.modal-overlay.is-open {
+  display: flex;
+}
+
 .create-room-modal {
-  width: 620px;
-  max-width: 90%;
+  width: min(640px, 100%);
+  max-height: calc(100vh - 32px);
+  overflow-y: auto;
 
   background: var(--surface-color);
   color: var(--text-color);
 
-  padding: 32px;
+  padding: 28px;
+
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  box-shadow: 0 24px 70px rgba(0, 0, 0, 0.26);
+  animation: create-room-enter 0.18s ease-out;
+}
+
+@keyframes create-room-enter {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.99);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.create-room-modal-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.create-room-eyebrow {
+  margin-bottom: 5px;
+  color: var(--active-text);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
 }
 
 .create-room-modal h2 {
-  margin-top: 0;
+  margin: 0;
+  font-size: 22px;
+  color: var(--text-color);
 }
 
-.create-room-modal label {
-  display: block;
-  margin-top: 14px;
-  margin-bottom: 6px;
+.create-room-close {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  border: 1px solid var(--border-color);
+  border-radius: 50%;
+  background: var(--input-bg);
+  color: var(--secondary-text-color);
+  font-size: 23px;
+  line-height: 1;
+  cursor: pointer;
+}
 
+.create-room-close:hover {
+  color: var(--text-color);
+  background: var(--hover-bg);
+}
+
+#createRoomForm {
+  display: grid;
+  gap: 16px;
+}
+
+.create-room-field {
+  min-width: 0;
+}
+
+.create-room-field > label {
+  display: block;
+  margin: 0 0 7px;
+  color: var(--text-color);
   font-weight: 600;
+  font-size: 13px;
 }
 
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 24px;
+  gap: 16px;
 }
 
-.modal-buttons {
+.create-room-modal .modal-buttons {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
-
-  margin-top: 24px;
+  margin-top: 4px;
 }
 
-.modal-buttons button {
-  padding: 10px 22px;
-
-  border-radius: 20px;
-
+.create-room-modal .modal-buttons button {
+  min-height: 42px;
+  padding: 0 20px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
   cursor: pointer;
 }
 
 #cancelCreateRoom {
   background: var(--surface-color);
-  color: var(--text-color);
-  border: 1px solid var(--text-color);
+  color: var(--secondary-text-color);
+  border: 1px solid var(--border-color);
+}
+
+#cancelCreateRoom:hover {
+  background: var(--hover-bg);
 }
 
 #confirmCreateRoom {
-  background: #2864dc;
+  background: #167a91;
   color: white;
   border: none;
+}
+
+#confirmCreateRoom:hover:not(:disabled) {
+  background: #116578;
+}
+
+#confirmCreateRoom:disabled {
+  opacity: 0.65;
+  cursor: wait;
 }
 
 /* =========================
@@ -465,23 +548,90 @@
    ========================= */
 
 .create-room-modal input:not([type="checkbox"]):not([type="radio"]),
-.create-room-modal select {
+.create-room-modal select,
+.create-room-modal textarea {
   width: 100%;
-  height: 42px;
-
-  padding: 0 12px;
-
+  min-height: 42px;
+  padding: 10px 12px;
   box-sizing: border-box;
-
   border: 1px solid var(--border-color);
-
-  border-radius: 10px;
-
+  border-radius: 8px;
   background: var(--input-bg);
-
   color: var(--text-color);
+  font-size: 14px;
+}
 
-  font-size: 15px;
+.create-room-modal textarea {
+  resize: vertical;
+  min-height: 82px;
+}
+
+.create-room-modal input:focus,
+.create-room-modal select:focus,
+.create-room-modal textarea:focus {
+  outline: 2px solid var(--active-text);
+  outline-offset: 1px;
+}
+
+.create-room-interests {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 4px 8px;
+  max-height: 138px;
+  overflow-y: auto;
+  padding: 8px;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--input-bg);
+}
+
+.create-room-interests label {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  padding: 7px 8px;
+  border-radius: 6px;
+  color: var(--text-color);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.create-room-interests label:hover {
+  background: var(--hover-bg);
+}
+
+.create-room-interests input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  margin: 0;
+  accent-color: #167a91;
+}
+
+.create-room-interest-empty {
+  grid-column: 1 / -1;
+  padding: 8px;
+  color: var(--secondary-text-color);
+  font-size: 13px;
+}
+
+.create-room-error {
+  padding: 10px 12px;
+  border: 1px solid #e7a7a7;
+  border-radius: 8px;
+  background: rgba(190, 42, 42, 0.08);
+  color: #b42323;
+  font-size: 13px;
+}
+
+.create-room-error[hidden],
+.create-room-password[hidden] {
+  display: none !important;
+}
+
+body.modal-open {
+  overflow: hidden;
 }
 
 /* =========================
@@ -613,6 +763,25 @@
   accent-color: #18a8dc;
 }
 
+@media (max-width: 600px) {
+  .create-room-modal {
+    padding: 22px 18px;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
+
+  .create-room-interests {
+    grid-template-columns: 1fr;
+  }
+
+  .create-room-modal .modal-buttons button {
+    flex: 1;
+  }
+}
+
 /* =========================
    PRIVATE ROOM POPUP
    ========================= */
@@ -717,4 +886,688 @@
   color: #ffffff;
 
   border: none;
+}
+
+
+/* ------------------------------------------ */
+
+
+
+/* =====================================================
+   ROOM CARD
+===================================================== */
+
+.room-card {
+  position: relative;
+
+  display: flex;
+  flex-direction: column;
+
+  min-height: 215px;
+
+  padding: 20px;
+
+  box-sizing: border-box;
+
+  border-radius: 18px;
+
+  background: var(--surface-color);
+  color: var(--text-color);
+
+  border: 1px solid var(--border-color);
+
+  box-shadow: 0 8px 25px var(--shadow-color);
+
+  overflow: hidden;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+}
+
+
+/* =========================
+   TOP ACCENT
+========================= */
+
+.room-card::before {
+  content: "";
+
+  position: absolute;
+
+  top: 0;
+  left: 0;
+
+  width: 100%;
+  height: 3px;
+
+  background: linear-gradient(
+    90deg,
+    #20aee2,
+    #2864e8
+  );
+}
+
+
+/* =========================
+   HOVER
+========================= */
+
+.room-card:hover {
+  transform: translateY(-4px);
+
+  border-color: #20aee2;
+
+  box-shadow:
+    0 12px 30px var(--shadow-color),
+    0 4px 12px rgba(32, 174, 226, 0.12);
+}
+
+
+/* =====================================================
+   HEADER
+===================================================== */
+
+.room-card-header {
+  display: flex;
+
+  align-items: flex-start;
+  justify-content: space-between;
+
+  gap: 12px;
+
+  margin-bottom: 18px;
+}
+
+
+.room-card-title-wrapper {
+  display: flex;
+
+  align-items: center;
+
+  min-width: 0;
+
+  gap: 11px;
+}
+
+
+/* =====================================================
+   ICON
+===================================================== */
+
+.room-card-icon {
+  flex-shrink: 0;
+
+  width: 44px;
+  height: 44px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 13px;
+
+  background: rgba(32, 174, 226, 0.10);
+
+  border: 1px solid rgba(32, 174, 226, 0.15);
+
+  color: #20aee2;
+
+  font-size: 20px;
+
+  transition: 0.2s ease;
+}
+
+
+.room-card:hover .room-card-icon {
+  background: rgba(32, 174, 226, 0.16);
+
+  transform: scale(1.04);
+}
+
+
+/* =====================================================
+   TITLE
+===================================================== */
+
+.room-card-title-content {
+  min-width: 0;
+
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 4px;
+}
+
+
+.room-card-title {
+  margin: 0;
+
+  color: var(--text-color);
+
+  font-size: 16px;
+
+  font-weight: 600;
+
+  line-height: 1.4;
+
+  overflow: hidden;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+}
+
+
+.room-card-type {
+  color: var(--secondary-text-color);
+
+  font-size: 11px;
+
+  font-weight: 400;
+}
+
+
+/* =====================================================
+   STATUS
+===================================================== */
+
+.room-card-status {
+  display: flex;
+
+  align-items: center;
+
+  justify-content: flex-end;
+
+  gap: 6px;
+
+  flex-shrink: 0;
+}
+
+
+.room-privacy {
+  display: inline-flex;
+
+  align-items: center;
+
+  padding: 5px 9px;
+
+  border-radius: 20px;
+
+  font-size: 10px;
+
+  font-weight: 600;
+
+  white-space: nowrap;
+}
+
+
+/* PUBLIC */
+
+.room-privacy.public {
+  color: #1686a8;
+
+  background: rgba(32, 174, 226, 0.10);
+
+  border: 1px solid rgba(32, 174, 226, 0.18);
+}
+
+
+/* PRIVATE */
+
+.room-privacy.private {
+  color: #856b20;
+
+  background: rgba(245, 194, 66, 0.12);
+
+  border: 1px solid rgba(245, 194, 66, 0.20);
+}
+
+
+/* =====================================================
+   UNREAD
+===================================================== */
+
+.unread-badge {
+  min-width: 21px;
+  height: 21px;
+
+  padding: 0 6px;
+
+  box-sizing: border-box;
+
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 50%;
+
+  background: #ef5350;
+
+  color: #ffffff;
+
+  font-size: 10px;
+
+  font-weight: 700;
+
+  box-shadow:
+    0 3px 8px rgba(239, 83, 80, 0.25);
+}
+
+
+/* =====================================================
+   INTERESTS
+===================================================== */
+
+.room-interests {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 6px;
+
+  min-height: 28px;
+
+  margin-bottom: 18px;
+}
+
+
+/*
+ * ใช้กับ
+ *
+ * <span class="room-tag">
+ *
+ */
+
+.room-interests .room-tag {
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  height: 27px;
+
+  padding: 0 10px;
+
+  box-sizing: border-box;
+
+  border-radius: 20px;
+
+  background: rgba(32, 174, 226, 0.08);
+
+  border: 1px solid rgba(32, 174, 226, 0.14);
+
+  color: #1686a8;
+
+  font-size: 9px;
+
+  line-height: 1;
+
+  white-space: nowrap;
+
+  transition: 0.15s ease;
+}
+
+
+.room-card:hover .room-interests .room-tag {
+  background: rgba(32, 174, 226, 0.12);
+
+  border-color: rgba(32, 174, 226, 0.20);
+}
+
+
+/* =====================================================
+   FOOTER
+===================================================== */
+
+.room-card-footer {
+  margin-top: auto;
+
+  padding-top: 14px;
+
+  display: flex;
+
+  align-items: center;
+
+  justify-content: space-between;
+
+  gap: 10px;
+
+  border-top: 1px solid var(--border-color);
+}
+
+
+/* =====================================================
+   MEMBER INFO
+===================================================== */
+
+.room-member-info {
+  display: flex;
+
+  align-items: center;
+
+  gap: 7px;
+}
+
+
+.room-member-icon {
+  width: 30px;
+  height: 30px;
+
+  display: flex;
+
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 9px;
+
+  background: var(--hover-bg);
+
+  font-size: 14px;
+}
+
+
+.room-members {
+  color: var(--secondary-text-color);
+
+  font-size: 11px;
+
+  font-weight: 500;
+}
+
+
+.member-divider {
+  margin: 0 2px;
+
+  color: var(--border-color);
+}
+
+
+/* =====================================================
+   ENTER BUTTON
+===================================================== */
+
+.room-enter-button {
+  display: inline-flex;
+
+  align-items: center;
+  justify-content: center;
+
+  gap: 7px;
+
+  height: 34px;
+
+  padding: 0 13px;
+
+  border: none;
+
+  border-radius: 18px;
+
+  background: #2864e8;
+
+  color: #ffffff;
+
+  font-family: inherit;
+
+  font-size: 11px;
+
+  font-weight: 600;
+
+  cursor: pointer;
+
+  box-shadow:
+    0 4px 10px rgba(40, 100, 232, 0.20);
+
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease,
+    box-shadow 0.2s ease;
+}
+
+
+.room-enter-button:hover {
+  background: #1952cf;
+
+  transform: translateX(2px);
+
+  box-shadow:
+    0 6px 14px rgba(40, 100, 232, 0.28);
+}
+
+
+.room-enter-button:active {
+  transform: scale(0.97);
+}
+
+
+.room-enter-arrow {
+  font-size: 14px;
+
+  transition: transform 0.15s ease;
+}
+
+
+.room-enter-button:hover .room-enter-arrow {
+  transform: translateX(3px);
+}
+
+
+/* =====================================================
+   EMPTY INTEREST
+===================================================== */
+
+.room-tag-empty {
+  color: var(--secondary-text-color) !important;
+
+  background: var(--hover-bg) !important;
+
+  border-color: var(--border-color) !important;
+}
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 1100px) {
+
+  .room-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+}
+
+
+@media (max-width: 800px) {
+
+  .room-grid {
+    grid-template-columns: 1fr;
+  }
+
+}
+
+
+@media (max-width: 500px) {
+
+  .room-card {
+    min-height: 200px;
+
+    padding: 17px;
+  }
+
+  .room-card-header {
+    gap: 8px;
+  }
+
+  .room-card-icon {
+    width: 40px;
+    height: 40px;
+
+    border-radius: 11px;
+
+    font-size: 18px;
+  }
+
+  .room-card-title {
+    font-size: 14px;
+  }
+
+  .room-privacy {
+    padding: 4px 7px;
+
+    font-size: 9px;
+  }
+
+  .room-enter-button {
+    height: 32px;
+
+    padding: 0 11px;
+
+    font-size: 10px;
+  }
+
+}
+
+/* =====================================================
+   FINAL ROOM CARD OVERRIDES
+   ===================================================== */
+
+.room-card {
+  min-height: 250px;
+  padding: 20px 24px 16px;
+}
+
+.room-card-header {
+  margin-bottom: 16px;
+}
+
+.room-card-body {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.room-name {
+  margin: 0 0 8px;
+  color: var(--text-color);
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.35;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.room-description {
+  margin: 0 0 12px;
+  color: var(--secondary-text-color);
+  font-size: 13px;
+  line-height: 1.45;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 2;
+  overflow: hidden;
+}
+
+.room-interests {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-height: 28px;
+  margin-bottom: 18px;
+}
+
+/* ทุกความสนใจใช้สีเดียวกัน */
+.room-interests .room-interest,
+.room-interests .room-interest-more,
+.room-interests .room-interest-empty {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 27px;
+  max-width: 150px;
+  padding: 0 10px;
+  box-sizing: border-box;
+  border-radius: 20px;
+  background: rgba(32, 174, 226, 0.10);
+  border: 1px solid rgba(32, 174, 226, 0.18);
+  color: #1686a8;
+  font-size: 10px;
+  line-height: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.room-interests .room-interest-more {
+  flex: 0 0 auto;
+  max-width: none;
+}
+
+.room-card:hover .room-interests .room-interest,
+.room-card:hover .room-interests .room-interest-more,
+.room-card:hover .room-interests .room-interest-empty {
+  background: rgba(32, 174, 226, 0.14);
+  border-color: rgba(32, 174, 226, 0.24);
+}
+
+.room-card-footer {
+  margin-top: auto;
+  padding-top: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-top: 1px solid var(--border-color);
+}
+
+.room-members,
+.room-target-year {
+  color: var(--secondary-text-color);
+  font-size: 11px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.room-target-year {
+  margin-right: auto;
+}
+
+.room-card-status {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  flex-shrink: 0;
+}
+
+.room-available,
+.room-full {
+  color: var(--text-color);
+  font-size: 12px;
+  font-weight: 600;
+}
+
+@media (max-width: 600px) {
+  .room-card {
+    min-height: 230px;
+    padding: 18px;
+  }
+
+  .room-name {
+    font-size: 17px;
+  }
+
+  .room-description {
+    font-size: 12px;
+  }
+
+  .room-target-year {
+    margin-right: auto;
+  }
 }

@@ -1,132 +1,131 @@
-/* =========================
-   RESET
-========================= */
-
-body {
-  background: var(--bg-color);
-  color: var(--text-color);
-}
-
-/* =========================
-   MAIN
-========================= */
-
-.main-content {
-  background: var(--bg-color);
-  color: var(--text-color);
-}
-
-/* =========================
-   SECTION
-========================= */
+/* =========================================================
+   NOTIFICATION PAGE
+========================================================= */
 
 .notification-section {
   width: 100%;
+  margin-bottom: 36px;
 }
 
-.message-section {
-  margin-top: 35px;
-}
-
-/* =========================
-   TITLE
-========================= */
+/* =========================================================
+   SECTION TITLE
+========================================================= */
 
 .section-title {
   display: flex;
   align-items: center;
 
-  gap: 13px;
+  gap: 12px;
 
-  margin-left: 5px;
-  margin-bottom: 20px;
+  margin-bottom: 22px;
 }
 
 .section-title h1 {
-  font-size: 22px;
-  font-weight: 700;
+  margin: 0;
 
   color: var(--text-color);
+
+  font-size: 22px;
+  font-weight: 700;
 }
 
 .title-icon {
-  font-size: 27px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 
-  color: var(--text-color);
+  min-width: 36px;
+  height: 36px;
 
-  line-height: 1;
+  color: var(--active-text);
+
+  font-size: 22px;
 }
 
 .message-icon {
-  font-size: 45px !important;
-  margin-bottom: 10px;
+  font-size: 25px;
 }
 
-/* =========================
-   FRIEND REQUEST GRID
-========================= */
+/* =========================================================
+   FRIEND REQUEST LIST
+========================================================= */
 
 .friend-request-list {
   display: grid;
 
   grid-template-columns: repeat(3, minmax(0, 1fr));
 
-  gap: 28px;
-
-  padding: 0 2px;
+  gap: 18px;
 }
 
-/* =========================
+/* =========================================================
    FRIEND REQUEST CARD
-========================= */
+========================================================= */
 
 .friend-request-card {
-  min-height: 108px;
+  display: flex;
+  flex-direction: column;
+
+  justify-content: space-between;
+
+  min-height: 170px;
+
+  padding: 18px;
 
   background: var(--surface-color);
+  color: var(--text-color);
 
   border: 1px solid var(--border-color);
 
-  border-radius: 18px;
+  border-radius: 14px;
 
-  padding: 18px 17px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-
-  gap: 15px;
-
-  box-shadow: 0 8px 25px var(--shadow-color);
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s ease,
+    box-shadow 0.18s ease;
 }
 
-/* =========================
-   FRIEND INFORMATION
-========================= */
+.friend-request-card:hover {
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+}
+
+/* =========================================================
+   FRIEND INFO
+========================================================= */
 
 .friend-info {
   display: flex;
   align-items: center;
 
-  gap: 10px;
+  gap: 14px;
 
   min-width: 0;
+
+  cursor: pointer;
+}
+
+.friend-profile-trigger {
+  cursor: pointer;
 }
 
 .friend-avatar {
-  width: 62px;
-  height: 62px;
+  width: 58px;
+  height: 58px;
 
-  border-radius: 50%;
+  flex: 0 0 58px;
 
   overflow: hidden;
 
-  flex-shrink: 0;
+  border-radius: 50%;
 }
 
 .friend-avatar img {
   width: 100%;
   height: 100%;
+
+  display: block;
 
   object-fit: cover;
 }
@@ -136,162 +135,284 @@ body {
 }
 
 .friend-name {
-  font-size: 15px;
-  font-weight: 500;
+  overflow: hidden;
 
   color: var(--text-color);
 
-  white-space: nowrap;
-
-  overflow: hidden;
+  font-size: 16px;
+  font-weight: 700;
 
   text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .friend-year {
-  font-size: 14px;
+  margin-top: 5px;
 
   color: var(--secondary-text-color);
 
-  margin-top: 4px;
+  font-size: 13px;
 }
 
-/* =========================
-   BUTTONS
-========================= */
+/* =========================================================
+   REQUEST ACTIONS
+========================================================= */
 
 .request-actions {
   display: flex;
-  align-items: center;
 
-  gap: 8px;
+  gap: 10px;
 
-  flex-shrink: 0;
+  margin-top: 18px;
 }
 
 .request-actions button {
+  flex: 1;
+
+  height: 38px;
+
   border: none;
+
+  border-radius: 9px;
+
+  font-family: inherit;
+
+  font-size: 13px;
+  font-weight: 600;
 
   cursor: pointer;
 
-  height: 30px;
-
-  padding: 0 12px;
-
-  border-radius: 20px;
-
-  font-size: 12px;
-
-  transition: 0.2s;
+  transition:
+    opacity 0.2s ease,
+    transform 0.15s ease;
 }
 
-/* =========================
+.request-actions button:hover {
+  opacity: 0.9;
+}
+
+.request-actions button:active {
+  transform: scale(0.98);
+}
+
+.request-actions button:disabled {
+  opacity: 0.55;
+
+  cursor: not-allowed;
+}
+
+/* =========================================================
    ACCEPT
-========================= */
+========================================================= */
 
 .accept-button {
-  background: var(--active-text);
+  background: #1688f5;
 
   color: #ffffff;
 }
 
-.accept-button:hover {
-  opacity: 0.85;
-}
-
-/* =========================
+/* =========================================================
    DECLINE
-========================= */
+========================================================= */
 
 .decline-button {
+  background: var(--active-bg);
+
+  color: var(--active-text);
+}
+
+/* =========================================================
+   EMPTY
+========================================================= */
+
+.friend-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  min-height: 100px;
+
+  padding: 20px;
+
+  color: var(--secondary-text-color);
+
+  font-size: 14px;
+
+  text-align: center;
+
   background: var(--surface-color);
 
-  color: var(--text-color);
+  border: 1px dashed var(--border-color);
 
-  border: 1px solid var(--border-color) !important;
+  border-radius: 12px;
+
+  grid-column: 1 / -1;
 }
 
-.decline-button:hover {
-  background: var(--hover-bg);
-}
+/* =========================================================
+   MESSAGE SECTION
+========================================================= */
 
-/* =========================
-   MESSAGE LIST
-========================= */
+.message-section {
+  margin-top: 12px;
+}
 
 .message-list {
   display: flex;
   flex-direction: column;
 
-  gap: 7px;
-
-  padding: 0 2px;
+  gap: 10px;
 }
 
-.message-item {
-  min-height: 68px;
+/* =========================================================
+   MESSAGE NOTIFICATION
+========================================================= */
 
-  border: 1px solid var(--border-color);
-
-  border-radius: 7px;
-
+.message-notification-item {
   display: flex;
   align-items: center;
 
-  padding: 9px 12px;
+  gap: 14px;
+
+  min-height: 72px;
+
+  padding: 14px 16px;
 
   background: var(--surface-color);
+
+  color: var(--text-color);
+
+  border: 1px solid var(--border-color);
+
+  border-radius: 12px;
+
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    transform 0.15s ease;
 }
 
-.message-avatar {
-  width: 52px;
-  height: 52px;
+.message-notification-item:hover {
+  transform: translateY(-1px);
+}
 
-  border-radius: 50%;
+.message-notification-item.unread {
+  border-left: 4px solid #1688f5;
+}
+
+.message-notification-avatar {
+  width: 48px;
+  height: 48px;
+
+  flex: 0 0 48px;
 
   overflow: hidden;
 
-  flex-shrink: 0;
+  border-radius: 50%;
 }
 
-.message-avatar img {
+.message-notification-avatar img {
   width: 100%;
   height: 100%;
+
+  display: block;
 
   object-fit: cover;
 }
 
-.message-text {
-  margin-left: 9px;
-
-  font-size: 16px;
-
-  color: var(--text-color);
+.message-notification-content {
+  min-width: 0;
 }
 
-/* =========================
+.message-notification-title {
+  color: var(--text-color);
+
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.message-notification-text {
+  margin-top: 4px;
+
+  overflow: hidden;
+
+  color: var(--secondary-text-color);
+
+  font-size: 13px;
+
+  text-overflow: ellipsis;
+
+  white-space: nowrap;
+}
+
+/* =========================================================
+   SIDEBAR NOTIFICATION BADGE
+========================================================= */
+
+.notification-badge {
+  display: none;
+
+  align-items: center;
+  justify-content: center;
+
+  min-width: 20px;
+  height: 20px;
+
+  margin-left: auto;
+
+  padding: 0 6px;
+
+  border-radius: 999px;
+
+  background: #ef4444;
+
+  color: #ffffff;
+
+  font-size: 11px;
+  font-weight: 700;
+
+  line-height: 1;
+}
+
+.notification-badge.show {
+  display: inline-flex;
+}
+
+/* =========================================================
    RESPONSIVE
-========================= */
+========================================================= */
 
 @media (max-width: 1100px) {
   .friend-request-list {
-    grid-template-columns: 1fr 1fr;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 }
 
-@media (max-width: 800px) {
+@media (max-width: 700px) {
   .friend-request-list {
     grid-template-columns: 1fr;
   }
+
+  .section-title h1 {
+    font-size: 20px;
+  }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 480px) {
   .friend-request-card {
-    flex-direction: column;
-    align-items: stretch;
+    padding: 15px;
   }
 
   .request-actions {
-    justify-content: flex-end;
+    flex-direction: column;
+  }
+
+  .request-actions button {
+    width: 100%;
+  }
+
+  .message-notification-item {
+    padding: 12px;
   }
 }
