@@ -168,48 +168,69 @@ public class ChatMessageService {
                         type, userId, req.getToUserId(), req.getRoomId(), fromName, fromImage));
     }
 
-    public void relayCallSignal(UUID userId, UUID roomId, CallSignalRequest signal) {
-        requireActiveMember(roomId, userId);
+        public void relayCallSignal(UUID userId, UUID roomId, CallSignalRequest signal) {
+            String type = signal.getType() == null
+                    ? ""
+                    : signal.getType().trim().toUpperCase(Locale.ROOT);
 
-        String type = signal.getType() == null ? "" : signal.getType().trim().toUpperCase(Locale.ROOT);
+            // LEAVE ต้องส่งได้แม้สมาชิกเพิ่งออกจากห้องแล้ว
+            // แต่ต้องเป็น user ที่เคยเป็นสมาชิกของห้องจริง
+            if ("LEAVE".equals(type)) {
+                roomMemberRepository
+                        .findFirstByRoomIdAndUserIdOrderByJoinedAtDesc(roomId, userId)
+                        .orElseThrow(() -> new ResponseStatusException(
+                                HttpStatus.FORBIDDEN,
+                                "You are not a member of this room"
+                        ));
 
-        switch (type) {
-            case "JOIN" -> messagingTemplate.convertAndSend(
-                    "/topic/rooms/" + roomId + "/call",
-                    new CallSignalResponse(type, userId, null, null));
-
-            case "MEDIA" -> {
-                // สถานะ media ของผู้ส่ง (เช่น ปิดกล้อง) broadcast ให้ทุกคนในห้อง
-                // เพื่อให้ฝั่งรับเอาภาพออกทันทีแทนการรอ track mute
                 messagingTemplate.convertAndSend(
                         "/topic/rooms/" + roomId + "/call",
-                        new CallSignalResponse(type, userId, null, signal.getPayload()));
+                        new CallSignalResponse(type, userId, null, null)
+                );
+                return;
             }
 
-            case "LEAVE" -> {
-                // LEAVE ต้อง relay ได้แม้ผู้ส่งเพิ่งถูกถอดออกจากห้องไปแล้ว
-                // (เช่น กดออกจากห้องผ่าน REST แล้วหน้าเว็บค่อยส่ง LEAVE ตาม)
-                // มิฉะนั้น client ที่เหลือจะไม่รู้ว่า peer ออกไปแล้ว วิดีโอจะค้าง
-                messagingTemplate.convertAndSend(
+            // Signal อื่นต้องเป็นสมาชิกปัจจุบันเท่านั้น
+            requireActiveMember(roomId, userId);
+
+            switch (type) {
+                case "JOIN" -> messagingTemplate.convertAndSend(
                         "/topic/rooms/" + roomId + "/call",
                         new CallSignalResponse(type, userId, null, null));
-            }
 
-            case "OFFER", "ANSWER", "ICE" -> {
-                if (signal.getTargetUserId() == null) {
-                    throw new ResponseStatusException(
-                            HttpStatus.BAD_REQUEST, type + " requires targetUserId");
-                }
-                messagingTemplate.convertAndSend(
+                case "MEDIA" -> messagingTemplate.convertAndSend(
                         "/topic/rooms/" + roomId + "/call",
-                        new CallSignalResponse(type, userId, signal.getTargetUserId(), signal.getPayload()));
-            }
+                        new CallSignalResponse(
+                                type,
+                                userId,
+                                null,
+                                signal.getPayload()
+                        ));
 
-            default -> throw new ResponseStatusException(
-                    HttpStatus.BAD_REQUEST,
-                    "Invalid signal type, use JOIN, LEAVE, OFFER, ANSWER or ICE");
+                case "OFFER", "ANSWER", "ICE" -> {
+                    if (signal.getTargetUserId() == null) {
+                        throw new ResponseStatusException(
+                                HttpStatus.BAD_REQUEST,
+                                type + " requires targetUserId"
+                        );
+                    }
+
+                    messagingTemplate.convertAndSend(
+                            "/topic/rooms/" + roomId + "/call",
+                            new CallSignalResponse(
+                                    type,
+                                    userId,
+                                    signal.getTargetUserId(),
+                                    signal.getPayload()
+                            ));
+                }
+
+                default -> throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "Invalid signal type, use JOIN, LEAVE, MEDIA, OFFER, ANSWER or ICE"
+                );
+            }
         }
-    }
 
     // =========================================================
     // ลบข้อความตัวเอง (soft delete)

@@ -280,6 +280,26 @@
       if (fromUserId) removePeer(fromUserId);
       return;
     }
+    if (signal.type === "MEDIA") {
+      if (!fromUserId || !signal.payload) return;
+
+      try {
+        const mediaState = JSON.parse(signal.payload);
+
+        window.dispatchEvent(
+          new CustomEvent("cp-call-media-state", {
+            detail: {
+              userId: fromUserId,
+              videoEnabled: mediaState.videoEnabled !== false,
+            },
+          }),
+        );
+      } catch (error) {
+        console.error("อ่าน MEDIA signal ไม่สำเร็จ:", error);
+      }
+
+      return;
+    }
 
     if (["OFFER", "ANSWER", "ICE"].includes(signal.type)) {
       handleWebRTCSignal(signal);
@@ -411,8 +431,20 @@
 
   function toggleCamera() {
     const track = localStream?.getVideoTracks?.()[0];
+
     if (!track) return false;
+
     track.enabled = !track.enabled;
+
+    if (currentRoomId && stompClient?.connected) {
+      wsPublish(`/app/rooms/${currentRoomId}/call`, {
+        type: "MEDIA",
+        payload: JSON.stringify({
+          videoEnabled: track.enabled,
+        }),
+      });
+    }
+
     return track.enabled;
   }
 
