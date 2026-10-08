@@ -113,7 +113,7 @@ class FriendNotificationChatContractTest {
     void friendJs_sendsTextMessage() {
         assertTrue(
                 friendJs.contains(
-                        "fetch(`/api/chats/${sendingRoomId}/messages`"
+                        "fetch(`/api/chats/${currentRoomId}/messages`"
                 )
         );
 

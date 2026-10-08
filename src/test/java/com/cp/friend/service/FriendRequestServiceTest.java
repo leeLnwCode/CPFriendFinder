@@ -12,6 +12,7 @@ import com.cp.friend.repository.FriendshipRepository;
 import com.cp.friend.repository.InterestRepository;
 import com.cp.friend.repository.UserInterestRepository;
 import com.cp.friend.repository.UserRepository;
+import com.cp.friend.event.FriendRequestDeclinedEvent;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -761,9 +762,12 @@ class FriendRequestServiceTest {
         );
 
         verify(friendRequestRepository)
-                .save(request);
+        .save(request);
 
-        verifyNoInteractions(eventPublisher);
+        verify(eventPublisher)
+                .publishEvent(
+                        any(FriendRequestDeclinedEvent.class)
+        );
     }
 
     private void setUserId(
