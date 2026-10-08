@@ -13,6 +13,8 @@ public interface InterestRepository extends JpaRepository<Interest, UUID> {
 
     Optional<Interest> findByName(String name);
 
+    Optional<Interest> findByNameIgnoreCase(String name);
+
     boolean existsByName(String name);
 
     boolean existsByNameIgnoreCase(String name);

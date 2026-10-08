@@ -1,18 +1,99 @@
 document.addEventListener("DOMContentLoaded", () => {
   const notificationList = document.getElementById("friendRequestList");
+
   const messageList = document.querySelector(".message-list");
 
-  let notificationSocket = null;
-  let stompSubscriptionId = null;
+  const notificationBadge = document.getElementById("notificationBadge");
+
+  let currentUser = null;
+
+  let stompClient = null;
+
+  let notificationSubscription = null;
+
+  let isLoadingFriendRequests = false;
+
+  let isLoadingMessages = false;
+
+  /* =====================================================
+     UTILITY
+  ====================================================== */
+
+  function escapeHtml(value) {
+    return String(value ?? "")
+      .replace(/&/g, "&amp;")
+      .replace(/</g, "&lt;")
+      .replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;")
+      .replace(/'/g, "&#039;");
+  }
+
+  function getFullName(user) {
+    const firstname = user?.firstname || "";
+    const lastname = user?.lastname || "";
+
+    return `${firstname} ${lastname}`.trim() || "ไม่ระบุชื่อ";
+  }
+
+  function normalizeInterests(interests) {
+    if (!interests) {
+      return [];
+    }
+
+    if (Array.isArray(interests)) {
+      return interests
+        .map((interest) => {
+          if (typeof interest === "string") {
+            return interest.trim();
+          }
+
+          if (interest && typeof interest === "object") {
+            return String(interest.name || "").trim();
+          }
+
+          return "";
+        })
+        .filter(Boolean);
+    }
+
+    return [];
+  }
+
+  /* =====================================================
+     CURRENT USER
+  ====================================================== */
+
+  async function getCurrentUser() {
+    const response = await fetch("/api/users/me", {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+      },
+      credentials: "include",
+    });
+
+    if (response.status === 401 || response.status === 403) {
+      window.location.href = "/login";
+      throw new Error("ยังไม่ได้เข้าสู่ระบบ");
+    }
+
+    if (!response.ok) {
+      throw new Error(`โหลดข้อมูลผู้ใช้ไม่สำเร็จ (${response.status})`);
+    }
+
+    return await response.json();
+  }
 
   /* =====================================================
      LOAD FRIEND REQUESTS
   ====================================================== */
 
   async function loadFriendRequests() {
-    if (!notificationList) {
+    if (!notificationList || isLoadingFriendRequests) {
       return;
     }
+
+    isLoadingFriendRequests = true;
 
     try {
       const response = await fetch("/api/friend-requests/incoming", {
@@ -23,6 +104,11 @@ document.addEventListener("DOMContentLoaded", () => {
         credentials: "include",
       });
 
+      if (response.status === 401 || response.status === 403) {
+        window.location.href = "/login";
+        return;
+      }
+
       if (!response.ok) {
         throw new Error(`โหลดคำขอเป็นเพื่อนไม่สำเร็จ (${response.status})`);
       }
@@ -31,7 +117,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
       notificationList.innerHTML = "";
 
-      if (!requests || requests.length === 0) {
+      if (!Array.isArray(requests) || requests.length === 0) {
         notificationList.innerHTML = `
           <div class="friend-empty">
             ไม่มีคำขอเป็นเพื่อน
@@ -52,6 +138,8 @@ document.addEventListener("DOMContentLoaded", () => {
           ไม่สามารถโหลดคำขอเป็นเพื่อนได้
         </div>
       `;
+    } finally {
+      isLoadingFriendRequests = false;
     }
   }
 
@@ -60,45 +148,85 @@ document.addEventListener("DOMContentLoaded", () => {
   ====================================================== */
 
   function createFriendRequestCard(request) {
+    if (!notificationList || !request) {
+      return;
+    }
+
     const card = document.createElement("div");
 
     card.className = "friend-request-card";
 
-    card.dataset.requestId = request.id;
+    card.dataset.requestId = request.id || "";
 
-    const fullname =
-      `${request.firstname || ""} ${request.lastname || ""}`.trim();
+    const userId = request.userId || "";
+
+    const fullname = getFullName(request);
 
     const image = request.imageUrl || "/images/man.jpg";
 
+    const year =
+      request.year !== null && request.year !== undefined
+        ? `ปี ${request.year}`
+        : "";
+
+    const bio = request.bio || "";
+
+    const interests = normalizeInterests(request.interests);
+
+    const interestsJson = JSON.stringify(interests);
+
+    /*
+     * สำคัญ:
+     *
+     * data-id = userId
+     * ไม่ใช่ request.id
+     *
+     * เพราะ Friend Profile Popup ต้องใช้
+     * ID ของ "ผู้ส่งคำขอ"
+     */
     card.innerHTML = `
       <div
         class="friend-info friend-profile-trigger"
         data-profile
-        data-name="${fullname || "ไม่ระบุชื่อ"}"
-        data-image="${image}"
+        data-id="${escapeHtml(userId)}"
+        data-name="${escapeHtml(fullname)}"
+        data-image="${escapeHtml(image)}"
+        data-year="${escapeHtml(request.year ?? "")}"
+        data-bio="${escapeHtml(bio)}"
+        data-interests="${escapeHtml(interests.join(", "))}"
+        data-status="none"
       >
+
         <div class="friend-avatar">
           <img
-            src="${image}"
-            alt="${fullname || "เพื่อน"}"
+            src="${escapeHtml(image)}"
+            alt="${escapeHtml(fullname)}"
+            onerror="this.src='/images/man.jpg'"
           />
         </div>
 
         <div class="friend-detail">
+
           <div class="friend-name">
-            ${fullname || "ไม่ระบุชื่อ"}
+            ${escapeHtml(fullname)}
           </div>
 
-          <div class="friend-year"></div>
+          <div class="friend-year">
+            ${escapeHtml(year)}
+          </div>
+
         </div>
+
       </div>
 
+
       <div class="request-actions">
+
         <button
           type="button"
           class="accept-button"
-          onclick="acceptRequest(this)"
+          data-action="accept"
+          data-request-id="${escapeHtml(request.id || "")}"
         >
           ยอมรับ
         </button>
@@ -106,38 +234,53 @@ document.addEventListener("DOMContentLoaded", () => {
         <button
           type="button"
           class="decline-button"
-          onclick="declineRequest(this)"
+          data-action="decline"
+          data-request-id="${escapeHtml(request.id || "")}"
         >
           ปฏิเสธ
         </button>
+
       </div>
     `;
+
+    /*
+     * เก็บ interests ไว้แบบ JSON ด้วย
+     * เผื่อ popup ต้องการข้อมูล object ในอนาคต
+     */
+    card.dataset.interests = interestsJson;
 
     notificationList.appendChild(card);
   }
 
   /* =====================================================
-     ACCEPT FRIEND REQUEST
+     ACCEPT REQUEST
   ====================================================== */
 
-  window.acceptRequest = async function (button) {
-    const card = button.closest(".friend-request-card");
-
-    if (!card) {
+  async function acceptRequest(button) {
+    if (!button) {
       return;
     }
 
-    const requestId = card.dataset.requestId;
+    const requestId = button.dataset.requestId;
 
     if (!requestId) {
+      console.error("ไม่พบ friend request ID");
       return;
+    }
+
+    const card = button.closest(".friend-request-card");
+
+    const buttons = card?.querySelectorAll("button");
+
+    if (buttons) {
+      buttons.forEach((item) => {
+        item.disabled = true;
+      });
     }
 
     try {
-      button.disabled = true;
-
       const response = await fetch(
-        `/api/friend-requests/${requestId}/accept`,
+        `/api/friend-requests/${encodeURIComponent(requestId)}/accept`,
         {
           method: "POST",
           headers: {
@@ -148,41 +291,76 @@ document.addEventListener("DOMContentLoaded", () => {
       );
 
       if (!response.ok) {
-        throw new Error(`Accept ไม่สำเร็จ (${response.status})`);
+        const errorText = await response.text();
+
+        throw new Error(
+          `ยอมรับคำขอไม่สำเร็จ (${response.status}) ${errorText}`,
+        );
       }
 
+      await response.json();
+
       removeRequestCard(card);
+
+      await updateNotificationBadge();
+
+      if (window.Swal) {
+        await window.Swal.fire({
+          icon: "success",
+          title: "เพิ่มเพื่อนสำเร็จ",
+          text: "คุณเป็นเพื่อนกันแล้ว",
+          confirmButtonText: "ตกลง",
+        });
+      }
     } catch (error) {
-      console.error("ยอมรับคำขอเป็นเพื่อนล้มเหลว:", error);
+      console.error("ยอมรับคำขอไม่สำเร็จ:", error);
 
-      button.disabled = false;
+      if (buttons) {
+        buttons.forEach((item) => {
+          item.disabled = false;
+        });
+      }
 
-      alert("ไม่สามารถยอมรับคำขอเป็นเพื่อนได้");
+      if (window.Swal) {
+        await window.Swal.fire({
+          icon: "error",
+          title: "เกิดข้อผิดพลาด",
+          text: "ไม่สามารถยอมรับคำขอเป็นเพื่อนได้",
+          confirmButtonText: "ตกลง",
+        });
+      }
     }
-  };
+  }
 
   /* =====================================================
-     DECLINE FRIEND REQUEST
+     DECLINE REQUEST
   ====================================================== */
 
-  window.declineRequest = async function (button) {
-    const card = button.closest(".friend-request-card");
-
-    if (!card) {
+  async function declineRequest(button) {
+    if (!button) {
       return;
     }
 
-    const requestId = card.dataset.requestId;
+    const requestId = button.dataset.requestId;
 
     if (!requestId) {
+      console.error("ไม่พบ friend request ID");
       return;
+    }
+
+    const card = button.closest(".friend-request-card");
+
+    const buttons = card?.querySelectorAll("button");
+
+    if (buttons) {
+      buttons.forEach((item) => {
+        item.disabled = true;
+      });
     }
 
     try {
-      button.disabled = true;
-
       const response = await fetch(
-        `/api/friend-requests/${requestId}/decline`,
+        `/api/friend-requests/${encodeURIComponent(requestId)}/decline`,
         {
           method: "POST",
           headers: {
@@ -193,52 +371,109 @@ document.addEventListener("DOMContentLoaded", () => {
       );
 
       if (!response.ok) {
-        throw new Error(`Decline ไม่สำเร็จ (${response.status})`);
+        const errorText = await response.text();
+
+        throw new Error(
+          `ปฏิเสธคำขอไม่สำเร็จ (${response.status}) ${errorText}`,
+        );
       }
 
+      await response.json();
+
       removeRequestCard(card);
+
+      await updateNotificationBadge();
+
+      if (window.Swal) {
+        await window.Swal.fire({
+          icon: "success",
+          title: "ปฏิเสธคำขอแล้ว",
+          confirmButtonText: "ตกลง",
+        });
+      }
     } catch (error) {
-      console.error("ปฏิเสธคำขอเป็นเพื่อนล้มเหลว:", error);
+      console.error("ปฏิเสธคำขอไม่สำเร็จ:", error);
 
-      button.disabled = false;
+      if (buttons) {
+        buttons.forEach((item) => {
+          item.disabled = false;
+        });
+      }
 
-      alert("ไม่สามารถปฏิเสธคำขอเป็นเพื่อนได้");
+      if (window.Swal) {
+        await window.Swal.fire({
+          icon: "error",
+          title: "เกิดข้อผิดพลาด",
+          text: "ไม่สามารถปฏิเสธคำขอเป็นเพื่อนได้",
+          confirmButtonText: "ตกลง",
+        });
+      }
     }
-  };
+  }
 
   /* =====================================================
-     REMOVE FRIEND REQUEST CARD
+     REMOVE REQUEST CARD
   ====================================================== */
 
   function removeRequestCard(card) {
-    card.style.transition = "0.25s";
+    if (!card) {
+      return;
+    }
+
     card.style.opacity = "0";
+    card.style.transform = "scale(0.98)";
 
     setTimeout(() => {
       card.remove();
 
-      const remainingCards = notificationList.querySelectorAll(
-        ".friend-request-card",
-      );
-
-      if (remainingCards.length === 0) {
+      if (
+        notificationList &&
+        !notificationList.querySelector(".friend-request-card")
+      ) {
         notificationList.innerHTML = `
           <div class="friend-empty">
             ไม่มีคำขอเป็นเพื่อน
           </div>
         `;
       }
-    }, 250);
+    }, 180);
   }
 
   /* =====================================================
-     LOAD EXISTING MESSAGE NOTIFICATIONS
+     EVENT DELEGATION
+  ====================================================== */
+
+  if (notificationList) {
+    notificationList.addEventListener("click", (event) => {
+      const button = event.target.closest("button[data-action]");
+
+      if (!button) {
+        return;
+      }
+
+      const action = button.dataset.action;
+
+      if (action === "accept") {
+        acceptRequest(button);
+        return;
+      }
+
+      if (action === "decline") {
+        declineRequest(button);
+      }
+    });
+  }
+
+  /* =====================================================
+     LOAD MESSAGE NOTIFICATIONS
   ====================================================== */
 
   async function loadMessageNotifications() {
-    if (!messageList) {
+    if (!messageList || isLoadingMessages) {
       return;
     }
+
+    isLoadingMessages = true;
 
     try {
       const response = await fetch(
@@ -252,26 +487,36 @@ document.addEventListener("DOMContentLoaded", () => {
         },
       );
 
+      if (response.status === 401 || response.status === 403) {
+        window.location.href = "/login";
+        return;
+      }
+
       if (!response.ok) {
-        throw new Error(
-          `โหลดการแจ้งเตือนไม่สำเร็จ (${response.status})`,
-        );
+        throw new Error(`โหลดข้อความแจ้งเตือนไม่สำเร็จ (${response.status})`);
       }
 
       const notifications = await response.json();
 
       messageList.innerHTML = "";
 
-      const messageNotifications = notifications.filter(
-        (notification) => notification.type === "NEW_MESSAGE",
-      );
+      const messages = Array.isArray(notifications)
+        ? notifications.filter(
+            (notification) => notification?.type === "NEW_MESSAGE",
+          )
+        : [];
 
-      if (messageNotifications.length === 0) {
-        showNoMessageNotification();
+      if (messages.length === 0) {
+        messageList.innerHTML = `
+          <div class="friend-empty">
+            ไม่มีข้อความ
+          </div>
+        `;
+
         return;
       }
 
-      messageNotifications.forEach((notification) => {
+      messages.forEach((notification) => {
         createMessageNotification(notification);
       });
     } catch (error) {
@@ -279,9 +524,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
       messageList.innerHTML = `
         <div class="friend-empty">
-          ไม่สามารถโหลดข้อความแจ้งเตือนได้
+          ไม่สามารถโหลดข้อความได้
         </div>
       `;
+    } finally {
+      isLoadingMessages = false;
     }
   }
 
@@ -289,411 +536,300 @@ document.addEventListener("DOMContentLoaded", () => {
      CREATE MESSAGE NOTIFICATION
   ====================================================== */
 
-  function createMessageNotification(notification, isNew = false) {
-    if (!messageList) {
-      return;
-    }
-
-    const actor = notification.actor;
-
-    const fullname = actor
-      ? `${actor.firstname || ""} ${actor.lastname || ""}`.trim()
-      : "ไม่ระบุชื่อ";
-
-    const image =
-      actor && actor.imageUrl
-        ? actor.imageUrl
-        : "/images/man2.jpg";
-
+  function createMessageNotification(notification) {
     const item = document.createElement("div");
 
-    item.className = "message-item";
+    item.className = "message-notification-item";
 
     if (!notification.isRead) {
       item.classList.add("unread");
     }
 
     item.dataset.notificationId = notification.id || "";
+
     item.dataset.roomId = notification.roomId || "";
 
+    const actor = notification.actor;
+
+    const image = actor?.imageUrl || "/images/man.jpg";
+
+    const actorName = getFullName(actor);
+
     item.innerHTML = `
-      <div class="message-avatar">
+      <div class="message-notification-avatar">
+
         <img
-          src="${image}"
-          alt="${fullname}"
+          src="${escapeHtml(image)}"
+          alt="${escapeHtml(actorName)}"
+          onerror="this.src='/images/man.jpg'"
         />
+
       </div>
 
-      <div class="message-text">
-        ${fullname} ส่งข้อความใหม่ถึงคุณ!
+
+      <div class="message-notification-content">
+
+        <div class="message-notification-title">
+          ${escapeHtml(notification.title || "ข้อความใหม่")}
+        </div>
+
+        <div class="message-notification-text">
+          ${escapeHtml(notification.message || "มีข้อความใหม่")}
+        </div>
+
       </div>
     `;
 
-    /*
-     * ถ้าเป็นข้อความใหม่ ให้เอาไว้ด้านบนสุด
-     */
-    if (isNew) {
-      messageList.prepend(item);
-    } else {
-      messageList.appendChild(item);
-    }
-
-    /*
-     * กด notification
-     */
     item.addEventListener("click", async () => {
-      const notificationId = item.dataset.notificationId;
-      const roomId = item.dataset.roomId;
-
-      /*
-       * mark notification เป็นอ่านแล้ว
-       */
-      if (notificationId) {
-        try {
-          await fetch(
-            `/api/notifications/${notificationId}/read`,
-            {
-              method: "POST",
-              headers: {
-                Accept: "application/json",
-              },
-              credentials: "include",
-            },
-          );
-
-          item.classList.remove("unread");
-        } catch (error) {
-          console.error(
-            "mark notification เป็นอ่านแล้วไม่สำเร็จ:",
-            error,
-          );
-        }
-      }
-
-      /*
-       * ถ้ามี roomId ให้เปิดห้องนั้น
-       */
-      if (roomId) {
-        window.location.href = `/room?id=${roomId}`;
-      }
+      await openMessageNotification(notification);
     });
+
+    messageList.appendChild(item);
   }
 
   /* =====================================================
-     EMPTY MESSAGE NOTIFICATION
+     OPEN MESSAGE NOTIFICATION
   ====================================================== */
 
-  function showNoMessageNotification() {
-    if (!messageList) {
+  async function openMessageNotification(notification) {
+    if (!notification) {
       return;
     }
 
-    messageList.innerHTML = `
-      <div class="friend-empty">
-        ไม่มีข้อความใหม่
-      </div>
-    `;
-  }
-
-  /* =====================================================
-     GET CURRENT USER
-  ====================================================== */
-
-  async function getCurrentUser() {
-    const response = await fetch("/api/users/me", {
-      method: "GET",
-      headers: {
-        Accept: "application/json",
-      },
-      credentials: "include",
-    });
-
-    if (!response.ok) {
-      throw new Error(
-        `โหลดข้อมูลผู้ใช้ไม่สำเร็จ (${response.status})`,
-      );
+    if (notification.id) {
+      try {
+        await fetch(
+          `/api/notifications/${encodeURIComponent(notification.id)}/read`,
+          {
+            method: "POST",
+            headers: {
+              Accept: "application/json",
+            },
+            credentials: "include",
+          },
+        );
+      } catch (error) {
+        console.error("Mark notification read failed:", error);
+      }
     }
 
-    return await response.json();
+    await updateNotificationBadge();
+
+    if (notification.roomId) {
+      window.location.href = `/room?id=${encodeURIComponent(
+        notification.roomId,
+      )}`;
+    }
   }
 
   /* =====================================================
-     LOAD UNREAD COUNT
+     NOTIFICATION BADGE
   ====================================================== */
 
-  async function loadUnreadCount() {
+  async function updateNotificationBadge() {
+    if (!notificationBadge) {
+      return;
+    }
+
     try {
-      const response = await fetch(
-        "/api/notifications/unread-count",
-        {
-          method: "GET",
-          headers: {
-            Accept: "application/json",
-          },
-          credentials: "include",
+      const response = await fetch("/api/notifications/unread-count", {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
         },
-      );
+        credentials: "include",
+      });
 
       if (!response.ok) {
-        throw new Error(
-          `โหลดจำนวนแจ้งเตือนไม่สำเร็จ (${response.status})`,
-        );
+        throw new Error(`โหลดจำนวนแจ้งเตือนไม่สำเร็จ (${response.status})`);
       }
 
       const data = await response.json();
 
-      console.log(
-        "จำนวน Notification ที่ยังไม่อ่าน:",
-        data.count,
-      );
+      const count = Number(data?.count || 0);
 
-      /*
-       * ตอนนี้ notification.html ยังไม่มี badge
-       * ดังนั้นเก็บไว้ใน console ก่อน
-       */
-    } catch (error) {
-      console.error(
-        "โหลดจำนวนแจ้งเตือนไม่สำเร็จ:",
-        error,
-      );
-    }
-  }
-
-  /* =====================================================
-     STOMP FRAME HELPERS
-  ====================================================== */
-
-  function sendStompFrame(command, headers = {}, body = "") {
-    if (!notificationSocket) {
-      return;
-    }
-
-    let frame = `${command}\n`;
-
-    Object.entries(headers).forEach(([key, value]) => {
-      frame += `${key}:${value}\n`;
-    });
-
-    frame += `\n`;
-    frame += body;
-    frame += "\0";
-
-    notificationSocket.send(frame);
-  }
-
-  /* =====================================================
-     PARSE STOMP FRAME
-  ====================================================== */
-
-  function parseStompFrame(data) {
-    const nullIndex = data.indexOf("\0");
-
-    const frameText =
-      nullIndex >= 0
-        ? data.substring(0, nullIndex)
-        : data;
-
-    const separatorIndex = frameText.indexOf("\n\n");
-
-    if (separatorIndex === -1) {
-      return null;
-    }
-
-    const headerText = frameText.substring(
-      0,
-      separatorIndex,
-    );
-
-    const body = frameText.substring(
-      separatorIndex + 2,
-    );
-
-    const lines = headerText.split("\n");
-
-    const command = lines.shift();
-
-    const headers = {};
-
-    lines.forEach((line) => {
-      const separator = line.indexOf(":");
-
-      if (separator === -1) {
+      if (!Number.isFinite(count) || count <= 0) {
+        notificationBadge.textContent = "";
+        notificationBadge.classList.remove("show");
         return;
       }
 
-      const key = line.substring(0, separator);
-      const value = line.substring(separator + 1);
+      notificationBadge.textContent = count > 99 ? "99+" : String(count);
 
-      headers[key] = value;
-    });
-
-    return {
-      command,
-      headers,
-      body,
-    };
-  }
-
-  /* =====================================================
-     CONNECT NOTIFICATION WEBSOCKET
-  ====================================================== */
-
-  async function connectNotificationWebSocket() {
-    try {
-      const user = await getCurrentUser();
-
-      if (!user || !user.id) {
-        throw new Error("ไม่พบ user.id ของผู้ใช้ปัจจุบัน");
-      }
-
-      console.log(
-        "Current notification user:",
-        user.id,
-      );
-
-      const protocol =
-        window.location.protocol === "https:"
-          ? "wss:"
-          : "ws:";
-
-      const socketUrl =
-        `${protocol}//${window.location.host}/ws`;
-
-      notificationSocket =
-        new WebSocket(socketUrl);
-
-      notificationSocket.onopen = () => {
-        console.log(
-          "Notification WebSocket connected",
-        );
-
-        /*
-         * STOMP CONNECT
-         */
-        sendStompFrame("CONNECT", {
-          "accept-version": "1.2",
-          host: window.location.host,
-        });
-      };
-
-      notificationSocket.onmessage = (event) => {
-        const frame = parseStompFrame(event.data);
-
-        if (!frame) {
-          return;
-        }
-
-        console.log(
-          "Notification STOMP frame:",
-          frame,
-        );
-
-        /*
-         * Server ตอบ CONNECTED
-         */
-        if (frame.command === "CONNECTED") {
-          console.log(
-            "Notification STOMP connected",
-          );
-
-          stompSubscriptionId =
-            `notification-${user.id}`;
-
-          sendStompFrame("SUBSCRIBE", {
-            id: stompSubscriptionId,
-            destination:
-              `/topic/notifications/${user.id}`,
-            ack: "auto",
-          });
-
-          console.log(
-            "Subscribed:",
-            `/topic/notifications/${user.id}`,
-          );
-
-          return;
-        }
-
-        /*
-         * มี notification ใหม่
-         */
-        if (frame.command === "MESSAGE") {
-          try {
-            const notification =
-              JSON.parse(frame.body);
-
-            console.log(
-              "New notification received:",
-              notification,
-            );
-
-            /*
-             * สนใจเฉพาะข้อความใหม่
-             */
-            if (
-              notification.type === "NEW_MESSAGE"
-            ) {
-              createMessageNotification(
-                notification,
-                true,
-              );
-
-              /*
-               * ถ้ามีข้อความใหม่เข้ามา
-               * เอา "ไม่มีข้อความใหม่" ออก
-               */
-              const emptyMessage =
-                messageList?.querySelector(
-                  ".friend-empty",
-                );
-
-              if (emptyMessage) {
-                emptyMessage.remove();
-              }
-            }
-          } catch (error) {
-            console.error(
-              "อ่าน notification ไม่สำเร็จ:",
-              error,
-            );
-          }
-        }
-      };
-
-      notificationSocket.onerror = (error) => {
-        console.error(
-          "Notification WebSocket error:",
-          error,
-        );
-      };
-
-      notificationSocket.onclose = () => {
-        console.log(
-          "Notification WebSocket disconnected",
-        );
-
-        /*
-         * ยังไม่ reconnect อัตโนมัติ
-         * เพื่อป้องกันเปิด connection ซ้ำไม่หยุด
-         */
-      };
+      notificationBadge.classList.add("show");
     } catch (error) {
-      console.error(
-        "เชื่อมต่อ Notification WebSocket ไม่สำเร็จ:",
-        error,
-      );
+      console.error("โหลด Badge ไม่สำเร็จ:", error);
     }
   }
 
   /* =====================================================
-     INITIAL LOAD
+     STOMP CONNECTION
   ====================================================== */
 
-  loadFriendRequests();
+  function connectNotificationWebSocket() {
+    if (!currentUser?.id) {
+      return;
+    }
 
-  loadMessageNotifications();
+    if (typeof StompJs === "undefined" || !StompJs.Client) {
+      console.error("ไม่พบ StompJs library");
+      return;
+    }
 
-  loadUnreadCount();
+    if (stompClient && stompClient.connected) {
+      return;
+    }
 
-  connectNotificationWebSocket();
+    if (stompClient) {
+      return;
+    }
+
+    const scheme = window.location.protocol === "https:" ? "wss" : "ws";
+
+    stompClient = new StompJs.Client({
+      brokerURL: `${scheme}://${window.location.host}/ws`,
+
+      reconnectDelay: 5000,
+
+      debug: () => {},
+    });
+
+    stompClient.onStompError = (frame) => {
+      console.error("STOMP error:", frame.headers?.message);
+    };
+
+    stompClient.onWebSocketError = (error) => {
+      console.error("WebSocket error:", error);
+    };
+
+    stompClient.onConnect = () => {
+      console.log("Notification WebSocket connected");
+
+      /*
+       * ป้องกัน subscribe ซ้ำ
+       */
+      if (notificationSubscription) {
+        try {
+          notificationSubscription.unsubscribe();
+        } catch (error) {
+          console.warn("ยกเลิก subscription เดิมไม่สำเร็จ:", error);
+        }
+
+        notificationSubscription = null;
+      }
+
+      notificationSubscription = stompClient.subscribe(
+        `/topic/notifications/${currentUser.id}`,
+        async (frame) => {
+          try {
+            const notification = JSON.parse(frame.body);
+
+            if (!notification || !notification.type) {
+              return;
+            }
+
+            /*
+             * FRIEND_REQUEST
+             *
+             * คนอื่นส่งคำขอเป็นเพื่อนมา
+             */
+            if (notification.type === "FRIEND_REQUEST") {
+              await loadFriendRequests();
+
+              await updateNotificationBadge();
+
+              return;
+            }
+
+            /*
+             * NEW_MESSAGE
+             *
+             * มีข้อความใหม่
+             */
+            if (notification.type === "NEW_MESSAGE") {
+              await loadMessageNotifications();
+
+              await updateNotificationBadge();
+
+              return;
+            }
+
+            /*
+             * Notification type อื่น
+             */
+            await updateNotificationBadge();
+          } catch (error) {
+            console.error("อ่าน Notification WebSocket ไม่สำเร็จ:", error);
+          }
+        },
+      );
+
+      /*
+       * sync badge ทันทีหลัง connect
+       */
+      updateNotificationBadge();
+    };
+
+    stompClient.activate();
+  }
+
+  /* =====================================================
+     STOP WEBSOCKET
+  ====================================================== */
+
+  function disconnectNotificationWebSocket() {
+    if (!stompClient) {
+      return;
+    }
+
+    try {
+      if (notificationSubscription) {
+        notificationSubscription.unsubscribe();
+      }
+    } catch (error) {
+      console.warn("ยกเลิก Notification subscription ไม่สำเร็จ:", error);
+    }
+
+    notificationSubscription = null;
+
+    stompClient.deactivate();
+
+    stompClient = null;
+  }
+
+  /* =====================================================
+     PAGEHIDE
+  ====================================================== */
+
+  window.addEventListener("pagehide", () => {
+    disconnectNotificationWebSocket();
+  });
+
+  /* =====================================================
+     START
+  ====================================================== */
+
+  async function init() {
+    try {
+      currentUser = await getCurrentUser();
+
+      /*
+       * โหลดข้อมูลพร้อมกัน
+       */
+      await Promise.all([
+        loadFriendRequests(),
+        loadMessageNotifications(),
+        updateNotificationBadge(),
+      ]);
+
+      /*
+       * WebSocket ต้องหลังจากรู้ user.id
+       */
+      connectNotificationWebSocket();
+    } catch (error) {
+      console.error("Notification page initialization failed:", error);
+    }
+  }
+
+  init();
 });

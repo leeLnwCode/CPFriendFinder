@@ -2,28 +2,27 @@ package com.cp.friend.service;
 
 import com.cp.friend.dto.response.NotificationResponse;
 import com.cp.friend.event.FriendRequestAcceptedEvent;
-import com.cp.friend.event.FriendRequestDeclinedEvent;
 import com.cp.friend.event.FriendRequestSentEvent;
 import com.cp.friend.factory.NotificationFactory;
 import com.cp.friend.model.*;
 import com.cp.friend.repository.NotificationRepository;
 import com.cp.friend.repository.RoomMemberRepository;
+
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.*;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -43,10 +42,6 @@ class NotificationServiceTest {
 
     private NotificationService notificationService;
 
-    private User sender;
-    private User receiver;
-    private FriendRequest friendRequest;
-
     @BeforeEach
     void setUp() {
         notificationService = new NotificationService(
@@ -55,188 +50,376 @@ class NotificationServiceTest {
                 notificationFactory,
                 messagingTemplate
         );
-
-        sender = new User();
-        setEntityId(sender, UUID.randomUUID());
-        sender.setFirstname("Somchai");
-        sender.setLastname("Jaidee");
-
-        receiver = new User();
-        setEntityId(receiver, UUID.randomUUID());
-        receiver.setFirstname("Somsri");
-        receiver.setLastname("Rukdee");
-
-        friendRequest = new FriendRequest();
-        setEntityId(friendRequest, UUID.randomUUID());
-        friendRequest.setSender(sender);
-        friendRequest.setReceiver(receiver);
-        friendRequest.setStatus(FriendRequest.Status.PENDING);
     }
 
-    @Test
-    @DisplayName("Observer: Should handle FriendRequestSentEvent and push notification to receiver")
-    void testOnFriendRequestSent() {
+    private User user(UUID id, String firstname) {
+        User user = new User();
+        setUserId(user, id);
+        user.setFirstname(firstname);
+        user.setLastname("User");
+        user.setImageUrl("avatar.png");
+        return user;
+    }
+
+    private Notification notification(User owner) {
         Notification notification = new Notification();
-        setEntityId(notification, UUID.randomUUID());
-        notification.setUser(receiver);
-        notification.setActor(sender);
+        notification.setUser(owner);
         notification.setType(Notification.Type.FRIEND_REQUEST);
-        notification.setTitle("New friend request");
-        notification.setMessage("Somchai Jaidee sent you a friend request");
-
-        when(notificationFactory.friendRequestReceived(friendRequest)).thenReturn(notification);
-        when(notificationRepository.save(notification)).thenReturn(notification);
-
-        notificationService.onFriendRequestSent(new FriendRequestSentEvent(friendRequest));
-
-        verify(notificationRepository).save(notification);
-        verify(messagingTemplate).convertAndSend(eq("/topic/notifications/" + receiver.getId()), any(NotificationResponse.class));
+        notification.setTitle("Title");
+        notification.setMessage("Message");
+        return notification;
     }
 
     @Test
-    @DisplayName("Observer: Should handle FriendRequestAcceptedEvent and push notification to sender")
-    void testOnFriendRequestAccepted() {
-        friendRequest.setStatus(FriendRequest.Status.ACCEPTED);
+    void list_allNotifications_mapsResponses() {
+        UUID userId = UUID.randomUUID();
+        User owner = user(userId, "Owner");
 
-        Notification notification = new Notification();
-        setEntityId(notification, UUID.randomUUID());
-        notification.setUser(sender);
-        notification.setActor(receiver);
-        notification.setType(Notification.Type.FRIEND_REQUEST);
-        notification.setTitle("Friend request accepted");
-        notification.setMessage("Somsri Rukdee accepted your friend request");
+        Notification n = notification(owner);
 
-        when(notificationFactory.friendRequestAccepted(friendRequest)).thenReturn(notification);
-        when(notificationRepository.save(notification)).thenReturn(notification);
+        when(notificationRepository.findByUserId(
+                eq(userId),
+                any(Pageable.class)
+        )).thenReturn(
+                new PageImpl<>(List.of(n))
+        );
 
-        notificationService.onFriendRequestAccepted(new FriendRequestAcceptedEvent(friendRequest));
+        assertEquals(
+                1,
+                notificationService.list(
+                        userId,
+                        false,
+                        0,
+                        20
+                ).size()
+        );
 
-        verify(notificationRepository).save(notification);
-        verify(messagingTemplate).convertAndSend(eq("/topic/notifications/" + sender.getId()), any(NotificationResponse.class));
+        verify(notificationRepository)
+                .findByUserId(
+                        eq(userId),
+                        any(Pageable.class)
+                );
     }
 
     @Test
-    @DisplayName("Observer: Should handle FriendRequestDeclinedEvent and push notification to sender")
-    void testOnFriendRequestDeclined() {
-        friendRequest.setStatus(FriendRequest.Status.DECLINED);
+    void list_unreadOnly_usesUnreadRepositoryQuery() {
+        UUID userId = UUID.randomUUID();
 
-        Notification notification = new Notification();
-        setEntityId(notification, UUID.randomUUID());
-        notification.setUser(sender);
-        notification.setActor(receiver);
-        notification.setType(Notification.Type.FRIEND_REQUEST);
-        notification.setTitle("Friend request declined");
-        notification.setMessage("Somsri Rukdee declined your friend request");
+        when(notificationRepository.findUnreadByUserId(
+                eq(userId),
+                any(Pageable.class)
+        )).thenReturn(
+                Page.empty()
+        );
 
-        when(notificationFactory.friendRequestDeclined(friendRequest)).thenReturn(notification);
-        when(notificationRepository.save(notification)).thenReturn(notification);
+        notificationService.list(
+                userId,
+                true,
+                0,
+                20
+        );
 
-        notificationService.onFriendRequestDeclined(new FriendRequestDeclinedEvent(friendRequest));
+        verify(notificationRepository)
+                .findUnreadByUserId(
+                        eq(userId),
+                        any(Pageable.class)
+                );
 
-        verify(notificationRepository).save(notification);
-        verify(messagingTemplate).convertAndSend(eq("/topic/notifications/" + sender.getId()), any(NotificationResponse.class));
+        verify(notificationRepository, never())
+                .findByUserId(
+                        any(),
+                        any()
+                );
     }
 
     @Test
-    @DisplayName("Should notify room members excluding the message sender")
-    void testNotifyNewMessageExcludesSender() {
-        ChatRoom room = new ChatRoom();
-        setEntityId(room, UUID.randomUUID());
-        room.setRoomName("Study Room");
+    void list_outOfRangePagination_isClamped() {
+        UUID userId = UUID.randomUUID();
 
-        Message message = new Message();
-        setEntityId(message, UUID.randomUUID());
-        message.setRoom(room);
-        message.setSender(sender);
-        message.setContent("Hello team");
+        when(notificationRepository.findByUserId(
+                eq(userId),
+                any(Pageable.class)
+        )).thenReturn(
+                Page.empty()
+        );
 
-        RoomMember senderMember = new RoomMember();
-        senderMember.setUser(sender);
+        notificationService.list(
+                userId,
+                false,
+                -5,
+                1000
+        );
 
-        RoomMember recipientMember = new RoomMember();
-        recipientMember.setUser(receiver);
+        ArgumentCaptor<Pageable> captor =
+                ArgumentCaptor.forClass(
+                        Pageable.class
+                );
 
-        when(roomMemberRepository.findActiveMembers(room.getId())).thenReturn(List.of(senderMember, recipientMember));
+        verify(notificationRepository)
+                .findByUserId(
+                        eq(userId),
+                        captor.capture()
+                );
 
-        Notification newNotification = new Notification();
-        setEntityId(newNotification, UUID.randomUUID());
-        newNotification.setUser(receiver);
-        newNotification.setActor(sender);
-        newNotification.setType(Notification.Type.NEW_MESSAGE);
+        assertEquals(
+                0,
+                captor.getValue().getPageNumber()
+        );
 
-        when(notificationRepository.findFirstByUserIdAndRoomIdAndTypeAndIsReadFalse(receiver.getId(), room.getId(), Notification.Type.NEW_MESSAGE))
-                .thenReturn(java.util.Optional.empty());
-        when(notificationFactory.newMessage(message, receiver)).thenReturn(newNotification);
-        when(notificationRepository.save(any(Notification.class))).thenReturn(newNotification);
-
-        notificationService.notifyNewMessage(message);
-
-        // Sender should NOT receive notification, only receiver should
-        verify(messagingTemplate, never()).convertAndSend(eq("/topic/notifications/" + sender.getId()), any(NotificationResponse.class));
-        verify(messagingTemplate).convertAndSend(eq("/topic/notifications/" + receiver.getId()), any(NotificationResponse.class));
+        assertEquals(
+                50,
+                captor.getValue().getPageSize()
+        );
     }
 
     @Test
-    @DisplayName("Should return list of notifications for user")
-    void testListNotifications() {
-        UUID userId = receiver.getId();
-        Notification n = new Notification();
-        setEntityId(n, UUID.randomUUID());
-        n.setUser(receiver);
-        n.setType(Notification.Type.SYSTEM);
-        n.setTitle("Welcome");
-        n.setMessage("Welcome to CP Friend Finder");
+    void unreadCount_returnsRepositoryCount() {
+        UUID userId = UUID.randomUUID();
 
-        when(notificationRepository.findByUserId(eq(userId), any(Pageable.class)))
-                .thenReturn(new PageImpl<>(List.of(n)));
+        when(notificationRepository
+                .countByUserIdAndIsReadFalse(userId))
+                .thenReturn(3L);
 
-        List<NotificationResponse> result = notificationService.list(userId, false, 0, 10);
-
-        assertNotNull(result);
-        assertEquals(1, result.size());
-        assertEquals("Welcome", result.get(0).title());
+        assertEquals(
+                3L,
+                notificationService.unreadCount(userId)
+        );
     }
 
     @Test
-    @DisplayName("Should query unread notification count")
-    void testUnreadCount() {
-        UUID userId = receiver.getId();
-        when(notificationRepository.countByUserIdAndIsReadFalse(userId)).thenReturn(5L);
+    void markAsRead_callsScopedUpdate() {
+        UUID userId = UUID.randomUUID();
+        UUID notificationId = UUID.randomUUID();
 
-        long count = notificationService.unreadCount(userId);
+        notificationService.markAsRead(
+                userId,
+                notificationId
+        );
 
-        assertEquals(5L, count);
-        verify(notificationRepository).countByUserIdAndIsReadFalse(userId);
+        verify(notificationRepository)
+                .markAsRead(
+                        notificationId,
+                        userId
+                );
     }
 
     @Test
-    @DisplayName("Should mark notification as read")
-    void testMarkAsRead() {
-        UUID userId = receiver.getId();
-        UUID notifId = UUID.randomUUID();
-
-        notificationService.markAsRead(userId, notifId);
-
-        verify(notificationRepository).markAsRead(notifId, userId);
-    }
-
-    @Test
-    @DisplayName("Should mark all notifications as read")
-    void testMarkAllAsRead() {
-        UUID userId = receiver.getId();
+    void markAllAsRead_callsRepository() {
+        UUID userId = UUID.randomUUID();
 
         notificationService.markAllAsRead(userId);
 
-        verify(notificationRepository).markAllAsRead(userId);
+        verify(notificationRepository)
+                .markAllAsRead(userId);
     }
 
-    private void setEntityId(Object target, UUID id) {
+    @Test
+    void onFriendRequestSent_savesAndPushesNotification() {
+        UUID receiverId = UUID.randomUUID();
+
+        User sender =
+                user(UUID.randomUUID(), "Sender");
+
+        User receiver =
+                user(receiverId, "Receiver");
+
+        FriendRequest request =
+                new FriendRequest();
+
+        request.setSender(sender);
+        request.setReceiver(receiver);
+
+        Notification n =
+                notification(receiver);
+
+        when(notificationFactory
+                .friendRequestReceived(request))
+                .thenReturn(n);
+
+        when(notificationRepository.save(n))
+                .thenReturn(n);
+
+        notificationService.onFriendRequestSent(
+                new FriendRequestSentEvent(request)
+        );
+
+        verify(notificationRepository).save(n);
+
+        verify(messagingTemplate)
+                .convertAndSend(
+                        eq(
+                                "/topic/notifications/"
+                                        + receiverId
+                        ),
+                        any(NotificationResponse.class)
+                );
+    }
+
+    @Test
+    void onFriendRequestAccepted_savesAndPushesNotification() {
+        UUID senderId = UUID.randomUUID();
+
+        User sender =
+                user(senderId, "Sender");
+
+        User receiver =
+                user(UUID.randomUUID(), "Receiver");
+
+        FriendRequest request =
+                new FriendRequest();
+
+        request.setSender(sender);
+        request.setReceiver(receiver);
+
+        Notification n =
+                notification(sender);
+
+        when(notificationFactory
+                .friendRequestAccepted(request))
+                .thenReturn(n);
+
+        when(notificationRepository.save(n))
+                .thenReturn(n);
+
+        notificationService.onFriendRequestAccepted(
+                new FriendRequestAcceptedEvent(request)
+        );
+
+        verify(notificationRepository).save(n);
+
+        verify(messagingTemplate)
+                .convertAndSend(
+                        eq(
+                                "/topic/notifications/"
+                                        + senderId
+                        ),
+                        any(NotificationResponse.class)
+                );
+    }
+
+    @Test
+    void notifyNewMessage_reusesUnreadAndSkipsSender() {
+        UUID roomId = UUID.randomUUID();
+        UUID senderId = UUID.randomUUID();
+        UUID recipientId = UUID.randomUUID();
+
+        User sender =
+                user(senderId, "Sender");
+
+        User recipient =
+                user(recipientId, "Recipient");
+
+        ChatRoom room = new ChatRoom();
+        setRoomId(room, roomId);
+        room.setRoomName("Study Room");
+
+        Message message = new Message();
+        message.setRoom(room);
+        message.setSender(sender);
+
+        RoomMember senderMember =
+                new RoomMember();
+
+        senderMember.setRoom(room);
+        senderMember.setUser(sender);
+
+        RoomMember recipientMember =
+                new RoomMember();
+
+        recipientMember.setRoom(room);
+        recipientMember.setUser(recipient);
+
+        Notification existing =
+                notification(recipient);
+
+        existing.setType(
+                Notification.Type.NEW_MESSAGE
+        );
+
+        existing.setRoom(room);
+
+        when(roomMemberRepository
+                .findActiveMembers(roomId))
+                .thenReturn(
+                        List.of(
+                                senderMember,
+                                recipientMember
+                        )
+                );
+
+        when(notificationRepository
+                .findFirstByUserIdAndRoomIdAndTypeAndIsReadFalse(
+                        recipientId,
+                        roomId,
+                        Notification.Type.NEW_MESSAGE
+                ))
+                .thenReturn(
+                        Optional.of(existing)
+                );
+
+        when(notificationRepository.save(existing))
+                .thenReturn(existing);
+
+        notificationService.notifyNewMessage(
+                message
+        );
+
+        verify(notificationFactory, never())
+                .newMessage(
+                        any(),
+                        any()
+                );
+
+        verify(notificationRepository)
+                .save(existing);
+
+        verify(messagingTemplate)
+                .convertAndSend(
+                        eq(
+                                "/topic/notifications/"
+                                        + recipientId
+                        ),
+                        any(NotificationResponse.class)
+                );
+
+        assertEquals(
+                "New message",
+                existing.getTitle()
+        );
+
+        assertEquals(
+                "Sender User sent a message in Study Room",
+                existing.getMessage()
+        );
+    }
+
+    private void setUserId(
+            User user,
+            UUID id
+    ) {
         try {
-            java.lang.reflect.Field field = target.getClass().getDeclaredField("id");
+            var field =
+                    User.class.getDeclaredField("id");
+
             field.setAccessible(true);
-            field.set(target, id);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
+            field.set(user, id);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    private void setRoomId(
+            ChatRoom room,
+            UUID id
+    ) {
+        try {
+            var field =
+                    ChatRoom.class.getDeclaredField("id");
+
+            field.setAccessible(true);
+            field.set(room, id);
+        } catch (Exception ex) {
+            throw new RuntimeException(ex);
         }
     }
 }
