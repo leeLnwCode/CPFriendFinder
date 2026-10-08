@@ -34,28 +34,34 @@ public class UserService {
 
         User user = getProfile(userId);
 
-        String firstname = normalize(request.getFirstname());
-        String lastname = normalize(request.getLastname());
-        String bio = normalize(request.getBio());
-        String department = normalize(request.getDepartment());
+        if (request.getFirstname() != null) {
+            user.setFirstname(
+                    normalize(request.getFirstname())
+            );
+        }
 
-        if (firstname != null) {
-            user.setFirstname(firstname);
+        if (request.getLastname() != null) {
+            user.setLastname(
+                    normalize(request.getLastname())
+            );
         }
-        if (lastname != null) {
-            user.setLastname(lastname);
+
+        if (request.getBio() != null) {
+            user.setBio(
+                    normalize(request.getBio())
+            );
         }
-        if (bio != null) {
-            user.setBio(bio);
-        }
+
         if (request.getDateOfBirth() != null) {
             user.setDateOfBirth(request.getDateOfBirth());
         }
         if (request.getYear() != null) {
             user.setYear(request.getYear());
         }
-        if (department != null) {
-            user.setDepartment(department);
+        if (request.getDepartment() != null) {
+            user.setDepartment(
+                    normalize(request.getDepartment())
+            );
         }
 
         String imageBase64 = request.getImageBase64();
