@@ -354,7 +354,8 @@ class ChatRoomServiceTest {
                         "  Java  ",
                         Set.of(interestId),
                         0,
-                        20
+                        20,
+                        0
                 );
 
         assertEquals(1, result.size());
