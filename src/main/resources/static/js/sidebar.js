@@ -1,3 +1,39 @@
+document.addEventListener("DOMContentLoaded", async function () {
+  try {
+    const response = await fetch("/api/users/me", {
+      method: "GET",
+      credentials: "include",
+      headers: {
+        Accept: "application/json",
+      },
+    });
+
+    // ไม่ได้ Login
+    if (response.status === 401 || response.status === 403) {
+      sessionStorage.removeItem("currentUser");
+      window.location.href = "/login";
+      return;
+    }
+
+    // Login แล้ว
+    if (response.ok) {
+      const user = await response.json();
+      // อัปเดตข้อมูล user ใน sessionStorage
+      sessionStorage.setItem("currentUser", JSON.stringify(user));
+      return;
+    }
+
+    // กรณี server error
+    console.error(
+      "Authentication check failed:",
+      response.status
+    );
+
+  } catch (error) {
+    console.error("Cannot connect to server:", error);
+  }
+});
+
 document.addEventListener("DOMContentLoaded", async () => {
 
     const profileImage = document.getElementById("sidebarProfileImage");
