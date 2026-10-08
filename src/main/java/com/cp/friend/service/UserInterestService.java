@@ -27,6 +27,79 @@ public class UserInterestService {
     private final InterestRepository interestRepository;
     private final UserRepository userRepository;
 
+    @Transactional
+public List<Interest> replaceInterestsByNames(
+        UUID userId,
+        List<String> names
+) {
+    ensureUserExists(userId);
+
+    Set<String> uniqueNames = new LinkedHashSet<>();
+
+    if (names != null) {
+        for (String name : names) {
+            if (name == null) {
+                continue;
+            }
+
+            String normalized = name.trim();
+
+            if (normalized.isEmpty()) {
+                continue;
+            }
+
+            boolean duplicate = uniqueNames.stream()
+                    .anyMatch(existing ->
+                            existing.equalsIgnoreCase(normalized));
+
+            if (!duplicate) {
+                uniqueNames.add(normalized);
+            }
+        }
+    }
+
+    List<Interest> interests = uniqueNames.stream()
+            .map(name ->
+                    interestRepository
+                            .findByNameIgnoreCase(name)
+                            .orElseGet(() -> {
+                                Interest interest =
+                                        new Interest();
+
+                                interest.setName(name);
+                                interest.setActive(true);
+
+                                return interestRepository.save(
+                                        interest
+                                );
+                            })
+            )
+            .toList();
+
+    userInterestRepository.deleteAllByUserId(userId);
+
+    List<UserInterest> userInterests =
+            interests.stream()
+                    .map(interest ->
+                            createUserInterest(
+                                    userId,
+                                    interest.getId()
+                            )
+                    )
+                    .toList();
+
+    userInterestRepository.saveAll(userInterests);
+
+    return interests.stream()
+            .sorted(
+                    Comparator.comparing(
+                            Interest::getName,
+                            String.CASE_INSENSITIVE_ORDER
+                    )
+            )
+            .toList();
+}
+
     @Transactional(readOnly = true)
     public List<Interest> getInterests(UUID userId) {
         ensureUserExists(userId);

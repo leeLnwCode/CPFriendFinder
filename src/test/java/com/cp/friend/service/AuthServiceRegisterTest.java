@@ -1,5 +1,7 @@
 package com.cp.friend.service;
 
+import java.util.List;
+import java.util.UUID;
 import com.cp.friend.dto.request.RegisterRequest;
 import com.cp.friend.model.User;
 import com.cp.friend.port.StoragePort;
@@ -33,12 +35,16 @@ class AuthServiceRegisterTest {
 
     private AuthService authService;
 
+    @Mock
+    private UserInterestService userInterestService;
+
     @BeforeEach
     void setUp() {
         authService = new AuthService(
                 userRepository,
                 passwordEncoder,
-                storagePort
+                storagePort,
+                userInterestService
         );
     }
 
@@ -265,4 +271,47 @@ class AuthServiceRegisterTest {
         assertEquals((short) 3, result.getYear());
         assertEquals("Computer Science", result.getDepartment());
     }
+
+    @Test
+    void register_withInterests_savesUserInterests() {
+        RegisterRequest request = validRequest();
+
+    request.setInterests(
+            List.of("Gaming", "Programming")
+    );
+
+    UUID userId = UUID.randomUUID();
+
+    User savedUser = mock(User.class);
+
+    when(savedUser.getId())
+            .thenReturn(userId);
+
+    when(passwordEncoder.encode(any(String.class)))
+            .thenReturn("encoded-password");
+
+    when(userRepository.save(any(User.class)))
+            .thenReturn(savedUser);
+
+    authService.register(request);
+
+    verify(userInterestService)
+            .replaceInterestsByNames(
+                    userId,
+                    List.of("Gaming", "Programming")
+            );
+    }
+    @Test
+     void register_withoutInterests_doesNotSaveUserInterests() {
+        RegisterRequest request = validRequest();
+
+        request.setInterests(null);
+
+        stubSuccessfulSave();
+
+        authService.register(request);
+
+        verifyNoInteractions(userInterestService);
+        }
+
 }

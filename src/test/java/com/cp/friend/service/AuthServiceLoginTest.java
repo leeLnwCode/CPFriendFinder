@@ -29,6 +29,9 @@ class AuthServiceLoginTest {
     @Mock
     private StoragePort storagePort;
 
+    @Mock
+    private UserInterestService userInterestService;
+
     private AuthService authService;
 
     @BeforeEach
@@ -36,7 +39,8 @@ class AuthServiceLoginTest {
         authService = new AuthService(
                 userRepository,
                 passwordEncoder,
-                storagePort
+                storagePort,
+                userInterestService
         );
     }
 
