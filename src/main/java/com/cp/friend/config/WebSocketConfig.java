@@ -1,21 +1,21 @@
 package com.cp.friend.config;
 
 import org.springframework.context.annotation.Configuration;
+import org.springframework.messaging.simp.config.ChannelRegistration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
 import org.springframework.web.socket.config.annotation.EnableWebSocketMessageBroker;
 import org.springframework.web.socket.config.annotation.StompEndpointRegistry;
 import org.springframework.web.socket.config.annotation.WebSocketMessageBrokerConfigurer;
+import org.springframework.web.socket.config.annotation.WebSocketTransportRegistration;
 
-// WebSocket + STOMP สำหรับ real-time chat
-//
-// ฝั่ง client:
-// - เชื่อมต่อ: ws(s)://<host>/ws (native WebSocket — ไม่ใช้ SockJS กัน warning
-//   "Permissions policy violation: unload" ที่มาจาก sockjs-client)
-// - ส่งข้อความ: /app/rooms/{roomId}/messages พร้อม JSON {content, messageType?}
-// - รับข้อความ: subscribe /topic/rooms/{roomId}
+import lombok.RequiredArgsConstructor;
+
 @Configuration
 @EnableWebSocketMessageBroker
+@RequiredArgsConstructor
 public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
+
+    private final WebSocketAuthChannelInterceptor webSocketAuthChannelInterceptor;
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
@@ -28,5 +28,19 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void configureMessageBroker(MessageBrokerRegistry registry) {
         registry.enableSimpleBroker("/topic");
         registry.setApplicationDestinationPrefixes("/app");
+    }
+
+    @Override
+    public void configureWebSocketTransport(WebSocketTransportRegistration registration) {
+        // SDP offer/answer อาจใหญ่ถึง 20KB+ และส่ง ICE candidates พร้อมกันจำนวนมาก
+        // ขยาย buffer จาก default 64KB → 256KB ป้องกัน connection drop
+        registration.setMessageSizeLimit(256 * 1024);          // max single message: 256KB
+        registration.setSendBufferSizeLimit(1024 * 1024);      // send buffer: 1MB
+        registration.setSendTimeLimit(20 * 1000);              // send timeout: 20s
+    }
+
+    @Override
+    public void configureClientInboundChannel(ChannelRegistration registration) {
+        registration.interceptors(webSocketAuthChannelInterceptor);
     }
 }

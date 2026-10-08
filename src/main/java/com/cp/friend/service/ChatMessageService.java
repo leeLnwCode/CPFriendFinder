@@ -174,9 +174,26 @@ public class ChatMessageService {
         String type = signal.getType() == null ? "" : signal.getType().trim().toUpperCase(Locale.ROOT);
 
         switch (type) {
-            case "JOIN", "LEAVE" -> messagingTemplate.convertAndSend(
+            case "JOIN" -> messagingTemplate.convertAndSend(
                     "/topic/rooms/" + roomId + "/call",
                     new CallSignalResponse(type, userId, null, null));
+
+            case "MEDIA" -> {
+                // สถานะ media ของผู้ส่ง (เช่น ปิดกล้อง) broadcast ให้ทุกคนในห้อง
+                // เพื่อให้ฝั่งรับเอาภาพออกทันทีแทนการรอ track mute
+                messagingTemplate.convertAndSend(
+                        "/topic/rooms/" + roomId + "/call",
+                        new CallSignalResponse(type, userId, null, signal.getPayload()));
+            }
+
+            case "LEAVE" -> {
+                // LEAVE ต้อง relay ได้แม้ผู้ส่งเพิ่งถูกถอดออกจากห้องไปแล้ว
+                // (เช่น กดออกจากห้องผ่าน REST แล้วหน้าเว็บค่อยส่ง LEAVE ตาม)
+                // มิฉะนั้น client ที่เหลือจะไม่รู้ว่า peer ออกไปแล้ว วิดีโอจะค้าง
+                messagingTemplate.convertAndSend(
+                        "/topic/rooms/" + roomId + "/call",
+                        new CallSignalResponse(type, userId, null, null));
+            }
 
             case "OFFER", "ANSWER", "ICE" -> {
                 if (signal.getTargetUserId() == null) {

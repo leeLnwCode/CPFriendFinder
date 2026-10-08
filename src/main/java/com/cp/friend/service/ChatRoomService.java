@@ -102,7 +102,7 @@ public class ChatRoomService {
     // =========================================================
 
     @Transactional(readOnly = true)
-    public List<ChatRoomSummaryResponse> discoverRooms(String search, Set<UUID> interestIds, int page, int size) {
+    public List<ChatRoomSummaryResponse> discoverRooms(String search, Set<UUID> interestIds, int page, int size, int year) {
         Pageable pageable = PageRequest.of(Math.max(page, 0), Math.min(Math.max(size, 1), 50));
 
         List<ChatRoom> rooms;
