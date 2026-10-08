@@ -22,6 +22,7 @@ public class AuthService {
         private final PasswordEncoder passwordEncoder;
         // Dependency Inversion — พึ่ง interface StoragePort ไม่ใช่ S3 SDK โดยตรง
         private final StoragePort storagePort;
+        private final UserInterestService userInterestService;
 
         // Register
         @Transactional
@@ -59,7 +60,19 @@ public class AuthService {
                 user.setYear(request.getYear());
                 user.setDepartment(request.getDepartment());
 
-                return userRepository.save(user);
+                User savedUser = userRepository.save(user);
+
+                if (
+                        request.getInterests() != null &&
+                        !request.getInterests().isEmpty()
+                ) {
+                userInterestService.replaceInterestsByNames(
+                        savedUser.getId(),
+                        request.getInterests()
+                );
+                }
+
+                return savedUser;
         }
 
         private void validateRegistration(RegisterRequest request) {
