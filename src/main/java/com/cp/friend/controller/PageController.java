@@ -1,0 +1,53 @@
+package com.cp.friend.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+
+@Controller
+public class PageController {
+
+    @GetMapping("/")
+    public String entry() {
+        return "redirect:/login";
+    }
+
+    @GetMapping("/login")
+    public String login() {
+        return "login";
+    }
+
+    @GetMapping("/register")
+    public String register() {
+        return "register";
+    }
+
+    @GetMapping("/home")
+    public String home() {
+        return "home";
+    }
+
+    @GetMapping("/room")
+    public String room() {
+        return "room";
+    }
+
+    @GetMapping("/setting")
+    public String setting() {
+        return "setting";
+    }
+
+    @GetMapping("/notification")
+    public String notification() {
+        return "notification";
+    }
+
+    @GetMapping("/friend")
+    public String friend() {
+        return "friend";
+    }
+
+    @GetMapping("/random")
+    public String random() {
+        return "random";
+    }
+}

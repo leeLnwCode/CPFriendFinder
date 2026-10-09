@@ -1,0 +1,66 @@
+HELP.md
+target/
+.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+### Environment / Secrets ###
+
+### Environment Variables ###
+.env
+*.env
+
+### Robot Framework / E2E ###
+.venv-robot/
+test/e2e/robot/results/
+server.log
+
+# Private TURN credentials
+.turn-servers.json
+
+# Private Cloudflare TURN key
+.cloudflare-turn.json
+
+# Private local config and generated exports
+**/.cloudflare-turn.json
+**/.turn-servers.json
+**/application-local.properties
+**/private-*.sql
+**/server.log
+**/*.zip
+**/node_modules/
+**/__pycache__/
+
+# Environment secrets and generated browser checks
+.env
+code/.env
+**/.env.local
+test/browser/results/

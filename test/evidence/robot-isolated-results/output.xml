@@ -1,0 +1,809 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot 7.5 (Python 3.10.10 on win32)" generated="2026-10-09T23:37:35.012016" rpa="false" schemaversion="5">
+<suite id="s1" name="Tests" source="C:\Users\User\.codex\.chatgpt-projects\g-p-6ac7d530a9f88191af240fae53a291e7\artifacts\full-project\CPFriendFinder\test\e2e\robot\tests">
+<suite id="s1-s1" name="Auth Flow" source="C:\Users\User\.codex\.chatgpt-projects\g-p-6ac7d530a9f88191af240fae53a291e7\artifacts\full-project\CPFriendFinder\test\e2e\robot\tests\auth_flow.robot">
+<kw name="Open CP Friend Finder" owner="common" type="SETUP">
+<kw name="New Browser" owner="Browser">
+<msg time="2026-10-09T23:37:39.198437" level="INFO">{"browser": "chromium", "headless": true, "chromiumSandbox": false, "devtools": false, "handleSIGHUP": true, "handleSIGINT": true, "handleSIGTERM": true, "slowMo": 0.0, "timeout": 30000.0, "tracesDir": "C:\\Users\\User\\.codex\\.chatgpt-projects\\g-p-6ac7d530a9f88191af240fae53a291e7\\artifacts\\full-project\\robot-isolated-results\\browser\\traces\\temp\\b45608c5-d102-43d1-8823-aed4d6757d03"}</msg>
+<msg time="2026-10-09T23:37:44.044487" level="INFO">Starting Browser process C:\Users\User\Desktop\CPFriendFinder-NEW\.venv-robot\lib\site-packages\Browser\wrapper\index.js using at 127.0.0.1:63895</msg>
+<msg time="2026-10-09T23:38:10.525859" level="INFO">Successfully created browser with options: {"browser":"chromium","headless":true,"chromiumSandbox":false,"devtools":false,"handleSIGHUP":true,"handleSIGINT":true,"handleSIGTERM":true,"slowMo":0,"timeout":30000,"tracesDir":"C:\\Users\\User\\.codex\\.chatgpt-projects\\g-p-6ac7d530a9f88191af240fae53a291e7\\artifacts\\full-project\\robot-isolated-results\\browser\\traces\\temp\\b45608c5-d102-43d1-8823-aed4d6757d03"}</msg>
+<arg>${BROWSER}</arg>
+<arg>headless=${HEADLESS}</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Create a new playwright Browser with specified options.</doc>
+<status status="PASS" start="2026-10-09T23:37:39.193332" elapsed="31.333543"/>
+</kw>
+<kw name="New Context" owner="Browser">
+<msg time="2026-10-09T23:38:10.542326" level="INFO">{
+  "acceptDownloads": true,
+  "bypassCSP": false,
+  "forcedColors": "none",
+  "ignoreHTTPSErrors": false,
+  "javaScriptEnabled": true,
+  "offline": false,
+  "reducedMotion": "no-preference",
+  "serviceWorkers": "allow",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  }
+}</msg>
+<msg time="2026-10-09T23:38:10.576901" level="INFO">Successfully created context. </msg>
+<msg time="2026-10-09T23:38:10.576901" level="INFO">{'acceptDownloads': True, 'bypassCSP': False, 'forcedColors': 'none', 'ignoreHTTPSErrors': False, 'javaScriptEnabled': True, 'offline': False, 'reducedMotion': 'no-preference', 'serviceWorkers': 'allow', 'viewport': {'width': 1440, 'height': 900}}</msg>
+<arg>viewport={'width': 1440, 'height': 900}</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Create a new BrowserContext with specified options.</doc>
+<status status="PASS" start="2026-10-09T23:38:10.527875" elapsed="0.049026"/>
+</kw>
+<kw name="New Page" owner="Browser">
+<msg time="2026-10-09T23:38:11.078880" level="INFO">Successfully initialized new page object and opened url: about:blank</msg>
+<arg>about:blank</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Open a new Page.</doc>
+<status status="PASS" start="2026-10-09T23:38:10.577898" elapsed="0.500982"/>
+</kw>
+<status status="PASS" start="2026-10-09T23:37:39.178994" elapsed="31.900988"/>
+</kw>
+<test id="s1-s1-t1" name="E2E-004 Register And Login Successfully" line="7">
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-10-09T23:38:11.146570" level="INFO">${suffix} = 2d48d98b</msg>
+<var>${suffix}</var>
+<arg>__import__('uuid').uuid4().hex[:8]</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-10-09T23:38:11.144570" elapsed="0.002000"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-10-09T23:38:11.149577" level="INFO">${email} = robot.2d48d98b@test.com</msg>
+<var>${email}</var>
+<arg>robot.${suffix}@test.com</arg>
+<doc>Returns the given values which can then be assigned to a variable.</doc>
+<status status="PASS" start="2026-10-09T23:38:11.147571" elapsed="0.002006"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-10-09T23:38:11.153568" level="INFO">${password} = RobotTest123</msg>
+<var>${password}</var>
+<arg>RobotTest123</arg>
+<doc>Returns the given values which can then be assigned to a variable.</doc>
+<status status="PASS" start="2026-10-09T23:38:11.150568" elapsed="0.003000"/>
+</kw>
+<kw name="Go To" owner="Browser">
+<msg time="2026-10-09T23:38:13.494245" level="INFO" html="true">&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;a href="browser/screenshot/fail-screenshot-1.png" target="_blank"&gt;&lt;img src="browser/screenshot/fail-screenshot-1.png" style="max-width:800px;max-height:800px;"/&gt;&lt;/a&gt;</msg>
+<msg time="2026-10-09T23:38:13.494245" level="INFO">See also file:///C:/Users/User/.codex/.chatgpt-projects/g-p-6ac7d530a9f88191af240fae53a291e7/artifacts/full-project/robot-isolated-results/playwright-log.txt for additional details.</msg>
+<msg time="2026-10-09T23:38:13.496245" level="FAIL">Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:18080/register
+Call log:
+  - navigating to "http://127.0.0.1:18080/register", waiting until "load"
+</msg>
+<arg>${BASE_URL}/register</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Navigates to the given ``url``.</doc>
+<status status="FAIL" start="2026-10-09T23:38:11.154572" elapsed="2.563737">Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:18080/register
+Call log:
+  - navigating to "http://127.0.0.1:18080/register", waiting until "load"
+</status>
+</kw>
+<kw name="Fill Text" owner="Browser">
+<arg>id=email</arg>
+<arg>${email}</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Clears and fills the given ``txt`` into the text field found by ``selector``.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:13.719306" elapsed="0.000000"/>
+</kw>
+<kw name="Fill Text" owner="Browser">
+<arg>id=password</arg>
+<arg>${password}</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Clears and fills the given ``txt`` into the text field found by ``selector``.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:13.719306" elapsed="0.001009"/>
+</kw>
+<kw name="Fill Text" owner="Browser">
+<arg>id=confirmPassword</arg>
+<arg>${password}</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Clears and fills the given ``txt`` into the text field found by ``selector``.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:13.720315" elapsed="0.001034"/>
+</kw>
+<kw name="Click" owner="Browser">
+<arg>css=#step1 .next-button</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Simulates mouse click on the element found by ``selector``.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:13.721349" elapsed="0.000000"/>
+</kw>
+<kw name="Wait For Elements State" owner="Browser">
+<arg>id=firstname</arg>
+<arg>visible</arg>
+<arg>5s</arg>
+<tag>PageContent</tag>
+<tag>Wait</tag>
+<doc>Waits for the element found by ``selector`` to satisfy state option.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:13.722349" elapsed="0.000000"/>
+</kw>
+<kw name="Fill Text" owner="Browser">
+<arg>id=firstname</arg>
+<arg>Robot</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Clears and fills the given ``txt`` into the text field found by ``selector``.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:13.723350" elapsed="0.000000"/>
+</kw>
+<kw name="Fill Text" owner="Browser">
+<arg>id=lastname</arg>
+<arg>Tester</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Clears and fills the given ``txt`` into the text field found by ``selector``.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:13.724349" elapsed="0.000000"/>
+</kw>
+<kw name="Fill Text" owner="Browser">
+<arg>id=dateOfBirth</arg>
+<arg>2004-01-15</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Clears and fills the given ``txt`` into the text field found by ``selector``.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:13.724349" elapsed="0.001001"/>
+</kw>
+<kw name="Select Options By" owner="Browser">
+<arg>id=year</arg>
+<arg>value</arg>
+<arg>3</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Selects options from select element found by ``selector``.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:13.725350" elapsed="0.000998"/>
+</kw>
+<kw name="Select Options By" owner="Browser">
+<arg>id=department</arg>
+<arg>value</arg>
+<arg>CS</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Selects options from select element found by ``selector``.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:13.726348" elapsed="0.000000"/>
+</kw>
+<kw name="Click" owner="Browser">
+<arg>css=#step2 .next-button</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Simulates mouse click on the element found by ``selector``.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:13.727348" elapsed="0.000000"/>
+</kw>
+<kw name="Wait For Elements State" owner="Browser">
+<arg>css=#step3</arg>
+<arg>visible</arg>
+<arg>5s</arg>
+<tag>PageContent</tag>
+<tag>Wait</tag>
+<doc>Waits for the element found by ``selector`` to satisfy state option.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:13.728349" elapsed="0.000000"/>
+</kw>
+<kw name="Click" owner="Browser">
+<arg>css=#step3 .interest &gt;&gt; nth=0</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Simulates mouse click on the element found by ``selector``.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:13.728349" elapsed="0.000999"/>
+</kw>
+<kw name="Click" owner="Browser">
+<arg>css=#step3 .next-button</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Simulates mouse click on the element found by ``selector``.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:13.729348" elapsed="0.001004"/>
+</kw>
+<kw name="Wait For Elements State" owner="Browser">
+<arg>id=email</arg>
+<arg>visible</arg>
+<arg>10s</arg>
+<tag>PageContent</tag>
+<tag>Wait</tag>
+<doc>Waits for the element found by ``selector`` to satisfy state option.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:13.730352" elapsed="0.000000"/>
+</kw>
+<kw name="Wait For Load State" owner="Browser">
+<arg>domcontentloaded</arg>
+<tag>PageContent</tag>
+<tag>Wait</tag>
+<doc>Waits until the page reaches the required load state.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:13.731353" elapsed="0.000000"/>
+</kw>
+<kw name="Get Url" owner="Browser">
+<arg>==</arg>
+<arg>${BASE_URL}/login</arg>
+<tag>Assertion</tag>
+<tag>Getter</tag>
+<tag>PageContent</tag>
+<doc>Returns the current URL.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:13.732317" elapsed="0.000000"/>
+</kw>
+<kw name="Fill Text" owner="Browser">
+<arg>id=email</arg>
+<arg>${email}</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Clears and fills the given ``txt`` into the text field found by ``selector``.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:13.732317" elapsed="0.001036"/>
+</kw>
+<kw name="Fill Text" owner="Browser">
+<arg>id=password</arg>
+<arg>${password}</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Clears and fills the given ``txt`` into the text field found by ``selector``.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:13.733353" elapsed="0.000998"/>
+</kw>
+<kw name="Click" owner="Browser">
+<arg>css=.login-button</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Simulates mouse click on the element found by ``selector``.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:13.734351" elapsed="0.000000"/>
+</kw>
+<kw name="Wait Until Keyword Succeeds" owner="BuiltIn">
+<arg>15s</arg>
+<arg>500ms</arg>
+<arg>Get Url</arg>
+<arg>==</arg>
+<arg>${BASE_URL}/home</arg>
+<doc>Runs the specified keyword and retries if it fails.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:13.735353" elapsed="0.000000"/>
+</kw>
+<status status="FAIL" start="2026-10-09T23:38:11.079982" elapsed="2.656374">Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:18080/register
+Call log:
+  - navigating to "http://127.0.0.1:18080/register", waiting until "load"
+</status>
+</test>
+<kw name="Close CP Friend Finder" owner="common" type="TEARDOWN">
+<kw name="Close Browser" owner="Browser">
+<msg time="2026-10-09T23:38:14.214063" level="INFO">Closed browser</msg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Closes the current browser.</doc>
+<status status="PASS" start="2026-10-09T23:38:13.762408" elapsed="0.452653"/>
+</kw>
+<status status="PASS" start="2026-10-09T23:38:13.761407" elapsed="0.453654"/>
+</kw>
+<status status="FAIL" start="2026-10-09T23:37:35.263729" elapsed="38.951332"/>
+</suite>
+<suite id="s1-s2" name="Login Smoke" source="C:\Users\User\.codex\.chatgpt-projects\g-p-6ac7d530a9f88191af240fae53a291e7\artifacts\full-project\CPFriendFinder\test\e2e\robot\tests\login_smoke.robot">
+<kw name="Open CP Friend Finder" owner="common" type="SETUP">
+<kw name="New Browser" owner="Browser">
+<msg time="2026-10-09T23:38:14.259475" level="INFO">{"browser": "chromium", "headless": true, "chromiumSandbox": false, "devtools": false, "handleSIGHUP": true, "handleSIGINT": true, "handleSIGTERM": true, "slowMo": 0.0, "timeout": 30000.0, "tracesDir": "C:\\Users\\User\\.codex\\.chatgpt-projects\\g-p-6ac7d530a9f88191af240fae53a291e7\\artifacts\\full-project\\robot-isolated-results\\browser\\traces\\temp\\ed380186-dbf7-4e18-a271-77636db2654c"}</msg>
+<msg time="2026-10-09T23:38:14.524885" level="INFO">Successfully created browser with options: {"browser":"chromium","headless":true,"chromiumSandbox":false,"devtools":false,"handleSIGHUP":true,"handleSIGINT":true,"handleSIGTERM":true,"slowMo":0,"timeout":30000,"tracesDir":"C:\\Users\\User\\.codex\\.chatgpt-projects\\g-p-6ac7d530a9f88191af240fae53a291e7\\artifacts\\full-project\\robot-isolated-results\\browser\\traces\\temp\\ed380186-dbf7-4e18-a271-77636db2654c"}</msg>
+<arg>${BROWSER}</arg>
+<arg>headless=${HEADLESS}</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Create a new playwright Browser with specified options.</doc>
+<status status="PASS" start="2026-10-09T23:38:14.257476" elapsed="0.267409"/>
+</kw>
+<kw name="New Context" owner="Browser">
+<msg time="2026-10-09T23:38:14.532317" level="INFO">{
+  "acceptDownloads": true,
+  "bypassCSP": false,
+  "forcedColors": "none",
+  "ignoreHTTPSErrors": false,
+  "javaScriptEnabled": true,
+  "offline": false,
+  "reducedMotion": "no-preference",
+  "serviceWorkers": "allow",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  }
+}</msg>
+<msg time="2026-10-09T23:38:14.556867" level="INFO">Successfully created context. </msg>
+<msg time="2026-10-09T23:38:14.557867" level="INFO">{'acceptDownloads': True, 'bypassCSP': False, 'forcedColors': 'none', 'ignoreHTTPSErrors': False, 'javaScriptEnabled': True, 'offline': False, 'reducedMotion': 'no-preference', 'serviceWorkers': 'allow', 'viewport': {'width': 1440, 'height': 900}}</msg>
+<arg>viewport={'width': 1440, 'height': 900}</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Create a new BrowserContext with specified options.</doc>
+<status status="PASS" start="2026-10-09T23:38:14.526890" elapsed="0.030977"/>
+</kw>
+<kw name="New Page" owner="Browser">
+<msg time="2026-10-09T23:38:14.827678" level="INFO">Successfully initialized new page object and opened url: about:blank</msg>
+<arg>about:blank</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Open a new Page.</doc>
+<status status="PASS" start="2026-10-09T23:38:14.558869" elapsed="0.268809"/>
+</kw>
+<status status="PASS" start="2026-10-09T23:38:14.256477" elapsed="0.572322"/>
+</kw>
+<test id="s1-s2-t1" name="E2E-001 Login Page Loads" line="7">
+<kw name="Go To" owner="Browser">
+<msg time="2026-10-09T23:38:15.360273" level="INFO" html="true">&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;a href="browser/screenshot/fail-screenshot-2.png" target="_blank"&gt;&lt;img src="browser/screenshot/fail-screenshot-2.png" style="max-width:800px;max-height:800px;"/&gt;&lt;/a&gt;</msg>
+<msg time="2026-10-09T23:38:15.360273" level="INFO">See also file:///C:/Users/User/.codex/.chatgpt-projects/g-p-6ac7d530a9f88191af240fae53a291e7/artifacts/full-project/robot-isolated-results/playwright-log.txt for additional details.</msg>
+<msg time="2026-10-09T23:38:15.361278" level="FAIL">Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:18080/login
+Call log:
+  - navigating to "http://127.0.0.1:18080/login", waiting until "load"
+</msg>
+<arg>${BASE_URL}/login</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Navigates to the given ``url``.</doc>
+<status status="FAIL" start="2026-10-09T23:38:14.856426" elapsed="0.506402">Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:18080/login
+Call log:
+  - navigating to "http://127.0.0.1:18080/login", waiting until "load"
+</status>
+</kw>
+<kw name="Get Title" owner="Browser">
+<arg>==</arg>
+<arg>Login - CP Friend Finder</arg>
+<tag>Assertion</tag>
+<tag>Getter</tag>
+<tag>PageContent</tag>
+<doc>Returns the title of the current page.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:15.363881" elapsed="0.000000"/>
+</kw>
+<kw name="Get Element" owner="Browser">
+<arg>id=email</arg>
+<tag>Getter</tag>
+<tag>PageContent</tag>
+<doc>Returns a selector string that points to the element found by ``selector``.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:15.364881" elapsed="0.000000"/>
+</kw>
+<kw name="Get Element" owner="Browser">
+<arg>id=password</arg>
+<tag>Getter</tag>
+<tag>PageContent</tag>
+<doc>Returns a selector string that points to the element found by ``selector``.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:15.366070" elapsed="0.000000"/>
+</kw>
+<kw name="Get Element" owner="Browser">
+<arg>id=showPassword</arg>
+<tag>Getter</tag>
+<tag>PageContent</tag>
+<doc>Returns a selector string that points to the element found by ``selector``.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:15.367221" elapsed="0.000000"/>
+</kw>
+<kw name="Get Element" owner="Browser">
+<arg>css=.login-button</arg>
+<tag>Getter</tag>
+<tag>PageContent</tag>
+<doc>Returns a selector string that points to the element found by ``selector``.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:15.368218" elapsed="0.000000"/>
+</kw>
+<status status="FAIL" start="2026-10-09T23:38:14.828799" elapsed="0.540838">Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:18080/login
+Call log:
+  - navigating to "http://127.0.0.1:18080/login", waiting until "load"
+</status>
+</test>
+<test id="s1-s2-t2" name="E2E-002 Password Can Be Shown And Hidden" line="15">
+<kw name="Go To" owner="Browser">
+<msg time="2026-10-09T23:38:15.613716" level="INFO" html="true">&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;a href="browser/screenshot/fail-screenshot-3.png" target="_blank"&gt;&lt;img src="browser/screenshot/fail-screenshot-3.png" style="max-width:800px;max-height:800px;"/&gt;&lt;/a&gt;</msg>
+<msg time="2026-10-09T23:38:15.614714" level="INFO">See also file:///C:/Users/User/.codex/.chatgpt-projects/g-p-6ac7d530a9f88191af240fae53a291e7/artifacts/full-project/robot-isolated-results/playwright-log.txt for additional details.</msg>
+<msg time="2026-10-09T23:38:15.614714" level="FAIL">Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:18080/login
+Call log:
+  - navigating to "http://127.0.0.1:18080/login", waiting until "load"
+</msg>
+<arg>${BASE_URL}/login</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Navigates to the given ``url``.</doc>
+<status status="FAIL" start="2026-10-09T23:38:15.418223" elapsed="0.199558">Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:18080/login
+Call log:
+  - navigating to "http://127.0.0.1:18080/login", waiting until "load"
+</status>
+</kw>
+<kw name="Get Attribute" owner="Browser">
+<arg>id=password</arg>
+<arg>type</arg>
+<arg>==</arg>
+<arg>password</arg>
+<tag>Assertion</tag>
+<tag>Getter</tag>
+<tag>PageContent</tag>
+<doc>Returns the HTML ``attribute`` of the element found by ``selector``.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:15.619784" elapsed="0.000000"/>
+</kw>
+<kw name="Click" owner="Browser">
+<arg>id=showPassword</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Simulates mouse click on the element found by ``selector``.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:15.620784" elapsed="0.001001"/>
+</kw>
+<kw name="Get Attribute" owner="Browser">
+<arg>id=password</arg>
+<arg>type</arg>
+<arg>==</arg>
+<arg>text</arg>
+<tag>Assertion</tag>
+<tag>Getter</tag>
+<tag>PageContent</tag>
+<doc>Returns the HTML ``attribute`` of the element found by ``selector``.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:15.622782" elapsed="0.000000"/>
+</kw>
+<kw name="Get Text" owner="Browser">
+<arg>id=showPassword</arg>
+<arg>==</arg>
+<arg>Hide</arg>
+<tag>Assertion</tag>
+<tag>Getter</tag>
+<tag>PageContent</tag>
+<doc>Returns text attribute of the element found by ``selector``.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:15.623782" elapsed="0.000000"/>
+</kw>
+<kw name="Click" owner="Browser">
+<arg>id=showPassword</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Simulates mouse click on the element found by ``selector``.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:15.624781" elapsed="0.000000"/>
+</kw>
+<kw name="Get Attribute" owner="Browser">
+<arg>id=password</arg>
+<arg>type</arg>
+<arg>==</arg>
+<arg>password</arg>
+<tag>Assertion</tag>
+<tag>Getter</tag>
+<tag>PageContent</tag>
+<doc>Returns the HTML ``attribute`` of the element found by ``selector``.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:15.625783" elapsed="0.000998"/>
+</kw>
+<kw name="Get Text" owner="Browser">
+<arg>id=showPassword</arg>
+<arg>==</arg>
+<arg>Show</arg>
+<tag>Assertion</tag>
+<tag>Getter</tag>
+<tag>PageContent</tag>
+<doc>Returns text attribute of the element found by ``selector``.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:15.627780" elapsed="0.000000"/>
+</kw>
+<status status="FAIL" start="2026-10-09T23:38:15.393903" elapsed="0.234878">Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:18080/login
+Call log:
+  - navigating to "http://127.0.0.1:18080/login", waiting until "load"
+</status>
+</test>
+<test id="s1-s2-t3" name="E2E-003 Register Link Opens Register Page" line="28">
+<kw name="Go To" owner="Browser">
+<msg time="2026-10-09T23:38:15.844860" level="INFO" html="true">&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;a href="browser/screenshot/fail-screenshot-4.png" target="_blank"&gt;&lt;img src="browser/screenshot/fail-screenshot-4.png" style="max-width:800px;max-height:800px;"/&gt;&lt;/a&gt;</msg>
+<msg time="2026-10-09T23:38:15.845860" level="INFO">See also file:///C:/Users/User/.codex/.chatgpt-projects/g-p-6ac7d530a9f88191af240fae53a291e7/artifacts/full-project/robot-isolated-results/playwright-log.txt for additional details.</msg>
+<msg time="2026-10-09T23:38:15.845860" level="FAIL">Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:18080/login
+Call log:
+  - navigating to "http://127.0.0.1:18080/login", waiting until "load"
+</msg>
+<arg>${BASE_URL}/login</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Navigates to the given ``url``.</doc>
+<status status="FAIL" start="2026-10-09T23:38:15.666428" elapsed="0.182577">Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:18080/login
+Call log:
+  - navigating to "http://127.0.0.1:18080/login", waiting until "load"
+</status>
+</kw>
+<kw name="Click" owner="Browser">
+<arg>css=.signup-link a</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Simulates mouse click on the element found by ``selector``.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:15.850007" elapsed="0.000000"/>
+</kw>
+<kw name="Get Url" owner="Browser">
+<arg>==</arg>
+<arg>${BASE_URL}/register</arg>
+<tag>Assertion</tag>
+<tag>Getter</tag>
+<tag>PageContent</tag>
+<doc>Returns the current URL.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:15.851007" elapsed="0.000000"/>
+</kw>
+<status status="FAIL" start="2026-10-09T23:38:15.646785" elapsed="0.205220">Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:18080/login
+Call log:
+  - navigating to "http://127.0.0.1:18080/login", waiting until "load"
+</status>
+</test>
+<kw name="Close CP Friend Finder" owner="common" type="TEARDOWN">
+<kw name="Close Browser" owner="Browser">
+<msg time="2026-10-09T23:38:16.314428" level="INFO">Closed browser</msg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Closes the current browser.</doc>
+<status status="PASS" start="2026-10-09T23:38:15.874794" elapsed="0.440635"/>
+</kw>
+<status status="PASS" start="2026-10-09T23:38:15.873846" elapsed="0.441583"/>
+</kw>
+<status status="FAIL" start="2026-10-09T23:38:14.231458" elapsed="2.083971"/>
+</suite>
+<suite id="s1-s3" name="Register Interest" source="C:\Users\User\.codex\.chatgpt-projects\g-p-6ac7d530a9f88191af240fae53a291e7\artifacts\full-project\CPFriendFinder\test\e2e\robot\tests\register_interest.robot">
+<kw name="Open CP Friend Finder" owner="common" type="SETUP">
+<kw name="New Browser" owner="Browser">
+<msg time="2026-10-09T23:38:16.365674" level="INFO">{"browser": "chromium", "headless": true, "chromiumSandbox": false, "devtools": false, "handleSIGHUP": true, "handleSIGINT": true, "handleSIGTERM": true, "slowMo": 0.0, "timeout": 30000.0, "tracesDir": "C:\\Users\\User\\.codex\\.chatgpt-projects\\g-p-6ac7d530a9f88191af240fae53a291e7\\artifacts\\full-project\\robot-isolated-results\\browser\\traces\\temp\\de811e28-2477-4532-95e3-4be9fa808b88"}</msg>
+<msg time="2026-10-09T23:38:16.623071" level="INFO">Successfully created browser with options: {"browser":"chromium","headless":true,"chromiumSandbox":false,"devtools":false,"handleSIGHUP":true,"handleSIGINT":true,"handleSIGTERM":true,"slowMo":0,"timeout":30000,"tracesDir":"C:\\Users\\User\\.codex\\.chatgpt-projects\\g-p-6ac7d530a9f88191af240fae53a291e7\\artifacts\\full-project\\robot-isolated-results\\browser\\traces\\temp\\de811e28-2477-4532-95e3-4be9fa808b88"}</msg>
+<arg>${BROWSER}</arg>
+<arg>headless=${HEADLESS}</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Create a new playwright Browser with specified options.</doc>
+<status status="PASS" start="2026-10-09T23:38:16.363651" elapsed="0.261418"/>
+</kw>
+<kw name="New Context" owner="Browser">
+<msg time="2026-10-09T23:38:16.636601" level="INFO">{
+  "acceptDownloads": true,
+  "bypassCSP": false,
+  "forcedColors": "none",
+  "ignoreHTTPSErrors": false,
+  "javaScriptEnabled": true,
+  "offline": false,
+  "reducedMotion": "no-preference",
+  "serviceWorkers": "allow",
+  "viewport": {
+    "width": 1440,
+    "height": 900
+  }
+}</msg>
+<msg time="2026-10-09T23:38:16.671679" level="INFO">Successfully created context. </msg>
+<msg time="2026-10-09T23:38:16.671679" level="INFO">{'acceptDownloads': True, 'bypassCSP': False, 'forcedColors': 'none', 'ignoreHTTPSErrors': False, 'javaScriptEnabled': True, 'offline': False, 'reducedMotion': 'no-preference', 'serviceWorkers': 'allow', 'viewport': {'width': 1440, 'height': 900}}</msg>
+<arg>viewport={'width': 1440, 'height': 900}</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Create a new BrowserContext with specified options.</doc>
+<status status="PASS" start="2026-10-09T23:38:16.627070" elapsed="0.044609"/>
+</kw>
+<kw name="New Page" owner="Browser">
+<msg time="2026-10-09T23:38:16.915371" level="INFO">Successfully initialized new page object and opened url: about:blank</msg>
+<arg>about:blank</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Open a new Page.</doc>
+<status status="PASS" start="2026-10-09T23:38:16.672674" elapsed="0.242697"/>
+</kw>
+<status status="PASS" start="2026-10-09T23:38:16.362134" elapsed="0.554242"/>
+</kw>
+<test id="s1-s3-t1" name="E2E-005 Selected Interest Is Saved After Registration" line="7">
+<kw name="Evaluate" owner="BuiltIn">
+<msg time="2026-10-09T23:38:16.943369" level="INFO">${suffix} = b5b2c0a6</msg>
+<var>${suffix}</var>
+<arg>__import__('uuid').uuid4().hex[:8]</arg>
+<doc>Evaluates the given expression in Python and returns the result.</doc>
+<status status="PASS" start="2026-10-09T23:38:16.940372" elapsed="0.002997"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-10-09T23:38:16.946371" level="INFO">${email} = robot.interest.b5b2c0a6@test.com</msg>
+<var>${email}</var>
+<arg>robot.interest.${suffix}@test.com</arg>
+<doc>Returns the given values which can then be assigned to a variable.</doc>
+<status status="PASS" start="2026-10-09T23:38:16.944372" elapsed="0.001999"/>
+</kw>
+<kw name="Set Variable" owner="BuiltIn">
+<msg time="2026-10-09T23:38:16.948429" level="INFO">${password} = RobotTest123</msg>
+<var>${password}</var>
+<arg>RobotTest123</arg>
+<doc>Returns the given values which can then be assigned to a variable.</doc>
+<status status="PASS" start="2026-10-09T23:38:16.947429" elapsed="0.001000"/>
+</kw>
+<kw name="Go To" owner="Browser">
+<msg time="2026-10-09T23:38:17.401473" level="INFO" html="true">&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;a href="browser/screenshot/fail-screenshot-5.png" target="_blank"&gt;&lt;img src="browser/screenshot/fail-screenshot-5.png" style="max-width:800px;max-height:800px;"/&gt;&lt;/a&gt;</msg>
+<msg time="2026-10-09T23:38:17.402473" level="INFO">See also file:///C:/Users/User/.codex/.chatgpt-projects/g-p-6ac7d530a9f88191af240fae53a291e7/artifacts/full-project/robot-isolated-results/playwright-log.txt for additional details.</msg>
+<msg time="2026-10-09T23:38:17.402473" level="FAIL">Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:18080/register
+Call log:
+  - navigating to "http://127.0.0.1:18080/register", waiting until "load"
+</msg>
+<arg>${BASE_URL}/register</arg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Navigates to the given ``url``.</doc>
+<status status="FAIL" start="2026-10-09T23:38:16.949429" elapsed="0.455044">Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:18080/register
+Call log:
+  - navigating to "http://127.0.0.1:18080/register", waiting until "load"
+</status>
+</kw>
+<kw name="Fill Text" owner="Browser">
+<arg>id=email</arg>
+<arg>${email}</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Clears and fills the given ``txt`` into the text field found by ``selector``.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:17.405473" elapsed="0.000400"/>
+</kw>
+<kw name="Fill Text" owner="Browser">
+<arg>id=password</arg>
+<arg>${password}</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Clears and fills the given ``txt`` into the text field found by ``selector``.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:17.406417" elapsed="0.000000"/>
+</kw>
+<kw name="Fill Text" owner="Browser">
+<arg>id=confirmPassword</arg>
+<arg>${password}</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Clears and fills the given ``txt`` into the text field found by ``selector``.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:17.407467" elapsed="0.000000"/>
+</kw>
+<kw name="Click" owner="Browser">
+<arg>css=#step1 .next-button</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Simulates mouse click on the element found by ``selector``.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:17.407467" elapsed="0.001003"/>
+</kw>
+<kw name="Wait For Elements State" owner="Browser">
+<arg>id=firstname</arg>
+<arg>visible</arg>
+<arg>5s</arg>
+<tag>PageContent</tag>
+<tag>Wait</tag>
+<doc>Waits for the element found by ``selector`` to satisfy state option.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:17.408470" elapsed="0.001002"/>
+</kw>
+<kw name="Fill Text" owner="Browser">
+<arg>id=firstname</arg>
+<arg>Interest</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Clears and fills the given ``txt`` into the text field found by ``selector``.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:17.409472" elapsed="0.000000"/>
+</kw>
+<kw name="Fill Text" owner="Browser">
+<arg>id=lastname</arg>
+<arg>Tester</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Clears and fills the given ``txt`` into the text field found by ``selector``.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:17.410569" elapsed="0.000514"/>
+</kw>
+<kw name="Fill Text" owner="Browser">
+<arg>id=dateOfBirth</arg>
+<arg>2004-01-15</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Clears and fills the given ``txt`` into the text field found by ``selector``.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:17.411083" elapsed="0.000000"/>
+</kw>
+<kw name="Select Options By" owner="Browser">
+<arg>id=year</arg>
+<arg>value</arg>
+<arg>3</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Selects options from select element found by ``selector``.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:17.412102" elapsed="0.000997"/>
+</kw>
+<kw name="Select Options By" owner="Browser">
+<arg>id=department</arg>
+<arg>value</arg>
+<arg>CS</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Selects options from select element found by ``selector``.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:17.413099" elapsed="0.000000"/>
+</kw>
+<kw name="Click" owner="Browser">
+<arg>css=#step2 .next-button</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Simulates mouse click on the element found by ``selector``.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:17.414097" elapsed="0.000000"/>
+</kw>
+<kw name="Wait For Elements State" owner="Browser">
+<arg>css=#step3</arg>
+<arg>visible</arg>
+<arg>5s</arg>
+<tag>PageContent</tag>
+<tag>Wait</tag>
+<doc>Waits for the element found by ``selector`` to satisfy state option.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:17.415101" elapsed="0.000998"/>
+</kw>
+<kw name="Click" owner="Browser">
+<arg>css=#step3 .interest &gt;&gt; nth=0</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Simulates mouse click on the element found by ``selector``.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:17.417100" elapsed="0.000000"/>
+</kw>
+<kw name="Click" owner="Browser">
+<arg>css=#step3 .next-button</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Simulates mouse click on the element found by ``selector``.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:17.418100" elapsed="0.000000"/>
+</kw>
+<kw name="Wait For Elements State" owner="Browser">
+<arg>id=email</arg>
+<arg>visible</arg>
+<arg>10s</arg>
+<tag>PageContent</tag>
+<tag>Wait</tag>
+<doc>Waits for the element found by ``selector`` to satisfy state option.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:17.419098" elapsed="0.000000"/>
+</kw>
+<kw name="Wait For Load State" owner="Browser">
+<arg>domcontentloaded</arg>
+<tag>PageContent</tag>
+<tag>Wait</tag>
+<doc>Waits until the page reaches the required load state.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:17.420099" elapsed="0.000000"/>
+</kw>
+<kw name="Fill Text" owner="Browser">
+<arg>id=email</arg>
+<arg>${email}</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Clears and fills the given ``txt`` into the text field found by ``selector``.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:17.421098" elapsed="0.001072"/>
+</kw>
+<kw name="Fill Text" owner="Browser">
+<arg>id=password</arg>
+<arg>${password}</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Clears and fills the given ``txt`` into the text field found by ``selector``.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:17.422170" elapsed="0.000994"/>
+</kw>
+<kw name="Click" owner="Browser">
+<arg>css=.login-button</arg>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Simulates mouse click on the element found by ``selector``.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:17.424166" elapsed="0.000000"/>
+</kw>
+<kw name="Wait Until Keyword Succeeds" owner="BuiltIn">
+<arg>15s</arg>
+<arg>500ms</arg>
+<arg>Get Url</arg>
+<arg>==</arg>
+<arg>${BASE_URL}/home</arg>
+<doc>Runs the specified keyword and retries if it fails.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:17.425166" elapsed="0.000000"/>
+</kw>
+<kw name="Evaluate JavaScript" owner="Browser">
+<var>${count}</var>
+<arg>${None}</arg>
+<arg>async () =&gt; { const r = await fetch('/api/users/me/interests'); const data = await r.json(); return data.length; }</arg>
+<tag>Getter</tag>
+<tag>PageContent</tag>
+<tag>Setter</tag>
+<doc>Executes the given JavaScript in the browser page.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:17.426167" elapsed="0.001002"/>
+</kw>
+<kw name="Should Be True" owner="BuiltIn">
+<arg>${count} &gt; 0</arg>
+<doc>Fails if the given condition is not true.</doc>
+<status status="NOT RUN" start="2026-10-09T23:38:17.428164" elapsed="0.000000"/>
+</kw>
+<status status="FAIL" start="2026-10-09T23:38:16.916376" elapsed="0.512788">Error: page.goto: net::ERR_CONNECTION_REFUSED at http://127.0.0.1:18080/register
+Call log:
+  - navigating to "http://127.0.0.1:18080/register", waiting until "load"
+</status>
+</test>
+<kw name="Close CP Friend Finder" owner="common" type="TEARDOWN">
+<kw name="Close Browser" owner="Browser">
+<msg time="2026-10-09T23:38:17.748299" level="INFO">Closed browser</msg>
+<tag>BrowserControl</tag>
+<tag>Setter</tag>
+<doc>Closes the current browser.</doc>
+<status status="PASS" start="2026-10-09T23:38:17.459121" elapsed="0.289178"/>
+</kw>
+<status status="PASS" start="2026-10-09T23:38:17.458122" elapsed="0.291178"/>
+</kw>
+<status status="FAIL" start="2026-10-09T23:38:16.332432" elapsed="1.416868"/>
+</suite>
+<status status="FAIL" start="2026-10-09T23:37:35.024980" elapsed="42.738379"/>
+</suite>
+<statistics>
+<total>
+<stat pass="0" fail="5" skip="0">All Tests</stat>
+</total>
+<tag>
+</tag>
+<suite>
+<stat name="Tests" id="s1" pass="0" fail="5" skip="0">Tests</stat>
+<stat name="Auth Flow" id="s1-s1" pass="0" fail="1" skip="0">Tests.Auth Flow</stat>
+<stat name="Login Smoke" id="s1-s2" pass="0" fail="3" skip="0">Tests.Login Smoke</stat>
+<stat name="Register Interest" id="s1-s3" pass="0" fail="1" skip="0">Tests.Register Interest</stat>
+</suite>
+</statistics>
+<errors>
+</errors>
+</robot>
