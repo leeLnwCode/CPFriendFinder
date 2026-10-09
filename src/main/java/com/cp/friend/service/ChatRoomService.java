@@ -103,39 +103,39 @@ public class ChatRoomService {
 
     @Transactional(readOnly = true)
     public List<ChatRoomSummaryResponse> discoverRooms(String search, Set<UUID> interestIds, int page, int size, int year) {
-        Pageable pageable = PageRequest.of(Math.max(page, 0), Math.min(Math.max(size, 1), 50));
+        return discoverRooms(search, interestIds, page, size, year, "newest");
+    }
 
-        List<ChatRoom> rooms;
+    @Transactional(readOnly = true)
+    public List<ChatRoomSummaryResponse> discoverRooms(String search, Set<UUID> interestIds, int page, int size, int year, String sort) {
+        if (!Set.of("newest", "oldest", "name").contains(sort))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "sort must be newest, oldest or name");
+        if (year < 0 || year > 6) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "year must be between 0 and 6");
         boolean hasSearch = search != null && !search.isBlank();
         boolean hasInterests = interestIds != null && !interestIds.isEmpty();
-
+        List<ChatRoom> rooms;
         if (hasSearch && hasInterests) {
-            // หาจากชื่อก่อนแล้วค่อยเอามาตัดกับ interest
-            Set<UUID> matchedIds = chatRoomRepository.searchGroupRoomsByName(search.trim())
-                    .stream()
-                    .map(ChatRoom::getId)
-                    .collect(Collectors.toSet());
-            rooms = chatRoomRepository.findGroupRoomsByInterestIds(interestIds).stream()
-                    .filter(r -> matchedIds.contains(r.getId()))
-                    .toList();
-        } else if (hasSearch) {
-            rooms = chatRoomRepository.searchGroupRoomsByName(search.trim());
-        } else if (hasInterests) {
-            rooms = chatRoomRepository.findGroupRoomsByInterestIds(interestIds);
-        } else {
-            rooms = chatRoomRepository.findByRoomType(ChatRoom.RoomType.GROUP, pageable).getContent();
-        }
-
-        return toSummaries(rooms.stream()
-                .filter(room -> roomMemberRepository.countActiveMembers(room.getId()) > 0)
-                .skip((long) Math.max(page, 0) * Math.min(Math.max(size, 1), 50))
-                .limit(Math.min(Math.max(size, 1), 50))
-                .toList());
+            Set<UUID> matched = chatRoomRepository.searchGroupRoomsByName(search.trim()).stream().map(ChatRoom::getId).collect(Collectors.toSet());
+            rooms = chatRoomRepository.findGroupRoomsByInterestIds(interestIds).stream().filter(r -> matched.contains(r.getId())).toList();
+        } else if (hasSearch) rooms = chatRoomRepository.searchGroupRoomsByName(search.trim());
+        else if (hasInterests) rooms = chatRoomRepository.findGroupRoomsByInterestIds(interestIds);
+        else rooms = chatRoomRepository.findByRoomType(ChatRoom.RoomType.GROUP, Pageable.unpaged()).getContent();
+        java.util.Comparator<ChatRoom> order = switch(sort) {
+            case "name" -> java.util.Comparator.comparing(ChatRoom::getRoomName, String.CASE_INSENSITIVE_ORDER);
+            case "oldest" -> java.util.Comparator.comparing(ChatRoom::getCreatedAt);
+            default -> java.util.Comparator.comparing(ChatRoom::getCreatedAt).reversed();
+        };
+        int limit = Math.min(Math.max(size, 1), 50);
+        return toSummaries(rooms.stream().filter(r -> r.getDeletedAt() == null)
+            .filter(r -> year == 0 || (r.getTargetYear() != null && r.getTargetYear() == year))
+            .filter(r -> roomMemberRepository.countActiveMembers(r.getId()) > 0)
+            .sorted(order.thenComparing(ChatRoom::getId))
+            .skip((long)Math.max(page, 0) * limit).limit(limit).toList());
     }
 
     @Transactional(readOnly = true)
     public ChatRoomDetailResponse getRoom(UUID roomId) {
-        ChatRoom room = chatRoomRepository.findById(roomId)
+        ChatRoom room = chatRoomRepository.findById(roomId).filter(r -> r.getDeletedAt() == null)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Room not found"));
 
         List<RoomMember> members = roomMemberRepository.findActiveMembers(roomId);
@@ -167,14 +167,15 @@ public class ChatRoomService {
 
     @Transactional
     public ChatRoomDetailResponse joinRoom(UUID userId, UUID roomId, String password) {
-        ChatRoom room = chatRoomRepository.findById(roomId)
+        ChatRoom room = chatRoomRepository.findById(roomId).filter(r -> r.getDeletedAt() == null)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Room not found"));
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
 
         if (roomMemberRepository.isActiveMember(roomId, userId)) {
-            throw new ResponseStatusException(HttpStatus.CONFLICT, "Already a member of this room");
+            // Membership survives page reloads and browser restarts. Rejoining must not add a row.
+            return getRoom(roomId);
         }
 
         if (room.isPrivate() && room.getPasswordHash() != null) {
@@ -214,7 +215,7 @@ public class ChatRoomService {
     public ChatRoomDetailResponse updateRoom(UUID userId, UUID roomId, UpdateChatRoomRequest request) {
         requireAnyRole(roomId, userId, RoomMember.Role.OWNER, RoomMember.Role.MODERATOR);
 
-        ChatRoom room = chatRoomRepository.findById(roomId)
+        ChatRoom room = chatRoomRepository.findById(roomId).filter(r -> r.getDeletedAt() == null)
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Room not found"));
 
         if (request.getRoomName() != null && !request.getRoomName().isBlank()) {
@@ -273,6 +274,18 @@ public class ChatRoomService {
         return getRoom(roomId);
     }
 
+    @Transactional
+    public void deleteRoom(UUID userId, UUID roomId) {
+        requireAnyRole(roomId, userId, RoomMember.Role.OWNER);
+        ChatRoom room = chatRoomRepository.findById(roomId).filter(r -> r.getDeletedAt() == null)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Room not found"));
+        if (room.getRoomType() != ChatRoom.RoomType.GROUP)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Only group rooms can be deleted");
+        room.setDeletedAt(Instant.now());
+        for (RoomMember member : roomMemberRepository.findActiveMembers(roomId)) member.setLeftAt(room.getDeletedAt());
+        chatRoomRepository.save(room);
+    }
+
     private void requireAnyRole(UUID roomId, UUID userId, RoomMember.Role... roles) {
         if (!roomMemberRepository.hasAnyRole(roomId, userId, List.of(roles))) {
             throw new ResponseStatusException(
@@ -305,10 +318,27 @@ public class ChatRoomService {
 
         ensureFriendship(userId, friendId);
 
-        ChatRoom existing = chatRoomRepository.findDirectRoomBetween(userId, friendId)
-                .orElse(null);
+        // Both callers lock the same row until this transaction commits. Check only after
+        // acquiring the lock so simultaneous first opens cannot create different rooms.
+        UUID canonical = userId.compareTo(friendId) <= 0 ? userId : friendId;
+        userRepository.lockDirectChatParticipant(canonical)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"User not found"));
+        ChatRoom existing = chatRoomRepository.findActiveDirectRoomsBetween(userId, friendId, PageRequest.of(0,1))
+                .stream().findFirst().orElse(null);
         if (existing != null) {
             return toSummary(existing, roomMemberRepository.countActiveMembers(existing.getId()));
+        }
+
+        ChatRoom historical = chatRoomRepository.findHistoricalDirectRoomsBetween(userId, friendId, PageRequest.of(0, 1))
+                .stream().findFirst().orElse(null);
+        if (historical != null) {
+            for (UUID participantId : List.of(userId, friendId)) {
+                RoomMember member = roomMemberRepository.findFirstByRoomIdAndUserIdOrderByJoinedAtDesc(historical.getId(), participantId)
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Conversation member not found"));
+                member.setLeftAt(null);
+                roomMemberRepository.save(member);
+            }
+            return toSummary(historical, roomMemberRepository.countActiveMembers(historical.getId()));
         }
 
         User me = userRepository.findById(userId)

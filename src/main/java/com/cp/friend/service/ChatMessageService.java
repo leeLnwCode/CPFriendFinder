@@ -40,7 +40,7 @@ public class ChatMessageService {
     private final ChatRoomRepository chatRoomRepository;
     private final RoomMemberRepository roomMemberRepository;
     private final UserRepository userRepository;
-    private final NotificationService notificationService;
+    private final com.cp.friend.port.MessageNotifications notificationService;
     private final MessageContentStrategyResolver contentStrategyResolver;
     private final SimpMessagingTemplate messagingTemplate;
 
@@ -103,7 +103,7 @@ public class ChatMessageService {
         // (ข้อความมีชีวิตอยู่เฉพาะตอนที่คนในห้องออนไลน์อยู่ด้วยกัน)
         if (room.getRoomType() == ChatRoom.RoomType.GROUP) {
             ChatMessageResponse response = new ChatMessageResponse(
-                    null,
+                    UUID.randomUUID(),
                     roomId,
                     senderMember.getUser().getId(),
                     senderMember.getUser().getFirstname(),
@@ -145,6 +145,12 @@ public class ChatMessageService {
         }
         String type = req.getType() == null ? "" : req.getType().trim().toUpperCase(Locale.ROOT);
 
+        String mode = req.getMode() == null || req.getMode().isBlank()
+                ? "VOICE" : req.getMode().trim().toUpperCase(Locale.ROOT);
+        if (!"VOICE".equals(mode) && !"VIDEO".equals(mode)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid call mode, use VOICE or VIDEO");
+        }
+
         String fromName = null;
         String fromImage = null;
         if ("INVITE".equals(type)) {
@@ -165,7 +171,7 @@ public class ChatMessageService {
         messagingTemplate.convertAndSend(
                 "/topic/call/" + req.getToUserId(),
                 new com.cp.friend.dto.response.CallInviteSignal(
-                        type, userId, req.getToUserId(), req.getRoomId(), fromName, fromImage));
+                        type, userId, req.getToUserId(), req.getRoomId(), fromName, fromImage, mode));
     }
 
         public void relayCallSignal(UUID userId, UUID roomId, CallSignalRequest signal) {
@@ -250,6 +256,24 @@ public class ChatMessageService {
 
         message.setDeletedAt(Instant.now());
         return toResponse(messageRepository.save(message));
+    }
+
+    @Transactional
+    public ChatMessageResponse edit(UUID userId, UUID roomId, UUID messageId, String content) {
+        requireActiveMember(roomId,userId);
+        Message message = messageRepository.findById(messageId)
+            .filter(m -> m.getRoom().getId().equals(roomId) && m.getDeletedAt() == null)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Message not found"));
+        if (!message.getSender().getId().equals(userId))
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"You can only edit your own messages");
+        if (message.getMessageType() != Message.MessageType.TEXT)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Only text messages can be edited");
+        if(content == null || content.isBlank() || content.length()>5000)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Text must contain 1 to 5000 characters");
+        message.setContent(contentStrategyResolver.resolve(Message.MessageType.TEXT).process(content));
+        ChatMessageResponse result=toResponse(messageRepository.save(message));
+        messagingTemplate.convertAndSend("/topic/rooms/"+roomId+"/message-updates", (Object)java.util.Map.of("type","EDIT","message",result));
+        return result;
     }
 
     // =========================================================
