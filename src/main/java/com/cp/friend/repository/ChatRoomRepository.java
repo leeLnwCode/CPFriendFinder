@@ -50,11 +50,13 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, UUID> {
     List<ChatRoom> findJoinedRooms(@Param("userId") UUID userId);
 
     // หาห้อง DIRECT ที่มีสมาชิกเป็น 2 คนนี้พอดี (ใช้ก่อนสร้างแชทส่วนตัวใหม่ กันสร้างซ้ำ)
+    // ⚠️ ต้องกรอง leftAt IS NULL — ไม่งั้นจะเจอห้องเก่าที่เพื่อน leave ไปแล้ว
+    // แล้วเพื่อนกลายเป็น "ไม่ได้เป็นสมาชิก" ทำให้ส่งข้อความโดน 403
     @Query("""
             SELECT r FROM ChatRoom r
             WHERE r.roomType = com.cp.friend.model.ChatRoom.RoomType.DIRECT
-              AND EXISTS (SELECT 1 FROM RoomMember m1 WHERE m1.room = r AND m1.user.id = :a)
-              AND EXISTS (SELECT 1 FROM RoomMember m2 WHERE m2.room = r AND m2.user.id = :b)
+              AND EXISTS (SELECT 1 FROM RoomMember m1 WHERE m1.room = r AND m1.user.id = :a AND m1.leftAt IS NULL)
+              AND EXISTS (SELECT 1 FROM RoomMember m2 WHERE m2.room = r AND m2.user.id = :b AND m2.leftAt IS NULL)
             """)
     Optional<ChatRoom> findDirectRoomBetween(@Param("a") UUID a, @Param("b") UUID b);
 }

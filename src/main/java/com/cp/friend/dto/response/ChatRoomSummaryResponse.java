@@ -18,7 +18,6 @@ public record ChatRoomSummaryResponse(
         List<InterestDto> interests,
         Instant createdAt
 ) {
-
     public record InterestDto(UUID id, String name) {
     }
 }

@@ -1,6 +1,8 @@
 package com.cp.friend.service;
 
 import com.cp.friend.dto.request.ChatMessagePayload;
+import com.cp.friend.dto.request.CallSignalRequest;
+import com.cp.friend.dto.response.CallSignalResponse;
 import com.cp.friend.dto.response.ChatMessageResponse;
 import com.cp.friend.model.ChatRoom;
 import com.cp.friend.model.Message;
@@ -713,6 +715,63 @@ class ChatMessageServiceTest {
         verify(messageRepository, never())
                 .save(any());
     }
+        @Test
+        void relayCallSignal_leave_afterMembershipEnded_stillBroadcasts() {
+        UUID userId = UUID.randomUUID();
+        UUID roomId = UUID.randomUUID();
+
+        User user = user(userId, "Former");
+        ChatRoom room = room(roomId, ChatRoom.RoomType.DIRECT);
+
+        RoomMember formerMember = member(room, user);
+        formerMember.setLeftAt(Instant.now());
+
+        CallSignalRequest signal = new CallSignalRequest();
+        signal.setType("LEAVE");
+
+        when(roomMemberRepository
+                .findFirstByRoomIdAndUserIdOrderByJoinedAtDesc(roomId, userId))
+                .thenReturn(Optional.of(formerMember));
+
+        assertDoesNotThrow(
+                () -> chatMessageService.relayCallSignal(
+                        userId,
+                        roomId,
+                        signal
+                )
+        );
+
+        verify(messagingTemplate).convertAndSend(
+                eq("/topic/rooms/" + roomId + "/call"),
+                any(CallSignalResponse.class)
+        );
+        }
+        @Test
+        void relayCallSignal_leave_neverMember_returnsForbidden() {
+        UUID userId = UUID.randomUUID();
+        UUID roomId = UUID.randomUUID();
+
+        CallSignalRequest signal = new CallSignalRequest();
+        signal.setType("LEAVE");
+
+        when(roomMemberRepository
+                .findFirstByRoomIdAndUserIdOrderByJoinedAtDesc(roomId, userId))
+                .thenReturn(Optional.empty());
+
+        ResponseStatusException ex = assertThrows(
+                ResponseStatusException.class,
+                () -> chatMessageService.relayCallSignal(
+                        userId,
+                        roomId,
+                        signal
+                )
+        );
+
+        assertEquals(HttpStatus.FORBIDDEN, ex.getStatusCode());
+
+        verifyNoInteractions(messagingTemplate);
+        }
+
 
     private void setUserId(
             User user,

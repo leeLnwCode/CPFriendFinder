@@ -1070,6 +1070,17 @@ document.addEventListener("DOMContentLoaded", async () => {
       voiceCallStatus.textContent = "กำลังสนทนา";
     if (mode === "VIDEO") startCallTimer();
   });
+  window.addEventListener("cp-call-media-state", (event) => {
+    const videoEnabled = event.detail?.videoEnabled !== false;
+
+    if (videoCallRemoteVideo) {
+      videoCallRemoteVideo.style.display = videoEnabled ? "block" : "none";
+    }
+
+    if (videoCallRemoteImage) {
+      videoCallRemoteImage.style.display = videoEnabled ? "none" : "block";
+    }
+  });
 
   window.addEventListener("cp-call-signal", async (event) => {
     const signal = event.detail;

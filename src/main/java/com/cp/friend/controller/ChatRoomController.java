@@ -55,10 +55,11 @@ public class ChatRoomController extends SessionController {
     public ResponseEntity<List<ChatRoomSummaryResponse>> discoverRooms(
             @RequestParam(required = false) String search,
             @RequestParam(required = false) Set<UUID> interestId,
+            @RequestParam(defaultValue = "0") int year,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size
     ) {
-        return ResponseEntity.ok(chatRoomService.discoverRooms(search, interestId, page, size));
+        return ResponseEntity.ok(chatRoomService.discoverRooms(search, interestId, page, size, year));
     }
 
     // รายละเอียดห้อง + สมาชิก
