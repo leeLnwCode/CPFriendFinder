@@ -1,7 +1,6 @@
 package com.cp.friend.dto.request;
 
 import java.time.LocalDate;
-import java.util.UUID;
 
 import jakarta.validation.constraints.Past;
 import jakarta.validation.constraints.Pattern;
@@ -39,12 +38,4 @@ public class UpdateProfileRequest {
             message = "imageBase64 must be valid base64 image data"
     )
     private String imageBase64;
-
-    @Size(max=50)
-    private java.util.List<@jakarta.validation.constraints.NotNull UUID> interestIds;
-
-    @Size(max=5, message="Choose at most 5 introduction photos")
-    private java.util.List<@jakarta.validation.Valid @jakarta.validation.constraints.NotNull GalleryPhoto> galleryPhotos;
-
-    public record GalleryPhoto(@Size(max=2048) String url, @Size(max=2800000) String imageBase64) {}
 }

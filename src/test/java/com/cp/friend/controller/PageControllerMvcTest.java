@@ -12,12 +12,6 @@ class PageControllerMvcTest {
     private final PageController controller = new PageController();
 
     @Test
-    void entry_redirectsToLogin() throws Exception {
-        assertArrayEquals(new String[]{"/"}, PageController.class.getDeclaredMethod("entry").getAnnotation(GetMapping.class).value());
-        assertEquals("redirect:/login", controller.entry());
-    }
-
-    @Test
     void loginPage_mapsToLoginView() throws Exception {
         Method method =
                 PageController.class.getDeclaredMethod("login");

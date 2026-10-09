@@ -74,12 +74,6 @@ public class ChatMessageController extends SessionController {
         return ResponseEntity.noContent().build();
     }
 
-    @org.springframework.web.bind.annotation.PutMapping("/{messageId}")
-    public ResponseEntity<ChatMessageResponse> editMessage(@PathVariable UUID roomId, @PathVariable UUID messageId,
-            @Valid @RequestBody com.cp.friend.dto.request.EditMessageRequest request, HttpSession session) {
-        return ResponseEntity.ok(chatMessageService.edit(currentUserId(session),roomId,messageId,request.content()));
-    }
-
     private Instant parseBefore(String before) {
         if (before == null || before.isBlank()) {
             return null;

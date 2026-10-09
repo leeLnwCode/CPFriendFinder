@@ -13,7 +13,6 @@ import java.util.UUID;
 @Setter
 public class UpdateProfileResponse {
 
-    private java.util.List<String> galleryPhotos;
     private UUID id;
     private String email;
     private String firstname;
@@ -27,7 +26,6 @@ public class UpdateProfileResponse {
     private Instant updatedAt;
 
     public UpdateProfileResponse(User user) {
-        this.galleryPhotos = java.util.List.copyOf(user.getGalleryPhotos());
         this.id = user.getId();
         this.email = user.getEmail();
         this.firstname = user.getFirstname();

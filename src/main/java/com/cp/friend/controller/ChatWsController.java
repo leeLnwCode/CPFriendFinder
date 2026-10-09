@@ -24,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 public class ChatWsController {
 
     private final ChatMessageService chatMessageService;
-    private final com.cp.friend.service.RoomRealtimeService realtime;
 
     @MessageMapping("/rooms/{roomId}/messages")
     public void sendMessage(
@@ -49,7 +48,6 @@ public class ChatWsController {
     public void handleCallSignal(
             @DestinationVariable UUID roomId,
             CallSignalRequest signal,
-            @org.springframework.messaging.handler.annotation.Header("simpSessionId") String sessionId,
             Principal principal
     ) {
         String signalType = signal != null ? signal.getType() : "null";
@@ -75,7 +73,6 @@ public class ChatWsController {
             throw new IllegalStateException("Authentication required");
         }
         chatMessageService.relayCallSignal(UUID.fromString(principal.getName()), roomId, signal);
-        realtime.signal(roomId, UUID.fromString(principal.getName()), sessionId, signal.getType(), signal.getPayload());
     }
 
     // สายเรียกเข้า: INVITE/ACCEPT/DECLINE/CANCEL

@@ -7,9 +7,6 @@ import java.util.UUID;
  * DTO for candidate recommended friends with calculated matching score.
  */
 public class MatchCandidateResponse {
-    private java.util.List<String> galleryPhotos = java.util.List.of();
-    public java.util.List<String> getGalleryPhotos(){return galleryPhotos;}
-    public void setGalleryPhotos(java.util.List<String> photos){galleryPhotos=java.util.List.copyOf(photos);}
     private UUID userId;
     private String firstname;
     private String lastname;
@@ -42,8 +39,6 @@ public class MatchCandidateResponse {
     }
 
     public static class Builder {
-        private java.util.List<String> photos = java.util.List.of();
-        public Builder galleryPhotos(java.util.List<String> value){photos=java.util.List.copyOf(value);return this;}
         private UUID userId;
         private String firstname;
         private String lastname;
@@ -100,8 +95,7 @@ public class MatchCandidateResponse {
         }
 
         public MatchCandidateResponse build() {
-            var response = new MatchCandidateResponse(userId, firstname, lastname, imageUrl, bio, department, year, matchScore, sharedInterests);
-            response.setGalleryPhotos(photos);return response;
+            return new MatchCandidateResponse(userId, firstname, lastname, imageUrl, bio, department, year, matchScore, sharedInterests);
         }
     }
 
