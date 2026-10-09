@@ -537,7 +537,7 @@ class ChatMessageServiceTest {
                         payload("hello", "TEXT")
                 );
 
-        assertNull(result.id());
+        assertNotNull(result.id());
         assertEquals("hello", result.content());
 
         verify(messageRepository, never())
@@ -773,6 +773,50 @@ class ChatMessageServiceTest {
         }
 
 
+    @Test
+    void relayCallInvite_videoMode_reachesReceiver() {
+        UUID callerId = UUID.randomUUID();
+        UUID receiverId = UUID.randomUUID();
+        UUID roomId = UUID.randomUUID();
+        User caller = user(callerId, "Caller");
+        when(roomMemberRepository.findActiveMember(roomId, callerId))
+                .thenReturn(Optional.of(member(room(roomId, ChatRoom.RoomType.DIRECT), caller)));
+        when(userRepository.findById(callerId)).thenReturn(Optional.of(caller));
+        var request = new com.cp.friend.dto.request.CallInviteRequest();
+        request.setType("INVITE"); request.setToUserId(receiverId); request.setRoomId(roomId); request.setMode("VIDEO");
+        chatMessageService.relayCallInvite(callerId, request);
+        var captured = ArgumentCaptor.forClass(com.cp.friend.dto.response.CallInviteSignal.class);
+        verify(messagingTemplate).convertAndSend(eq("/topic/call/" + receiverId), captured.capture());
+        assertEquals("VIDEO", captured.getValue().mode());
+        assertEquals(roomId, captured.getValue().roomId());
+        assertEquals("Caller User", captured.getValue().fromName());
+    }
+
+    @Test
+    void relayCallInvite_accept_preservesModeAndOldClientsDefaultToVoice() {
+        UUID callerId = UUID.randomUUID();
+        UUID receiverId = UUID.randomUUID();
+        var request = new com.cp.friend.dto.request.CallInviteRequest();
+        request.setType("ACCEPT"); request.setToUserId(receiverId); request.setMode("VIDEO");
+        chatMessageService.relayCallInvite(callerId, request);
+        request.setMode(null);
+        chatMessageService.relayCallInvite(callerId, request);
+        var captured = ArgumentCaptor.forClass(com.cp.friend.dto.response.CallInviteSignal.class);
+        verify(messagingTemplate, times(2)).convertAndSend(eq("/topic/call/" + receiverId), captured.capture());
+        assertEquals("VIDEO", captured.getAllValues().get(0).mode());
+        assertEquals("VOICE", captured.getAllValues().get(1).mode());
+    }
+
+    @Test
+    void relayCallInvite_invalidMode_isRejected() {
+        var request = new com.cp.friend.dto.request.CallInviteRequest();
+        request.setType("ACCEPT"); request.setToUserId(UUID.randomUUID()); request.setMode("UNKNOWN");
+        var error = assertThrows(ResponseStatusException.class,
+                () -> chatMessageService.relayCallInvite(UUID.randomUUID(), request));
+        assertEquals(HttpStatus.BAD_REQUEST, error.getStatusCode());
+        verifyNoInteractions(messagingTemplate);
+    }
+
     private void setUserId(
             User user,
             UUID id
@@ -786,5 +830,39 @@ class ChatMessageServiceTest {
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
+    }
+
+    @Test void editsOnlyOwnTextAndBroadcastsUpdate() {
+        UUID me=UUID.randomUUID(),rid=UUID.randomUUID(),mid=UUID.randomUUID();ChatRoom r=room(rid,ChatRoom.RoomType.DIRECT);User u=user(me,"Me");
+        RoomMember membership=new RoomMember();membership.setRoom(r);membership.setUser(u);
+        Message m=new Message();m.setId(mid);m.setRoom(r);m.setSender(u);m.setContent("Before");
+        when(roomMemberRepository.findActiveMember(rid,me)).thenReturn(Optional.of(membership));
+        when(messageRepository.findById(mid)).thenReturn(Optional.of(m));
+        when(contentStrategyResolver.resolve(Message.MessageType.TEXT)).thenReturn(contentStrategy);
+        when(contentStrategy.process("After")).thenReturn("After");when(messageRepository.save(m)).thenReturn(m);
+        assertEquals("After",chatMessageService.edit(me,rid,mid,"After").content());
+        verify(messagingTemplate).convertAndSend(eq("/topic/rooms/"+rid+"/message-updates"),any(Object.class));
+    }
+    @Test void editingAnotherPersonsMessageIsForbidden() {
+        UUID me=UUID.randomUUID(),rid=UUID.randomUUID(),mid=UUID.randomUUID();RoomMember membership=new RoomMember();
+        Message m=new Message();m.setId(mid);m.setRoom(room(rid,ChatRoom.RoomType.DIRECT));m.setSender(user(UUID.randomUUID(),"Other"));
+        when(roomMemberRepository.findActiveMember(rid,me)).thenReturn(Optional.of(membership));when(messageRepository.findById(mid)).thenReturn(Optional.of(m));
+        assertEquals(HttpStatus.FORBIDDEN,assertThrows(ResponseStatusException.class,()->chatMessageService.edit(me,rid,mid,"After")).getStatusCode());
+        verify(messageRepository,never()).save(any());verifyNoInteractions(messagingTemplate);
+    }
+
+    @Test void cannotEditWithoutMembership() {
+        UUID me=UUID.randomUUID(),rid=UUID.randomUUID();
+        assertEquals(HttpStatus.FORBIDDEN,assertThrows(ResponseStatusException.class,()->chatMessageService.edit(me,rid,UUID.randomUUID(),"After")).getStatusCode());
+        verifyNoInteractions(messageRepository);
+    }
+    @Test void rejectsImageAndBlankEdits() {
+        UUID me=UUID.randomUUID(),rid=UUID.randomUUID(),mid=UUID.randomUUID();Message m=new Message();m.setId(mid);m.setRoom(room(rid,ChatRoom.RoomType.DIRECT));m.setSender(user(me,"Me"));
+        when(roomMemberRepository.findActiveMember(rid,me)).thenReturn(Optional.of(new RoomMember()));when(messageRepository.findById(mid)).thenReturn(Optional.of(m));
+        m.setMessageType(Message.MessageType.IMAGE);
+        assertEquals(HttpStatus.BAD_REQUEST,assertThrows(ResponseStatusException.class,()->chatMessageService.edit(me,rid,mid,"After")).getStatusCode());
+        m.setMessageType(Message.MessageType.TEXT);
+        assertEquals(HttpStatus.BAD_REQUEST,assertThrows(ResponseStatusException.class,()->chatMessageService.edit(me,rid,mid," ")).getStatusCode());
+        verify(messageRepository,never()).save(any());
     }
 }

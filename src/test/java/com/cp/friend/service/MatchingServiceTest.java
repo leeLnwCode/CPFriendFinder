@@ -2,6 +2,8 @@ package com.cp.friend.service;
 
 import com.cp.friend.dto.matching.MatchCandidateResponse;
 import com.cp.friend.model.Interest;
+import com.cp.friend.model.Friendship;
+import com.cp.friend.model.FriendRequest;
 import com.cp.friend.model.User;
 import com.cp.friend.model.UserInterest;
 import com.cp.friend.repository.FriendRequestRepository;
@@ -104,27 +106,18 @@ class MatchingServiceTest {
                 createUserInterest(baseId, "Web")
         ));
 
-        // Candidate 1 has: Java, AI, Mobile -> 2/3 = 66.67%
-        when(userInterestRepository.findByUserIdWithInterest(cand1Id)).thenReturn(List.of(
-                createUserInterest(cand1Id, "Java"),
-                createUserInterest(cand1Id, "AI"),
-                createUserInterest(cand1Id, "Mobile")
+        when(userInterestRepository.findByUserIdsWithInterest(any())).thenReturn(List.of(
+                createUserInterest(cand1Id, "Java"), createUserInterest(cand1Id, "AI"), createUserInterest(cand1Id, "Mobile"),
+                createUserInterest(cand2Id, "Java"), createUserInterest(cand2Id, "AI"), createUserInterest(cand2Id, "Web")
         ));
-
-        // Candidate 2 has: Java, AI, Web -> 3/3 = 100.0%
-        when(userInterestRepository.findByUserIdWithInterest(cand2Id)).thenReturn(List.of(
-                createUserInterest(cand2Id, "Java"),
-                createUserInterest(cand2Id, "AI"),
-                createUserInterest(cand2Id, "Web")
-        ));
-
-        when(friendshipRepository.existsBetween(any(), any())).thenReturn(false);
-        when(friendRequestRepository.existsPendingBetween(any(), any())).thenReturn(false);
 
         List<MatchCandidateResponse> results = matchingService.recommendFriends(baseId, 10);
 
         assertNotNull(results);
         assertEquals(2, results.size());
+        verify(friendshipRepository, never()).existsBetween(any(), any());
+        verify(friendRequestRepository, never()).existsPendingBetween(any(), any());
+        verify(userInterestRepository, times(1)).findByUserIdsWithInterest(any());
 
         // First candidate should be cand2 with 100.0%
         assertEquals(cand2Id, results.get(0).getUserId());
@@ -150,12 +143,12 @@ class MatchingServiceTest {
         when(userRepository.findAllActive()).thenReturn(List.of(baseUser, candidateUser1, candidateUser2));
         when(userInterestRepository.findByUserIdWithInterest(baseId)).thenReturn(Collections.emptyList());
 
-        // Candidate 1 is already a friend
-        when(friendshipRepository.existsBetween(baseId, friendId)).thenReturn(true);
-
-        // Candidate 2 has a pending request
-        when(friendshipRepository.existsBetween(baseId, pendingId)).thenReturn(false);
-        when(friendRequestRepository.existsPendingBetween(baseId, pendingId)).thenReturn(true);
+        Friendship friendship = new Friendship(); friendship.setUser(baseUser); friendship.setFriend(candidateUser1);
+        FriendRequest outgoing = new FriendRequest(); outgoing.setSender(baseUser); outgoing.setReceiver(candidateUser2);
+        FriendRequest incoming = new FriendRequest(); incoming.setSender(candidateUser2); incoming.setReceiver(baseUser);
+        when(friendshipRepository.findAllByMember(baseId)).thenReturn(List.of(friendship));
+        when(friendRequestRepository.findBySenderIdAndStatus(baseId, FriendRequest.Status.PENDING)).thenReturn(List.of(outgoing));
+        when(friendRequestRepository.findByReceiverIdAndStatus(baseId, FriendRequest.Status.PENDING)).thenReturn(List.of(incoming));
 
         List<MatchCandidateResponse> results = matchingService.recommendFriends(baseId, 10);
 

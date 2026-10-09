@@ -25,7 +25,7 @@ class WebSocketAuthChannelInterceptorTest {
     @BeforeEach
     void setUp() {
         channel = mock(MessageChannel.class);
-        interceptor = new WebSocketAuthChannelInterceptor();
+        interceptor = new WebSocketAuthChannelInterceptor(mock(com.cp.friend.service.RoomMembershipService.class));
     }
 
     @Test
@@ -68,16 +68,29 @@ class WebSocketAuthChannelInterceptorTest {
                         new byte[0],
                         accessor.getMessageHeaders());
 
-        Message<?> result = interceptor.preSend(message, channel);
+        org.junit.jupiter.api.Assertions.assertThrows(org.springframework.security.access.AccessDeniedException.class,
+                () -> interceptor.preSend(message, channel));
+    }
 
-        StompHeaderAccessor resultAccessor =
-                MessageHeaderAccessor.getAccessor(
-                        result,
-                        StompHeaderAccessor.class);
-
-        assertNotNull(resultAccessor);
-        assertNull(
-                resultAccessor.getUser(),
-                "Unauthenticated client must not become authenticated from STOMP login header");
+    private Message<byte[]> frame(StompCommand command, UUID user, String destination) {
+        var a=StompHeaderAccessor.create(command);if(user!=null)a.setUser(()->user.toString());a.setDestination(destination);a.setLeaveMutable(true);
+        return MessageBuilder.createMessage(new byte[0],a.getMessageHeaders());
+    }
+    @Test void cannotSubscribeToAnotherUsersNotifications() {
+        org.junit.jupiter.api.Assertions.assertThrows(org.springframework.security.access.AccessDeniedException.class,
+          ()->interceptor.preSend(frame(StompCommand.SUBSCRIBE,UUID.randomUUID(),"/topic/notifications/"+UUID.randomUUID()),channel));
+    }
+    @Test void ownNotificationsAndRoomListUpdatesAllowed() {
+        UUID me=UUID.randomUUID();assertNotNull(interceptor.preSend(frame(StompCommand.SUBSCRIBE,me,"/topic/notifications/"+me),channel));
+        assertNotNull(interceptor.preSend(frame(StompCommand.SUBSCRIBE,me,"/topic/rooms/updates"),channel));
+    }
+    @Test void roomSubscriptionChecksMembership() {
+        var membership=mock(com.cp.friend.service.RoomMembershipService.class);var secured=new WebSocketAuthChannelInterceptor(membership);
+        UUID me=UUID.randomUUID(),room=UUID.randomUUID();var message=frame(StompCommand.SUBSCRIBE,me,"/topic/rooms/"+room+"/message-updates");
+        secured.preSend(message,channel);org.mockito.Mockito.verify(membership).requireActive(room,me);
+    }
+    @Test void clientsCannotPublishBrokerTopics() {
+        org.junit.jupiter.api.Assertions.assertThrows(org.springframework.security.access.AccessDeniedException.class,
+          ()->interceptor.preSend(frame(StompCommand.SEND,UUID.randomUUID(),"/topic/rooms/updates"),channel));
     }
 }

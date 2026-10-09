@@ -37,7 +37,7 @@ class UserServiceTest {
 
     @BeforeEach
     void setUp() {
-        userService = new UserService(userRepository, storagePort);
+        userService = new UserService(userRepository, storagePort, mock(UserInterestService.class));
 
         userId = UUID.randomUUID();
 

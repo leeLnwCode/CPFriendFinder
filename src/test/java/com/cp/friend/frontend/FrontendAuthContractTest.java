@@ -41,9 +41,9 @@ class FrontendAuthContractTest {
 
         String js = readResource("static/js/login.js");
 
-        assertTrue(js.contains("fetch(\"/api/auth/login\""));
-        assertTrue(js.contains("method: \"POST\""));
-        assertTrue(js.contains("\"Content-Type\": \"application/json\""));
+        assertTrue(js.matches("(?s).*fetch\\(\\s*[\"']/api/auth/login[\"'].*"));
+        assertTrue(js.matches("(?s).*method\\s*:\\s*[\"']POST[\"'].*"));
+        assertTrue(js.matches("(?s).*[\"']Content-Type[\"']\\s*:\\s*[\"']application/json[\"'].*"));
     }
 
     @Test
@@ -52,13 +52,9 @@ class FrontendAuthContractTest {
 
         String js = readResource("static/js/login.js");
 
-        assertTrue(js.contains(
-                "sessionStorage.setItem(\"currentUser\""
-        ));
+        assertTrue(js.matches("(?s).*sessionStorage\\.setItem\\([\"']currentUser[\"'].*"));
 
-        assertTrue(js.contains(
-                "window.location.href = \"/home\""
-        ));
+        assertTrue(js.contains("window.location.assign('/home')"));
     }
 
     @Test
@@ -93,15 +89,11 @@ class FrontendAuthContractTest {
 
         String js = readResource("static/js/register.js");
 
-        assertTrue(js.contains(
-                "fetch(\"/api/auth/register\""
-        ));
+        assertTrue(js.contains("fetch('/api/auth/register'"));
 
-        assertTrue(js.contains("method: \"POST\""));
+        assertTrue(js.matches("(?s).*method\\s*:\\s*[\"']POST[\"'].*"));
 
-        assertTrue(js.contains(
-                "\"Content-Type\": \"application/json\""
-        ));
+        assertTrue(js.matches("(?s).*[\"']Content-Type[\"']\\s*:\\s*[\"']application/json[\"'].*"));
     }
 
     @Test
@@ -113,8 +105,6 @@ class FrontendAuthContractTest {
         assertTrue(js.contains("password.length < 8"));
         assertTrue(js.contains("password !== confirmPassword"));
 
-        assertTrue(js.contains(
-                "window.location.href = \"/login\""
-        ));
+        assertTrue(js.contains("window.location.assign('/login?registered=1&email='+encodeURIComponent(email))"));
     }
 }

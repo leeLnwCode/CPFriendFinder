@@ -92,7 +92,7 @@ class FriendNotificationChatContractTest {
     void friendJs_loadsMessageHistory() {
         assertTrue(
                 friendJs.contains(
-                        "`/api/chats/${currentRoomId}/messages?limit=50`"
+                        "`/api/chats/${roomId}/messages?limit=50${before}`"
                 )
         );
 
