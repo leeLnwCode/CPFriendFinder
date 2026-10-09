@@ -32,10 +32,13 @@ E2E-005 Selected Interest Is Saved After Registration
 
     # Login
     Wait For Elements State    id=email    visible    10s
+    Wait For Load State    domcontentloaded
+
     Fill Text    id=email       ${email}
     Fill Text    id=password    ${password}
     Click    css=.login-button
-    Get Url    ==    ${BASE_URL}/home
+
+    Wait Until Keyword Succeeds    15s    500ms    Get Url    ==    ${BASE_URL}/home
 
     # Read interests through the real authenticated API
     ${count}=    Evaluate JavaScript    ${None}    async () => { const r = await fetch('/api/users/me/interests'); const data = await r.json(); return data.length; }

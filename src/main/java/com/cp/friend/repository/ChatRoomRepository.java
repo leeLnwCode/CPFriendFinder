@@ -44,7 +44,7 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, UUID> {
     @Query("""
             SELECT r FROM ChatRoom r
             JOIN RoomMember m ON m.room = r
-            WHERE m.user.id = :userId AND m.leftAt IS NULL
+            WHERE m.user.id = :userId AND m.leftAt IS NULL AND r.deletedAt IS NULL
             ORDER BY r.updatedAt DESC
             """)
     List<ChatRoom> findJoinedRooms(@Param("userId") UUID userId);
@@ -55,8 +55,9 @@ public interface ChatRoomRepository extends JpaRepository<ChatRoom, UUID> {
             WHERE r.roomType = com.cp.friend.model.ChatRoom.RoomType.DIRECT
               AND EXISTS (SELECT 1 FROM RoomMember m1 WHERE m1.room = r AND m1.user.id = :a AND m1.leftAt IS NULL)
               AND EXISTS (SELECT 1 FROM RoomMember m2 WHERE m2.room = r AND m2.user.id = :b AND m2.leftAt IS NULL)
+            ORDER BY r.createdAt ASC, r.id ASC
             """)
-    Optional<ChatRoom> findDirectRoomBetween(@Param("a") UUID a, @Param("b") UUID b);
+    List<ChatRoom> findActiveDirectRoomsBetween(@Param("a") UUID a, @Param("b") UUID b, Pageable pageable);
 
     @Query("""
             SELECT r FROM ChatRoom r

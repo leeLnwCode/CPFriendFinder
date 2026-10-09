@@ -40,7 +40,7 @@ public class ChatMessageService {
     private final ChatRoomRepository chatRoomRepository;
     private final RoomMemberRepository roomMemberRepository;
     private final UserRepository userRepository;
-    private final NotificationService notificationService;
+    private final com.cp.friend.port.MessageNotifications notificationService;
     private final MessageContentStrategyResolver contentStrategyResolver;
     private final SimpMessagingTemplate messagingTemplate;
 
@@ -256,6 +256,24 @@ public class ChatMessageService {
 
         message.setDeletedAt(Instant.now());
         return toResponse(messageRepository.save(message));
+    }
+
+    @Transactional
+    public ChatMessageResponse edit(UUID userId, UUID roomId, UUID messageId, String content) {
+        requireActiveMember(roomId,userId);
+        Message message = messageRepository.findById(messageId)
+            .filter(m -> m.getRoom().getId().equals(roomId) && m.getDeletedAt() == null)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"Message not found"));
+        if (!message.getSender().getId().equals(userId))
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN,"You can only edit your own messages");
+        if (message.getMessageType() != Message.MessageType.TEXT)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Only text messages can be edited");
+        if(content == null || content.isBlank() || content.length()>5000)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"Text must contain 1 to 5000 characters");
+        message.setContent(contentStrategyResolver.resolve(Message.MessageType.TEXT).process(content));
+        ChatMessageResponse result=toResponse(messageRepository.save(message));
+        messagingTemplate.convertAndSend("/topic/rooms/"+roomId+"/message-updates", (Object)java.util.Map.of("type","EDIT","message",result));
+        return result;
     }
 
     // =========================================================

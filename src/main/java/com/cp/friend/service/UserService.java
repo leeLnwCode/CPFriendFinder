@@ -21,7 +21,7 @@ public class UserService {
     private final UserRepository userRepository;
     // Dependency Inversion — พึ่ง interface StoragePort ไม่ใช่ S3 SDK โดยตรง
     private final StoragePort storagePort;
-    private final UserInterestService userInterestService;
+    private final UserInterests userInterestService;
 
     @Transactional(readOnly = true)
     public User getProfile(UUID userId) {

@@ -7,18 +7,18 @@ import org.springframework.web.server.ResponseStatusException;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import com.cp.friend.service.RoomRealtimeService;
-import com.cp.friend.repository.RoomMemberRepository;
+import com.cp.friend.service.RoomMembershipService;
 
 @RestController
 @RequestMapping("/api/chats")
 @RequiredArgsConstructor
 public class RoomPresenceController extends SessionController {
     private final RoomRealtimeService realtime;
-    private final RoomMemberRepository members;
+    private final RoomMembershipService members;
     @GetMapping("/{roomId}/call-presence")
     public ResponseEntity<Map<String,Object>> presence(@PathVariable UUID roomId,HttpSession session) {
         UUID userId=currentUserId(session);
-        members.findActiveMember(roomId,userId).orElseThrow(()->new ResponseStatusException(HttpStatus.FORBIDDEN,"You are not a member of this room"));
+        members.requireActive(roomId,userId);
         return ResponseEntity.ok().cacheControl(CacheControl.noStore()).body(realtime.snapshot(roomId));
     }
 }

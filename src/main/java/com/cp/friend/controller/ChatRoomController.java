@@ -59,9 +59,10 @@ public class ChatRoomController extends SessionController {
             @RequestParam(required = false) Set<UUID> interestId,
             @RequestParam(defaultValue = "0") int year,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "newest") String sort
     ) {
-        return ResponseEntity.ok(chatRoomService.discoverRooms(search, interestId, page, size, year));
+        return ResponseEntity.ok(chatRoomService.discoverRooms(search, interestId, page, size, year, sort));
     }
 
     // รายละเอียดห้อง + สมาชิก
@@ -77,7 +78,16 @@ public class ChatRoomController extends SessionController {
             @Valid @RequestBody UpdateChatRoomRequest request,
             HttpSession session
     ) {
-        return ResponseEntity.ok(chatRoomService.updateRoom(currentUserId(session), roomId, request));
+        var response = chatRoomService.updateRoom(currentUserId(session), roomId, request);
+        realtime.membersChanged(roomId);
+        return ResponseEntity.ok(response);
+    }
+
+    @org.springframework.web.bind.annotation.DeleteMapping("/{roomId}")
+    public ResponseEntity<Void> deleteRoom(@PathVariable UUID roomId, HttpSession session) {
+        chatRoomService.deleteRoom(currentUserId(session),roomId);
+        realtime.closeRoom(roomId);
+        return ResponseEntity.noContent().build();
     }
 
     // เปลี่ยน role ของสมาชิก (OWNER เท่านั้น) — body: {"role": "MODERATOR"} หรือ "MEMBER"

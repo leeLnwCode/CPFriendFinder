@@ -46,6 +46,12 @@ public class RoomRealtimeService {
         if(sessions.isEmpty()) { users.remove(userId);if(relayLeave)messaging.convertAndSend("/topic/rooms/"+roomId+"/call",new CallSignalResponse("LEAVE",userId,null,null)); }
         if(users.isEmpty())calls.remove(roomId);changed(roomId);
     }
+    public synchronized void closeRoom(UUID roomId) {
+        var users = calls.get(roomId);
+        if (users != null) for (UUID user : new ArrayList<>(users.keySet())) removeMember(roomId,user);
+        membersChanged(roomId);
+    }
+
     public synchronized void removeMember(UUID roomId,UUID userId) {
         var users=calls.get(roomId);if(users==null||users.remove(userId)==null)return;
         if(users.isEmpty())calls.remove(roomId);

@@ -21,8 +21,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
     public void registerStompEndpoints(StompEndpointRegistry registry) {
         registry.setPreserveReceiveOrder(true);
         registry.addEndpoint("/ws")
-                .setHandshakeHandler(new HttpSessionHandshakeHandler())
-                .setAllowedOriginPatterns("*");
+                .addInterceptors(new SessionHandshakeInterceptor())
+                .setHandshakeHandler(new HttpSessionHandshakeHandler());
     }
 
     @Override
