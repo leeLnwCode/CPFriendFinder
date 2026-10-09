@@ -46,6 +46,15 @@ public class User {
     @Column(length = 500)
     private String bio;
 
+    @ElementCollection
+    @CollectionTable(name="user_gallery_photos", joinColumns=@JoinColumn(name="user_id"))
+    @OrderColumn(name="photo_order")
+    @Column(name="image_url", length=2048, nullable=false)
+    @org.hibernate.annotations.BatchSize(size=50)
+    private java.util.List<String> galleryPhotos = new java.util.ArrayList<>();
+
+    public java.util.List<String> getGalleryPhotos() { return galleryPhotos; }
+
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 

@@ -19,6 +19,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
+        registry.setPreserveReceiveOrder(true);
         registry.addEndpoint("/ws")
                 .setHandshakeHandler(new HttpSessionHandshakeHandler())
                 .setAllowedOriginPatterns("*");
@@ -26,6 +27,7 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void configureMessageBroker(MessageBrokerRegistry registry) {
+        registry.setPreservePublishOrder(true);
         registry.enableSimpleBroker("/topic");
         registry.setApplicationDestinationPrefixes("/app");
     }

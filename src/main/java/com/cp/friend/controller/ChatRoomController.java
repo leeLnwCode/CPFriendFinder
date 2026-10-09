@@ -33,6 +33,7 @@ import lombok.RequiredArgsConstructor;
 public class ChatRoomController extends SessionController {
 
     private final ChatRoomService chatRoomService;
+    private final com.cp.friend.service.RoomRealtimeService realtime;
 
     // ห้องที่ตัวเองเป็นสมาชิกอยู่
     @GetMapping
@@ -47,6 +48,7 @@ public class ChatRoomController extends SessionController {
             HttpSession session
     ) {
         ChatRoomSummaryResponse response = chatRoomService.createGroupRoom(currentUserId(session), request);
+        realtime.roomsChanged();
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
@@ -98,13 +100,18 @@ public class ChatRoomController extends SessionController {
             HttpSession session
     ) {
         String password = request == null ? null : request.getPassword();
-        return ResponseEntity.ok(chatRoomService.joinRoom(currentUserId(session), roomId, password));
+        var result=chatRoomService.joinRoom(currentUserId(session), roomId, password);
+        realtime.membersChanged(roomId);
+        return ResponseEntity.ok(result);
     }
 
     // ออกจากห้อง
     @PostMapping("/{roomId}/leave")
     public ResponseEntity<Void> leaveRoom(@PathVariable UUID roomId, HttpSession session) {
-        chatRoomService.leaveRoom(currentUserId(session), roomId);
+        UUID userId=currentUserId(session);
+        chatRoomService.leaveRoom(userId, roomId);
+        realtime.removeMember(roomId,userId);
+        realtime.membersChanged(roomId);
         return ResponseEntity.noContent().build();
     }
 
