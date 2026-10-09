@@ -174,6 +174,19 @@ async function createAccount() {
   const year = Number(document.getElementById("year").value);
   const department = document.getElementById("department").value;
   const profileInput = document.getElementById("profileImage");
+  const selectedInterests = Array.from(
+  document.querySelectorAll("#step3 .interest.selected")
+)
+  .map(function (button) {
+    const parts = button.textContent.trim().split(/\s+/);
+
+    return parts.length > 1
+      ? parts.slice(1).join(" ")
+      : parts[0];
+  })
+  .filter(function (name) {
+    return name !== "";
+  });
 
   // ตรวจสอบรหัสผ่านอย่างน้อย 8 ตัว
   if (password.length < 8) {
@@ -263,6 +276,8 @@ async function createAccount() {
     year: year,
 
     department: department,
+
+    interests: selectedInterests,
   };
 
   console.log("Register request:", requestData);
@@ -304,6 +319,25 @@ async function createAccount() {
     ========================= */
 
     console.log("Register success:", data);
+    const selectedInterestNames = Array.from(
+     document.querySelectorAll("#step3 .interest.selected"),
+    )
+     .map(function (button) {
+       return button.textContent
+        .trim()
+        .split(/\s+/)
+        .slice(1)
+        .join(" ")
+       .trim();
+     })
+     .filter(function (name) {
+       return name !== "";
+     });
+
+    sessionStorage.setItem(
+      "pendingRegistrationInterests",
+      JSON.stringify(selectedInterestNames)
+    );
 
     alert("สมัครสมาชิกสำเร็จ");
 

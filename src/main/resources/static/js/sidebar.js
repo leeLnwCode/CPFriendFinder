@@ -1,147 +1,59 @@
 document.addEventListener("DOMContentLoaded", async () => {
-  const profileImage = document.getElementById("sidebarProfileImage");
 
-  const profileName = document.getElementById("sidebarProfileName");
+    const profileImage = document.getElementById("sidebarProfileImage");
+    const profileName = document.getElementById("sidebarProfileName");
+    const profileYear = document.getElementById("sidebarProfileYear");
+    const profileDepartment = document.getElementById("sidebarProfileDepartment");
 
-  const profileYear = document.getElementById("sidebarProfileYear");
+    // ถ้าหน้านี้ไม่มี Sidebar ก็ไม่ต้องทำอะไร
+    if (!profileName) {
+        return;
+    }
 
-  const profileDepartment = document.getElementById("sidebarProfileDepartment");
-
-  const notificationBadge = document.getElementById("notificationBadge");
-
-  /* =====================================================
-     LOAD CURRENT USER
-  ====================================================== */
-
-  async function loadCurrentUser() {
     try {
-      const response = await fetch("/api/users/me", {
-        method: "GET",
+        const response = await fetch("/api/users/me", {
+            method: "GET",
+            headers: {
+                Accept: "application/json"
+            },
+            credentials: "include"
+        });
 
-        headers: {
-          Accept: "application/json",
-        },
+        if (!response.ok) {
+            throw new Error(`โหลดข้อมูลผู้ใช้ไม่สำเร็จ (${response.status})`);
+        }
 
-        credentials: "include",
-      });
+        const user = await response.json();
 
-      if (response.status === 401 || response.status === 403) {
-        sessionStorage.removeItem("currentUser");
+        // ชื่อ
+        const firstname = user.firstname || "";
+        const lastname = user.lastname || "";
 
-        window.location.href = "/login";
+        const fullname = `${firstname} ${lastname}`.trim();
 
-        return null;
-      }
+        profileName.textContent = fullname || "ไม่ระบุชื่อ";
 
-      if (!response.ok) {
-        throw new Error(`โหลดข้อมูลผู้ใช้ไม่สำเร็จ (${response.status})`);
-      }
+        // ปี
+        if (user.year !== null && user.year !== undefined) {
+            profileYear.textContent = `ปี ${user.year}`;
+        } else {
+            profileYear.textContent = "";
+        }
 
-      const user = await response.json();
+        // Department
+        profileDepartment.textContent = user.department || "";
 
-      sessionStorage.setItem("currentUser", JSON.stringify(user));
+        // รูปโปรไฟล์
+        if (user.image_url) {
+            profileImage.src = user.image_url;
+        }
 
-      return user;
     } catch (error) {
-      console.error("โหลดข้อมูลผู้ใช้ไม่สำเร็จ:", error);
 
-      return null;
-    }
-  }
+        console.error("โหลดข้อมูล Sidebar ไม่สำเร็จ:", error);
 
-  /* =====================================================
-     RENDER SIDEBAR PROFILE
-  ====================================================== */
-
-  function renderProfile(user) {
-    if (!user) {
-      return;
-    }
-
-    if (profileName) {
-      const firstname = user.firstname || "";
-
-      const lastname = user.lastname || "";
-
-      const fullname = `${firstname} ${lastname}`.trim();
-
-      profileName.textContent = fullname || "ไม่ระบุชื่อ";
-    }
-
-    if (profileYear) {
-      if (user.year !== null && user.year !== undefined && user.year !== "") {
-        profileYear.textContent = `ปี ${user.year}`;
-      } else {
+        profileName.textContent = "ไม่สามารถโหลดข้อมูล";
         profileYear.textContent = "";
-      }
+        profileDepartment.textContent = "";
     }
-
-    if (profileDepartment) {
-      profileDepartment.textContent = user.department || "";
-    }
-
-    if (profileImage && user.image_url) {
-      profileImage.src = user.image_url;
-    }
-  }
-
-  /* =====================================================
-     LOAD NOTIFICATION BADGE
-  ====================================================== */
-
-  async function loadNotificationBadge() {
-    if (!notificationBadge) {
-      return;
-    }
-
-    try {
-      const response = await fetch("/api/notifications/unread-count", {
-        method: "GET",
-
-        headers: {
-          Accept: "application/json",
-        },
-
-        credentials: "include",
-      });
-
-      if (response.status === 401 || response.status === 403) {
-        return;
-      }
-
-      if (!response.ok) {
-        throw new Error(`โหลดจำนวนแจ้งเตือนไม่สำเร็จ (${response.status})`);
-      }
-
-      const data = await response.json();
-
-      const count = Number(data?.count || 0);
-
-      if (!Number.isFinite(count) || count <= 0) {
-        notificationBadge.textContent = "";
-
-        notificationBadge.classList.remove("show");
-
-        return;
-      }
-
-      notificationBadge.textContent = count > 99 ? "99+" : String(count);
-
-      notificationBadge.classList.add("show");
-    } catch (error) {
-      console.error("โหลด Notification Badge ไม่สำเร็จ:", error);
-    }
-  }
-
-  /* =====================================================
-     START
-  ====================================================== */
-
-  const user = await loadCurrentUser();
-
-  if (user) {
-    renderProfile(user);
-  }
-
-  await loadNotificationBadge();
 });

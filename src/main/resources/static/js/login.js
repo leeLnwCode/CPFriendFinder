@@ -11,17 +11,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const email = document.getElementById("email").value.trim();
     const password = document.getElementById("password").value;
 
-    // =========================
-    // Validate
-    // =========================
-
     if (email === "" || password === "") {
-      Swal.fire({
-        icon: "warning",
-        title: "กรุณากรอกข้อมูล",
-        text: "กรุณากรอก Email และ Password",
-        confirmButtonText: "ตกลง",
-      });
+      alert("กรุณากรอก Email และ Password");
       return;
     }
 
@@ -36,7 +27,6 @@ document.addEventListener("DOMContentLoaded", function () {
         headers: {
           "Content-Type": "application/json",
         },
-        credentials: "include",
         body: JSON.stringify(requestData),
       });
 
@@ -44,49 +34,21 @@ document.addEventListener("DOMContentLoaded", function () {
 
       console.log("Login response:", data);
 
-      // =========================
-      // Login Failed
-      // =========================
-
       if (!response.ok) {
-        Swal.fire({
-          icon: "error",
-          title: "เข้าสู่ระบบไม่สำเร็จ",
-          text: "อีเมลหรือรหัสผ่านไม่ถูกต้อง",
-          confirmButtonText: "ลองอีกครั้ง",
-        });
+        alert("อีเมลหรือรหัสผ่านไม่ถูกต้อง");
         return;
       }
 
-      // =========================
-      // Login Success
-      // =========================
-
+      // เก็บข้อมูลผู้ใช้ที่ Login
       sessionStorage.setItem("currentUser", JSON.stringify(data));
 
-      await Swal.fire({
-        icon: "success",
-        title: "เข้าสู่ระบบสำเร็จ",
-        text: "กำลังเข้าสู่หน้าหลัก...",
-        showConfirmButton: false,
-        timer: 1500,
-      });
+      alert("เข้าสู่ระบบสำเร็จ");
 
       window.location.href = "/home";
-
     } catch (error) {
       console.error("Login error:", error);
 
-      // =========================
-      // Server Connection Error
-      // =========================
-
-      Swal.fire({
-        icon: "error",
-        title: "เกิดข้อผิดพลาด",
-        text: "ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้",
-        confirmButtonText: "ตกลง",
-      });
+      alert("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้");
     }
   });
 
@@ -95,6 +57,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // =========================
 
   const showPasswordButton = document.getElementById("showPassword");
+
   const passwordInput = document.getElementById("password");
 
   if (showPasswordButton && passwordInput) {
