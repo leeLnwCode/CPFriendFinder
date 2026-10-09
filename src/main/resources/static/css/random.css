@@ -1,0 +1,539 @@
+/* =========================================================
+   RANDOM CHAT
+========================================================= */
+
+.random-content {
+  padding: 28px 36px 40px;
+  overflow: hidden;
+}
+
+
+/* =========================================================
+   MAIN LAYOUT
+========================================================= */
+
+.random-layout {
+  width: 100%;
+  min-height: calc(100vh - 68px);
+
+  display: grid;
+  grid-template-columns: 290px minmax(0, 1fr);
+
+  gap: 18px;
+}
+
+
+/* =========================================================
+   PROFILE PANEL
+========================================================= */
+
+.random-profile-panel {
+  min-width: 0;
+
+  background: var(--surface-color);
+
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+
+  overflow: hidden;
+}
+
+
+.random-profile {
+  height: 100%;
+
+  padding: 28px 20px 20px;
+
+  display: flex;
+  flex-direction: column;
+}
+
+
+/* =========================================================
+   PROFILE IMAGE
+========================================================= */
+
+.random-profile-image-wrapper {
+  display: flex;
+  justify-content: center;
+
+  margin-bottom: 10px;
+}
+
+
+.random-profile-image {
+  width: 145px;
+  height: 145px;
+
+  border-radius: 50%;
+
+  object-fit: cover;
+
+  border: 4px solid var(--surface-color);
+}
+
+
+/* =========================================================
+   PROFILE NAME
+========================================================= */
+
+.random-profile h1 {
+  margin: 0;
+
+  text-align: center;
+
+  font-size: 18px;
+  font-weight: 700;
+
+  color: var(--text-color);
+}
+
+
+.random-profile > p {
+  margin: 5px 0 22px;
+
+  text-align: center;
+
+  font-size: 13px;
+
+  color: var(--secondary-text-color);
+}
+
+
+/* =========================================================
+   PROFILE SECTION
+========================================================= */
+
+.random-profile-section {
+  margin-bottom: 22px;
+}
+
+
+.random-section-title {
+  display: flex;
+  align-items: center;
+
+  gap: 9px;
+
+  margin-bottom: 12px;
+
+  font-size: 15px;
+  font-weight: 600;
+
+  color: var(--text-color);
+}
+
+
+.random-section-icon {
+  font-size: 18px;
+}
+
+
+/* =========================================================
+   INTEREST
+========================================================= */
+
+.random-interests {
+  display: flex;
+
+  flex-wrap: wrap;
+
+  gap: 8px;
+}
+
+
+.interest-tag {
+  padding: 6px 10px;
+
+  border-radius: 20px;
+
+  background: var(--active-bg);
+  color: var(--active-text);
+
+  font-size: 12px;
+}
+
+
+/* =========================================================
+   BIO
+========================================================= */
+
+.random-profile-bio {
+  margin: 0;
+
+  font-size: 13px;
+
+  line-height: 1.65;
+
+  color: var(--text-color);
+}
+
+
+/* =========================================================
+   PROFILE BUTTONS
+========================================================= */
+
+.random-profile-actions {
+  margin-top: auto;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 10px;
+}
+
+
+.add-friend-button,
+.next-person-button {
+  width: 100%;
+  min-height: 42px;
+
+  border-radius: 11px;
+
+  font-family: inherit;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  transition:
+    background-color 0.2s ease,
+    transform 0.15s ease;
+}
+
+
+.add-friend-button {
+  border: none;
+
+  background: #168df0;
+
+  color: white;
+}
+
+
+.add-friend-button:hover {
+  background: #087bd9;
+}
+
+
+.next-person-button {
+  border: 1px solid var(--border-color);
+
+  background: var(--surface-color);
+
+  color: var(--text-color);
+}
+
+
+.next-person-button:hover {
+  background: var(--hover-bg);
+}
+
+
+.add-friend-button:active,
+.next-person-button:active {
+  transform: scale(0.98);
+}
+
+
+/* =========================================================
+   CHAT PANEL
+========================================================= */
+
+.random-chat-panel {
+  min-width: 0;
+  min-height: 0;
+
+  background: var(--surface-color);
+
+  border: 1px solid var(--border-color);
+  border-radius: 20px;
+
+  display: flex;
+  flex-direction: column;
+
+  overflow: hidden;
+}
+
+
+/* =========================================================
+   CHAT HEADER
+========================================================= */
+
+.random-chat-header {
+  min-height: 68px;
+
+  padding: 12px 18px;
+
+  border-bottom: 1px solid var(--border-color);
+
+  flex-shrink: 0;
+}
+
+
+.random-chat-user {
+  display: flex;
+  align-items: center;
+
+  gap: 11px;
+}
+
+
+.random-chat-user img {
+  width: 38px;
+  height: 38px;
+
+  border-radius: 50%;
+
+  object-fit: cover;
+}
+
+
+.random-chat-user h2 {
+  margin: 0;
+
+  font-size: 14px;
+  font-weight: 600;
+
+  color: var(--text-color);
+}
+
+
+.random-chat-user p {
+  margin: 3px 0 0;
+
+  font-size: 11px;
+
+  color: var(--secondary-text-color);
+}
+
+
+/* =========================================================
+   CHAT MESSAGES
+========================================================= */
+
+.random-chat-messages {
+  flex: 1;
+
+  min-height: 0;
+
+  padding: 20px;
+
+  overflow-y: auto;
+
+  display: flex;
+  flex-direction: column;
+
+  gap: 16px;
+}
+
+
+.chat-message {
+  display: flex;
+  align-items: flex-start;
+
+  gap: 8px;
+
+  max-width: 75%;
+}
+
+
+.chat-message img {
+  width: 30px;
+  height: 30px;
+
+  border-radius: 50%;
+
+  object-fit: cover;
+
+  flex-shrink: 0;
+}
+
+
+.message-bubble {
+  padding: 9px 13px;
+
+  border-radius: 12px;
+
+  background: var(--hover-bg);
+
+  color: var(--text-color);
+
+  font-size: 13px;
+
+  line-height: 1.5;
+}
+
+
+.chat-message.sent {
+  margin-left: auto;
+
+  flex-direction: row-reverse;
+}
+
+
+.chat-message.sent .message-bubble {
+  background: var(--active-text);
+
+  color: white;
+}
+
+
+/* =========================================================
+   CHAT INPUT
+========================================================= */
+
+.random-chat-input-area {
+  min-height: 62px;
+
+  padding: 10px 14px;
+
+  border-top: 1px solid var(--border-color);
+
+  display: flex;
+  align-items: center;
+
+  gap: 8px;
+
+  flex-shrink: 0;
+}
+
+
+.random-chat-input-area input[type="text"] {
+  flex: 1;
+
+  min-width: 0;
+
+  height: 40px;
+
+  padding: 0 14px;
+
+  border: 1px solid var(--border-color);
+
+  border-radius: 20px;
+
+  outline: none;
+
+  background: var(--input-bg);
+
+  color: var(--text-color);
+
+  font-family: inherit;
+
+  font-size: 13px;
+}
+
+
+.random-chat-input-area input[type="text"]:focus {
+  border-color: var(--active-text);
+}
+
+
+.random-image-button {
+  width: 38px;
+  height: 38px;
+
+  border: none;
+
+  background: transparent;
+
+  color: var(--text-color);
+
+  font-size: 22px;
+
+  cursor: pointer;
+}
+
+
+.random-image-button:hover {
+  color: var(--active-text);
+}
+
+
+.random-send-button {
+  width: 52px;
+  height: 38px;
+
+  border: none;
+
+  border-radius: 20px;
+
+  background: #168df0;
+
+  color: white;
+
+  font-family: inherit;
+
+  font-size: 13px;
+  font-weight: 600;
+
+  cursor: pointer;
+}
+
+
+.random-send-button:hover {
+  background: #087bd9;
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 950px) {
+
+  .random-layout {
+    grid-template-columns: 250px minmax(0, 1fr);
+  }
+
+  .random-profile-image {
+    width: 120px;
+    height: 120px;
+  }
+
+}
+
+
+@media (max-width: 750px) {
+
+  .random-content {
+    overflow-y: auto;
+  }
+
+  .random-layout {
+    grid-template-columns: 1fr;
+
+    min-height: auto;
+  }
+
+  .random-profile-panel {
+    min-height: 560px;
+  }
+
+  .random-chat-panel {
+    height: 600px;
+  }
+
+}
+
+
+@media (max-width: 500px) {
+
+  .random-content {
+    padding: 18px 14px 30px;
+  }
+
+  .random-profile {
+    padding: 22px 16px;
+  }
+
+  .random-chat-messages {
+    padding: 14px;
+  }
+
+  .chat-message {
+    max-width: 90%;
+  }
+
+}

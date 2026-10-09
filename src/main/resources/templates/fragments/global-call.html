@@ -1,0 +1,33 @@
+<div
+  xmlns:th="http://www.thymeleaf.org"
+  th:fragment="globalCall"
+  id="globalCallOverlay"
+  class="global-call-overlay"
+>
+  <div class="global-call-card">
+    <img
+      id="globalCallImage"
+      src="/images/avatar-placeholder.svg"
+      alt="Caller"
+      class="global-call-avatar"
+    />
+
+    <h2 id="globalCallName">สายเรียกเข้า</h2>
+    <p id="globalCallStatus">กำลังโทรหาคุณ...</p>
+
+    <div id="globalCallVideoArea" class="global-call-video">
+      <video id="videoCallRemoteVideo" autoplay playsinline></video>
+
+      <video id="videoCallLocalVideo" autoplay muted playsinline></video>
+    </div>
+
+    <div id="globalIncomingActions" class="global-call-actions">
+      <button type="button" id="globalCallAccept">รับสาย</button>
+      <button type="button" id="globalCallDecline">ปฏิเสธ</button>
+    </div>
+
+    <button type="button" id="globalCallEnd" class="global-call-end">
+      วางสาย
+    </button>
+  </div>
+</div>

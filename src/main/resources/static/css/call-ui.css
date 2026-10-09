@@ -1,0 +1,52 @@
+/* Call dialogs and controls shared by friend and global incoming calls. */
+.voice-call-overlay,.video-call-overlay,.global-call-overlay { z-index:10000; padding:16px; }
+.voice-call-popup { width:min(480px,100%); max-width:100%; padding:42px 24px 28px; gap:14px; }
+.voice-call-popup h2 { margin:0; }
+.voice-call-status { margin:0; max-width:100%; overflow-wrap:anywhere; text-align:center; }
+.voice-call-actions { gap:14px; margin-top:16px; width:100%; justify-content:center; flex-wrap:wrap; }
+.voice-call-action,.voice-call-end { width:64px; min-width:0; font-size:12px; gap:8px; }
+.voice-call-icon,.voice-call-end-icon { width:52px; height:52px; }
+.voice-call-icon img,.voice-call-end-icon img { width:24px; height:24px; }
+.voice-call-action.muted::after { display:none; }
+.voice-call-slash,.video-call-slash { display:none; position:absolute; width:3px; height:32px; border-radius:3px; background:#f87171; transform:rotate(-45deg); }
+.voice-call-icon { position:relative; }
+.incoming-call-actions { display:flex; justify-content:center; align-items:center; gap:14px; width:100%; margin-top:18px; }
+.incoming-call-actions button,.global-call-actions button { flex:1; min-height:48px; max-width:180px; border:0; border-radius:14px; padding:12px 18px; font-weight:700; font-size:15px; box-shadow:0 4px 14px rgba(0,0,0,.12); color:#fff; }
+.voice-call-accept,.video-call-accept,#globalCallAccept { background:#15803d; }
+.voice-call-decline,.video-call-decline,#globalCallDecline { background:#dc2626; }
+.incoming-call-actions button:disabled { opacity:.65; cursor:wait; }
+.video-call-window { width:min(960px,100%); height:min(640px,calc(100dvh - 32px)); }
+.video-call-window .remote-video { display:block; }
+.remote-video>video { position:absolute; inset:0; width:100%; height:100%; object-fit:contain; background:#0f172a; }
+.video-placeholder { position:absolute; inset:0; background:linear-gradient(145deg,#17243a,#263954); flex-direction:column; gap:18px; color:#e2e8f0; }
+.video-placeholder img { width:112px; height:112px; border-radius:50%; object-fit:cover; }
+.video-placeholder::after { content:"รอภาพจากเพื่อน · กล้องอีกฝั่งอาจปิดอยู่"; font-size:14px; text-align:center; padding:0 24px; }
+.video-call-user-info { right:64px; max-width:calc(100% - 90px); }
+.video-call-user-info>div { min-width:0; }
+#videoCallUserName { overflow:hidden; white-space:nowrap; text-overflow:ellipsis; }
+.video-call-status { font-size:13px; color:#dbeafe; margin:4px 0; overflow-wrap:anywhere; }
+.video-call-time { color:#cbd5e1; }
+.video-call-window .incoming-call-actions { position:absolute; bottom:28px; left:24px; width:calc(100% - 48px); margin:0; z-index:8; }
+.video-call-overlay.ringing .local-video { display:none; }
+.video-call-overlay.ringing .video-call-actions { display:none; }
+.video-call-overlay.ringing .video-placeholder::after { content:"สายวิดีโอเข้า · รับสายเพื่อเปิดไมค์และกล้อง"; }
+.local-video { right:20px; bottom:112px; width:190px; height:136px; }
+.local-video>video { width:100%; height:100%; object-fit:cover; transform:scaleX(-1); }
+.local-video-placeholder { position:absolute; inset:0; background:#334155; }
+.video-call-actions { gap:20px; bottom:24px; }
+.video-call-actions button { min-height:76px; }
+.global-call-card { color:var(--text-color,#17243a); background:var(--surface-color,#fff); border:1px solid var(--border-color,#dce4ef); padding:32px 24px; }
+.global-call-card h2 { margin:18px 0 8px; }
+.global-call-card p { color:var(--secondary-text-color,#62718a); }
+@media(max-width:700px) {
+ .video-call-overlay { padding:0; }
+ .video-call-window { width:100%; height:100dvh; border-radius:0; }
+ .local-video { width:120px; height:150px; right:14px; bottom:116px; }
+ .video-call-user-info { top:20px; left:14px; }
+ .video-call-window .incoming-call-actions { left:16px; width:calc(100% - 32px); bottom:calc(28px + env(safe-area-inset-bottom)); }
+ .video-call-actions { bottom:calc(20px + env(safe-area-inset-bottom)); }
+ .voice-call-popup { min-height:420px; padding:42px 18px 28px; }
+ .voice-call-actions { gap:10px; }
+ .voice-call-action,.voice-call-end { width:58px; }
+ .voice-call-image-wrapper,.voice-call-image { width:104px; height:104px; }
+}
