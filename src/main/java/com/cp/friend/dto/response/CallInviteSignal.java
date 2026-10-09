@@ -13,6 +13,7 @@ public record CallInviteSignal(
         UUID toUserId,
         UUID roomId,
         String fromName,
-        String fromImage
+        String fromImage,
+        String mode
 ) {
 }

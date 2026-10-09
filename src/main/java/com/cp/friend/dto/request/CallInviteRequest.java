@@ -13,6 +13,9 @@ public class CallInviteRequest {
     // INVITE | ACCEPT | DECLINE | CANCEL
     private String type;
 
+    // VOICE | VIDEO (missing mode defaults to VOICE for older clients)
+    private String mode;
+
     // ผู้รับสัญญาณ (เพื่อนที่โทรหา/ตอบกลับ)
     private UUID toUserId;
 

@@ -46,6 +46,18 @@ public class User {
     @Column(length = 500)
     private String bio;
 
+    @OneToOne(mappedBy="user", cascade=CascadeType.ALL, orphanRemoval=true, fetch=FetchType.EAGER)
+    private UserProfile profile;
+
+    @ElementCollection
+    @CollectionTable(name="user_gallery_photos", joinColumns=@JoinColumn(name="user_id"))
+    @OrderColumn(name="photo_order")
+    @Column(name="image_url", length=2048, nullable=false)
+    @org.hibernate.annotations.BatchSize(size=50)
+    private java.util.List<String> galleryPhotos = new java.util.ArrayList<>();
+
+    public java.util.List<String> getGalleryPhotos() { return galleryPhotos; }
+
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
 
@@ -97,7 +109,7 @@ public class User {
     }
 
     public String getBio() {
-        return bio;
+        return profile == null ? bio : profile.getBio();
     }
 
     public LocalDate getDateOfBirth() {
@@ -151,6 +163,8 @@ public class User {
 
     public void setBio(String bio) {
         this.bio = bio;
+        if (profile == null) profile = new UserProfile(this,bio);
+        else profile.setBio(bio);
     }
 
     public void setDateOfBirth(LocalDate dateOfBirth) {

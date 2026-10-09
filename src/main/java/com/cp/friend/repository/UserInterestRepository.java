@@ -26,6 +26,9 @@ public interface UserInterestRepository extends JpaRepository<UserInterest, User
             """)
         List<UserInterest> findActiveByUserIdWithInterest(@Param("userId") UUID userId);
 
+    @Query("SELECT ui FROM UserInterest ui JOIN FETCH ui.interest WHERE ui.userId IN :userIds")
+    List<UserInterest> findByUserIdsWithInterest(@Param("userIds") List<UUID> userIds);
+
     boolean existsByUserIdAndInterestId(UUID userId, UUID interestId);
 
     // ล้าง interest ทั้งหมดของ user (ใช้ตอนแก้ไขโปรไฟล์แล้วบันทึกใหม่)
