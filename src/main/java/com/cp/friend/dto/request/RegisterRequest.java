@@ -1,7 +1,7 @@
 package com.cp.friend.dto.request;
 
 import java.time.LocalDate;
-
+import java.util.List;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Past;
@@ -45,4 +45,6 @@ public class RegisterRequest {
 
     @Size(max = 255, message = "department must be at most 255 characters")
     private String department;
+
+    private List<String> interests;
 }

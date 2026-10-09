@@ -39,6 +39,19 @@ public class NotificationFactory {
         );
     }
 
+    // คำขอถูกปฏิเสธ → แจ้งผู้ส่ง
+    public Notification friendRequestDeclined(FriendRequest request) {
+        return build(
+                request.getSender(),
+                request.getReceiver(),
+                Notification.Type.FRIEND_REQUEST,
+                "Friend request declined",
+                "%s declined your friend request".formatted(fullName(request.getReceiver())),
+                request,
+                null
+        );
+    }
+
     // มีข้อความใหม่ในห้อง → แจ้งสมาชิกคนนั้น
     public Notification newMessage(Message message, User recipient) {
         return build(

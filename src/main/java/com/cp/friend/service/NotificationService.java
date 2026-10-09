@@ -12,8 +12,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.cp.friend.dto.response.NotificationResponse;
 import com.cp.friend.event.FriendRequestAcceptedEvent;
+import com.cp.friend.event.FriendRequestDeclinedEvent;
 import com.cp.friend.event.FriendRequestSentEvent;
 import com.cp.friend.factory.NotificationFactory;
+import com.cp.friend.observer.NotificationObserver;
 import com.cp.friend.model.ChatRoom;
 import com.cp.friend.model.FriendRequest;
 import com.cp.friend.model.Notification;
@@ -24,11 +26,11 @@ import com.cp.friend.repository.RoomMemberRepository;
 
 import lombok.RequiredArgsConstructor;
 
-// Observer Pattern — NotificationService เป็น Listener ของ domain events
+// Observer Pattern — NotificationService เป็น Concrete Observer ของ domain events
 // (FriendRequestService publish event แล้วไม่รู้จัก service นี้เลย — decouple ผ่าน ApplicationEvent)
 @Service
 @RequiredArgsConstructor
-public class NotificationService {
+public class NotificationService implements NotificationObserver {
 
     private final NotificationRepository notificationRepository;
     private final RoomMemberRepository roomMemberRepository;
@@ -39,6 +41,7 @@ public class NotificationService {
     // Observers — รับ domain events แล้วสร้าง notification ผ่าน Factory
     // =========================================================
 
+    @Override
     @EventListener
     @Transactional
     public void onFriendRequestSent(FriendRequestSentEvent event) {
@@ -46,11 +49,20 @@ public class NotificationService {
         saveAndPush(notificationFactory.friendRequestReceived(request));
     }
 
+    @Override
     @EventListener
     @Transactional
     public void onFriendRequestAccepted(FriendRequestAcceptedEvent event) {
         FriendRequest request = event.request();
         saveAndPush(notificationFactory.friendRequestAccepted(request));
+    }
+
+    @Override
+    @EventListener
+    @Transactional
+    public void onFriendRequestDeclined(FriendRequestDeclinedEvent event) {
+        FriendRequest request = event.request();
+        saveAndPush(notificationFactory.friendRequestDeclined(request));
     }
 
     // แจ้งเตือนข้อความใหม่ให้สมาชิกทุกคนในห้อง (ยกเว้นผู้ส่ง)

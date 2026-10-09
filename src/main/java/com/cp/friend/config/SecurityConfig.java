@@ -31,7 +31,12 @@ public class SecurityConfig {
                                                                 "/",
                                                                 "/login",
                                                                 "/home",
-                                                                "/register")
+                                                                "/register", 
+                                                                "/room",
+                                                                "/setting",
+                                                                "/notification", 
+                                                                "/friend",
+                                                                "/random")
                                                 .permitAll()
 
                                                 .requestMatchers(
