@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Room - CP Friend Finder</title>
+  <link rel="stylesheet" th:href="@{/css/room.css}" />
+  <link rel="stylesheet" th:href="@{/css/theme.css}" />
+  <link rel="stylesheet" th:href="@{/css/sidebar.css}" />
+  <link rel="stylesheet" th:href="@{/css/friend-profile-popup.css}" />
+  <link rel="stylesheet" th:href="@{/css/profile-popup.css}" />
+</head>
+
+<body>
+  <body>
+
+  <!-- Friend Profile Popup -->
+  <div th:replace="~{fragments/friend-profile-popup :: friendProfilePopup}"></div>
+
+  <div class="room-page">
+
+    <!-- ================= SIDEBAR ================= -->
+
+    <aside class="sidebar">
+      <!-- Logo -->
+      <div class="sidebar-logo">
+        <img th:src="@{/images/Full_logo.png}" alt="CP Friend Finder" />
+      </div>
+
+      <!-- Profile -->
+      <div class="sidebar-profile" id="sidebarProfileButton">
+          <img
+            id="sidebarProfileImage"
+            th:src="@{/images/man.jpg}"
+            alt="Profile"
+            class="profile-image"
+          />
+
+          <div class="profile-info">
+            <div id="sidebarProfileName" class="profile-name">กำลังโหลด...</div>
+
+            <div id="sidebarProfileYear" class="profile-year"></div>
+
+            <div id="sidebarProfileDepartment" class="profile-department"></div>
+          </div>
+
+          <button class="profile-arrow">⌄</button>
+        </div>
+
+      <!-- Navigation -->
+      <nav class="sidebar-menu">
+        <a href="/home" class="menu-item">
+          <span class="menu-icon">⌂</span>
+          <span>หน้าหลัก</span>
+        </a>
+
+        <a href="/random" class="menu-item">
+          <span class="menu-icon">✌︎</span>
+          <span>สุ่มคุย</span>
+        </a>
+
+        <a href="/friend" class="menu-item">
+          <span class="menu-icon">☺︎</span>
+          <span>เพื่อนของฉัน</span>
+        </a>
+
+        <a href="/notification" class="menu-item">
+          <span class="menu-icon">☏</span>
+          <span>การแจ้งเตือน</span>
+        </a>
+
+        <a href="/setting" class="menu-item">
+          <span class="menu-icon">⚙</span>
+          <span>การตั้งค่า</span>
+        </a>
+      </nav>
+    </aside>
+
+    <div class="profile-modal" id="profileModal">
+        <div class="profile-modal-overlay" id="profileModalOverlay"></div>
+
+        <div class="profile-modal-content">
+          <div class="profile-modal-header">
+            <h2>แก้ไขโปรไฟล์</h2>
+
+            <button
+              type="button"
+              class="profile-modal-close"
+              id="closeProfileModal"
+            >
+              ×
+            </button>
+          </div>
+
+          <div class="profile-edit-form">
+            <!-- รูปโปรไฟล์ -->
+            <div class="profile-image-edit">
+              <img
+                id="editProfileImage"
+                th:src="@{/images/man.jpg}"
+                alt="Profile"
+              />
+
+              <button
+                type="button"
+                class="change-image-button"
+                id="changeProfileImage"
+              >
+                เปลี่ยนรูป
+              </button>
+
+              <input
+                type="file"
+                id="profileImageInput"
+                accept="image/*"
+                hidden
+              />
+            </div>
+
+            <!-- ชื่อ -->
+            <div class="profile-field">
+              <label for="editFirstname">ชื่อ</label>
+              <input type="text" id="editFirstname" placeholder="กรอกชื่อ" />
+            </div>
+
+            <!-- นามสกุล -->
+            <div class="profile-field">
+              <label for="editLastname">นามสกุล</label>
+              <input type="text" id="editLastname" placeholder="กรอกนามสกุล" />
+            </div>
+
+            <!-- Bio -->
+            <div class="profile-field">
+              <label for="editBio">เกี่ยวกับฉัน</label>
+              <textarea
+                id="editBio"
+                rows="4"
+                placeholder="บอกเกี่ยวกับตัวคุณ..."
+              ></textarea>
+            </div>
+
+            <div class="profile-field">
+              <label for="editDateOfBirth">วันเกิด</label>
+              <input type="date" id="editDateOfBirth" />
+            </div>
+
+            <!-- ปี -->
+            <div class="profile-field">
+              <label for="editYear">ชั้นปี</label>
+              <select id="editYear">
+                <option value="">เลือกชั้นปี</option>
+                <option value="1">ปี 1</option>
+                <option value="2">ปี 2</option>
+                <option value="3">ปี 3</option>
+                <option value="4">ปี 4</option>
+              </select>
+            </div>
+
+            <!-- สาขา -->
+            <div class="profile-field">
+              <label for="editDepartment">สาขา</label>
+              <input type="text" id="editDepartment" placeholder="กรอกสาขา" />
+            </div>
+
+            <!-- ปุ่ม -->
+            <div class="profile-modal-actions">
+              <button
+                type="button"
+                class="profile-cancel-button"
+                id="cancelProfileEdit"
+              >
+                ยกเลิก
+              </button>
+
+              <button
+                type="button"
+                class="profile-save-button"
+                id="saveProfileEdit"
+              >
+                บันทึก
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    <!-- ================= ROOM ================= -->
+
+    <main class="room-content">
+      <!-- Room Header -->
+
+      <header class="room-header">
+        <div>
+          <h1 id="roomTitle">ห้องพูดคุย</h1>
+
+          <div id="ownerRoomCode" class="owner-room-code">
+            <span>รหัสเข้าห้อง</span>
+            <strong id="roomCode">-</strong>
+          </div>
+
+          <p id="roomMembers">0/10 คนกำลังคุย</p>
+        </div>
+
+        <button type="button" class="leave-room-button" id="leaveRoomButton">
+          ออกจากห้อง
+        </button>
+      </header>
+
+      <!-- ================= ROOM MEMBERS ================= -->
+
+      <section class="members-section">
+        <div class="members-grid" id="membersGrid"></div>
+      </section>
+    </main>
+
+    <!-- ================= CHAT ================= -->
+
+    <aside class="chat-panel">
+      <div class="chat-header">
+        <h2>แชท</h2>
+
+        <span id="chatMembers">0 คน</span>
+      </div>
+
+      <!-- Messages -->
+
+      <div class="chat-messages" id="chatMessages"></div>
+
+      <!-- Chat Input -->
+
+      <div class="chat-input-area">
+        <input type="text" id="chatInput" placeholder="พิมพ์ข้อความ..." />
+
+        <button type="button" class="chat-more" id="imageButton">🅾</button>
+
+        <input type="file" id="imageInput" accept="image/*" hidden />
+
+        <button type="button" class="chat-send" id="sendMessageButton">
+          ส่ง
+        </button>
+      </div>
+    </aside>
+  </div>
+
+
+  <script th:src="@{/js/friend-profile-popup.js}"></script>
+  <script th:src="@{/js/theme.js}"></script>
+  <script th:src="@{/js/room.js(v=4)}"></script>
+  <script th:src="@{/js/sidebar.js}"></script>
+  <script th:src="@{/js/profile-popup.js}"></script>
+</body>
+
+</html>

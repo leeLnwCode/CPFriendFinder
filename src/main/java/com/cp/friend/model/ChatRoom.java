@@ -55,12 +55,6 @@ public class ChatRoom {
     @Column(name = "updated_at", nullable = false)
     private Instant updatedAt = Instant.now();
 
-    @Column(name = "deleted_at")
-    private Instant deletedAt;
-
-    @OneToMany(mappedBy = "room", fetch = FetchType.LAZY)
-    private java.util.List<RoomMember> members = new java.util.ArrayList<>();
-
     @PreUpdate
     void onUpdate() {
         this.updatedAt = Instant.now();

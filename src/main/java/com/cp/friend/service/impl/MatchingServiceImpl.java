@@ -2,7 +2,6 @@ package com.cp.friend.service.impl;
 
 import com.cp.friend.dto.matching.MatchCandidateResponse;
 import com.cp.friend.model.User;
-import com.cp.friend.model.FriendRequest;
 import com.cp.friend.model.UserInterest;
 import com.cp.friend.repository.FriendRequestRepository;
 import com.cp.friend.repository.FriendshipRepository;
@@ -64,34 +63,15 @@ public class MatchingServiceImpl implements MatchingService {
 
         List<User> activeUsers = userRepository.findAllActive();
 
-        // Load exclusions and interests in batches instead of querying for every candidate.
-        Set<UUID> excluded = new HashSet<>();
-        excluded.add(baseUser.getId());
-        friendshipRepository.findAllByMember(userId).forEach(f -> {
-            excluded.add(f.getUser().getId()); excluded.add(f.getFriend().getId());
-        });
-        friendRequestRepository.findBySenderIdAndStatus(userId, FriendRequest.Status.PENDING)
-                .forEach(fr -> excluded.add(fr.getReceiver().getId()));
-        friendRequestRepository.findByReceiverIdAndStatus(userId, FriendRequest.Status.PENDING)
-                .forEach(fr -> excluded.add(fr.getSender().getId()));
-        List<UUID> eligibleIds = activeUsers.stream().map(User::getId)
-                .filter(id -> !excluded.contains(id)).toList();
-        Map<UUID, Set<String>> interestsByUser = new HashMap<>();
-        if (!eligibleIds.isEmpty()) {
-            for (UserInterest interest : userInterestRepository.findByUserIdsWithInterest(eligibleIds)) {
-                if (interest.getInterest() != null && interest.getInterest().getName() != null)
-                    interestsByUser.computeIfAbsent(interest.getUserId(), id -> new HashSet<>())
-                            .add(interest.getInterest().getName());
-            }
-        }
-
         List<MatchCandidateResponse> candidates = activeUsers.stream()
                 // Exclude self
-                .filter(u -> !excluded.contains(u.getId()))
+                .filter(u -> !u.getId().equals(baseUser.getId()))
                 // Exclude existing friends
+                .filter(u -> !friendshipRepository.existsBetween(baseUser.getId(), u.getId()))
                 // Exclude pending friend requests (in either direction)
+                .filter(u -> !friendRequestRepository.existsPendingBetween(baseUser.getId(), u.getId()))
                 .map(candidate -> {
-                    Set<String> candidateInterests = interestsByUser.getOrDefault(candidate.getId(), Collections.emptySet());
+                    Set<String> candidateInterests = getUserInterests(candidate.getId());
                     double score = matchingStrategy.calculateMatchScore(baseInterests, candidateInterests);
 
                     Set<String> shared = baseInterests.stream()
@@ -103,7 +83,6 @@ public class MatchingServiceImpl implements MatchingService {
                             .firstname(candidate.getFirstname())
                             .lastname(candidate.getLastname())
                             .imageUrl(candidate.getImageUrl())
-                            .galleryPhotos(candidate.getGalleryPhotos())
                             .bio(candidate.getBio())
                             .department(candidate.getDepartment())
                             .year(candidate.getYear())

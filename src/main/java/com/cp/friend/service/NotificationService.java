@@ -30,7 +30,7 @@ import lombok.RequiredArgsConstructor;
 // (FriendRequestService publish event แล้วไม่รู้จัก service นี้เลย — decouple ผ่าน ApplicationEvent)
 @Service
 @RequiredArgsConstructor
-public class NotificationService implements NotificationObserver, com.cp.friend.port.MessageNotifications {
+public class NotificationService implements NotificationObserver {
 
     private final NotificationRepository notificationRepository;
     private final RoomMemberRepository roomMemberRepository;

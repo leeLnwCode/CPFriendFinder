@@ -33,6 +33,7 @@ build/
 .vscode/
 
 ### Environment / Secrets ###
+src/main/resources/application.properties
 
 ### Environment Variables ###
 .env
@@ -42,25 +43,3 @@ build/
 .venv-robot/
 test/e2e/robot/results/
 server.log
-
-# Private TURN credentials
-.turn-servers.json
-
-# Private Cloudflare TURN key
-.cloudflare-turn.json
-
-# Private local config and generated exports
-**/.cloudflare-turn.json
-**/.turn-servers.json
-**/application-local.properties
-**/private-*.sql
-**/server.log
-**/*.zip
-**/node_modules/
-**/__pycache__/
-
-# Environment secrets and generated browser checks
-.env
-code/.env
-**/.env.local
-test/browser/results/

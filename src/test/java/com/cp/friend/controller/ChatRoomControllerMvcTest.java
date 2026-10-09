@@ -32,7 +32,7 @@ class ChatRoomControllerMvcTest {
 
         ChatRoomController controller =
                 new ChatRoomController(
-                        chatRoomService, org.mockito.Mockito.mock(com.cp.friend.service.RoomRealtimeService.class)
+                        chatRoomService
                 );
 
         mockMvc = MockMvcBuilders
