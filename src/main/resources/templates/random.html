@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>สุ่มคุย - CP Friend Finder</title>
+
+    <link rel="stylesheet" th:href="@{/css/theme.css}" />
+    <link rel="stylesheet" th:href="@{/css/sidebar.css}" />
+    <link rel="stylesheet" th:href="@{/css/layout.css}" />
+    <link rel="stylesheet" th:href="@{/css/random.css}" />
+  </head>
+
+  <body>
+    <div class="page-layout">
+      <!-- ================= SIDEBAR ================= -->
+
+      <aside class="sidebar">
+        <div class="sidebar-logo">
+          <img src="/images/Full_logo.png" alt="CP Friend Finder" />
+        </div>
+
+        <div class="sidebar-profile">
+          <img src="/images/man.jpg" alt="Profile" class="profile-image" />
+
+          <div class="profile-info">
+            <div class="profile-name">Singha Waraha</div>
+            <div class="profile-year">ปี 1</div>
+            <div class="profile-department">CS-VIP</div>
+          </div>
+
+          <button type="button" class="profile-arrow">⌄</button>
+        </div>
+
+        <nav class="sidebar-menu">
+          <a href="/home" class="menu-item">
+            <span class="menu-icon">⌂</span>
+            <span>หน้าหลัก</span>
+          </a>
+
+          <a href="/random" class="menu-item active">
+            <span class="menu-icon">✌︎</span>
+            <span>สุ่มคุย</span>
+          </a>
+
+          <a href="/friend" class="menu-item">
+            <span class="menu-icon">☺︎</span>
+            <span>เพื่อนของฉัน</span>
+          </a>
+
+          <a href="/notification" class="menu-item">
+            <span class="menu-icon">☏</span>
+            <span>การแจ้งเตือน</span>
+          </a>
+
+          <a href="/setting" class="menu-item">
+            <span class="menu-icon">⚙</span>
+            <span>การตั้งค่า</span>
+          </a>
+        </nav>
+      </aside>
+
+      <!-- ================= RANDOM CONTENT ================= -->
+
+      <main class="page-content random-content">
+        <div class="random-layout">
+          <!-- ================= PROFILE ================= -->
+
+          <section class="random-profile-panel">
+            <div class="random-profile">
+              <div class="random-profile-image-wrapper">
+                <img
+                  id="randomProfileImage"
+                  src="/images/man2.jpg"
+                  alt="Profile"
+                  class="random-profile-image"
+                />
+              </div>
+
+              <h1 id="randomProfileName">Prashant Kumar Singh</h1>
+
+              <p id="randomProfileYear">ปี 3 CS-VIP</p>
+
+              <!-- Interest -->
+
+              <section class="random-profile-section">
+                <div class="random-section-title">
+                  <span class="random-section-icon">♥</span>
+                  <span>ความสนใจ</span>
+                </div>
+
+                <div id="randomProfileInterests" class="random-interests">
+                  <span class="interest-tag">Gaming</span>
+                  <span class="interest-tag">ROV</span>
+                  <span class="interest-tag">Programming</span>
+                </div>
+              </section>
+
+              <!-- About -->
+
+              <section class="random-profile-section">
+                <div class="random-section-title">
+                  <span class="random-section-icon">♟</span>
+                  <span>เกี่ยวกับฉัน</span>
+                </div>
+
+                <p id="randomProfileBio" class="random-profile-bio">
+                  ชอบเล่นเกมโดยเฉพาะ ROV ชวนเล่นได้ทุกๆคน
+                  อยากหาเพื่อนคุยและทำโปรเจคด้วยกันครับ
+                </p>
+              </section>
+
+              <!-- Actions -->
+
+              <div class="random-profile-actions">
+                <button
+                  type="button"
+                  id="addFriendButton"
+                  class="add-friend-button"
+                >
+                  <span>👤+</span>
+                  <span>เพิ่มเพื่อน</span>
+                </button>
+
+                <button
+                  type="button"
+                  id="nextPersonButton"
+                  class="next-person-button"
+                >
+                  <span>🎲</span>
+                  <span>สุ่มคนถัดไป</span>
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <!-- ================= CHAT ================= -->
+
+          <section class="random-chat-panel">
+            <!-- Chat Header -->
+
+            <header class="random-chat-header">
+              <div class="random-chat-user">
+                <img
+                  id="chatProfileImage"
+                  src="/images/man2.jpg"
+                  alt="Profile"
+                />
+
+                <div>
+                  <h2 id="chatProfileName">Prashant Kumar Singh</h2>
+
+                  <p id="chatProfileYear">ปี 3 CS-VIP</p>
+                </div>
+              </div>
+            </header>
+
+            <!-- Messages -->
+
+            <div id="randomChatMessages" class="random-chat-messages">
+              <div class="chat-message received">
+                <img src="/images/man2.jpg" alt="Profile" />
+
+                <div class="message-bubble">
+                  ไหนลองมาคุยกันเรื่อง ROV ด้วยกันมั้ยครับ
+                </div>
+              </div>
+
+              <div class="chat-message received">
+                <img src="/images/man2.jpg" alt="Profile" />
+
+                <div class="message-bubble">ว่างช่วงเย็นวันนี้มั้ยครับ</div>
+              </div>
+            </div>
+
+            <!-- Chat Input -->
+
+            <div class="random-chat-input-area">
+              <button
+                type="button"
+                id="randomImageButton"
+                class="random-image-button"
+                title="ส่งรูป"
+              >
+                ⊞
+              </button>
+
+              <input
+                type="file"
+                id="randomImageInput"
+                accept="image/*"
+                hidden
+              />
+
+              <input
+                type="text"
+                id="randomChatInput"
+                placeholder="พิมพ์ข้อความ..."
+                autocomplete="off"
+              />
+
+              <button
+                type="button"
+                id="randomSendButton"
+                class="random-send-button"
+              >
+                ส่ง
+              </button>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <script th:src="@{/js/theme.js}"></script>
+    <script th:src="@{/js/random.js}"></script>
+  </body>
+</html>
