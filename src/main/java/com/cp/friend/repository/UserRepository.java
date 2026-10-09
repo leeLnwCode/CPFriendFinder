@@ -26,6 +26,12 @@ import java.util.UUID;
  */
 public interface UserRepository extends JpaRepository<User, UUID> {
 
+    // Serialize concurrent direct-room creation on the same canonical participant.
+    // Native scalar locking avoids FOR UPDATE on the nullable One-to-One profile join.
+    @Query(value="SELECT id FROM users WHERE id = :id FOR UPDATE", nativeQuery=true)
+    Optional<UUID> lockDirectChatParticipant(@Param("id") UUID id);
+
+
     /**
      * ค้นหา User ด้วย Email
      */

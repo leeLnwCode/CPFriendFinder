@@ -38,6 +38,9 @@ class AuthSecurityWebMvcTest {
     @MockitoBean
     private AuthService authService;
 
+    @MockitoBean private com.cp.friend.service.UserService userService;
+    @MockitoBean private com.cp.friend.mapper.UserMapper userMapper;
+
     @Test
     void publicPages_areNotBlockedBySecurity() throws Exception {
         String[] paths = {

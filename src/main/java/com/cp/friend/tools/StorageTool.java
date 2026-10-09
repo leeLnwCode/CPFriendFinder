@@ -20,7 +20,7 @@ public class StorageTool implements StoragePort {
     private final S3Client s3Client;
     private final S3Config s3Config;
 
-    @Value("storage")
+    @Value("${AWS_BUCKET:storage}")
     private String bucket;
 
     public StorageTool(S3Client s3Client, S3Config s3Config) {
@@ -60,7 +60,7 @@ public class StorageTool implements StoragePort {
 
     @Override
     public String publicUrl(String key) {
-        return s3Config.getEndpoint().concat("/storage/").concat(key);
+        return s3Config.getPublicEndpoint().replaceAll("/+$", "").concat("/"+bucket+"/").concat(key);
     }
 
     private String getExtension(String contentType) {

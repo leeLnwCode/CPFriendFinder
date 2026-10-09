@@ -32,6 +32,20 @@ public class ImageContentStrategy extends AbstractMessageContentStrategy {
         if (content.length() > MAX_IMAGE_BASE64_LENGTH) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Image is too large (max ~3MB)");
         }
+        try {
+            if (!content.matches("(?s)^data:image/(png|jpeg);base64,.+")) throw new IllegalArgumentException();
+            byte[] bytes=java.util.Base64.getDecoder().decode(content.substring(content.indexOf(',')+1));
+            if(bytes.length>3_000_000) throw new IllegalArgumentException();
+            try(var input=javax.imageio.ImageIO.createImageInputStream(new java.io.ByteArrayInputStream(bytes))) {
+                var readers=javax.imageio.ImageIO.getImageReaders(input);
+                if(!readers.hasNext()) throw new IllegalArgumentException();
+                var reader=readers.next();
+                try {reader.setInput(input);if(reader.getWidth(0)>4096 || reader.getHeight(0)>4096 || reader.read(0)==null)throw new IllegalArgumentException();}
+                finally {reader.dispose();}
+            }
+        } catch (Exception error) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Use a valid JPEG/PNG image, max 3 MB and 4096 pixels per side");
+        }
     }
 
     @Override
