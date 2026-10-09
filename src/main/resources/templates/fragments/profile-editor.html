@@ -1,0 +1,144 @@
+<div
+  th:fragment="profileEditor"
+  class="profile-modal"
+  id="profileModal"
+  aria-hidden="true"
+>
+  <div class="profile-modal-overlay" id="profileModalOverlay"></div>
+  <section
+    class="profile-modal-content"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="profileEditorTitle"
+  >
+    <header class="profile-modal-header">
+      <div>
+        <h2 id="profileEditorTitle">โปรไฟล์ของฉัน</h2>
+        <p class="profile-help">เล่าเรื่องตัวคุณให้เพื่อนใหม่รู้จัก</p>
+      </div>
+      <button
+        type="button"
+        class="profile-modal-close"
+        id="closeProfileModal"
+        aria-label="ปิดหน้าแก้ไขโปรไฟล์"
+      >
+        ×
+      </button>
+    </header>
+    <div class="profile-edit-form">
+      <div class="profile-image-edit">
+        <img
+          id="editProfileImage"
+          src="/images/avatar-placeholder.svg"
+          alt="รูปโปรไฟล์ของฉัน"
+        /><button
+          type="button"
+          class="change-image-button"
+          id="changeProfileImage"
+        >
+          เปลี่ยนรูปโปรไฟล์</button
+        ><input
+          type="file"
+          id="profileImageInput"
+          accept="image/jpeg,image/png,image/webp"
+          hidden
+        />
+      </div>
+      <div class="profile-name-fields">
+        <div class="profile-field">
+          <label for="editFirstname">ชื่อ</label
+          ><input
+            id="editFirstname"
+            maxlength="255"
+            autocomplete="given-name"
+          />
+        </div>
+        <div class="profile-field">
+          <label for="editLastname">นามสกุล</label
+          ><input
+            id="editLastname"
+            maxlength="255"
+            autocomplete="family-name"
+          />
+        </div>
+      </div>
+      <div class="profile-field">
+        <label for="editBio">เกี่ยวกับฉัน</label
+        ><textarea
+          id="editBio"
+          maxlength="500"
+          rows="3"
+          placeholder="ชอบทำอะไร หรืออยากรู้จักเพื่อนแบบไหน…"
+        ></textarea
+        ><small id="bioCount" class="profile-help">0/500</small>
+      </div>
+      <fieldset class="profile-interest-field">
+        <legend>ความสนใจของฉัน</legend>
+        <p class="profile-help">
+          เลือกเรื่องที่คุณสนใจ เพื่อช่วยค้นหาเพื่อนที่เข้ากัน
+        </p>
+        <div id="editProfileInterests" class="profile-interest-options"></div>
+      </fieldset>
+      <section class="profile-gallery-section" aria-labelledby="galleryTitle">
+        <div class="profile-gallery-heading">
+          <h3 id="galleryTitle">รูปแนะนำตัว</h3>
+          <span id="galleryPhotoCount">0/5 รูป</span>
+        </div>
+        <p class="profile-help">
+          แสดงในหน้าสุ่มคุย เรียงรูปได้ตามต้องการ ถ้าไม่ใส่จะใช้รูปโปรไฟล์
+        </p>
+        <div id="editGalleryPhotos" class="profile-gallery-grid"></div>
+        <button type="button" class="gallery-upload" id="addGalleryPhoto">
+          + เพิ่มรูป</button
+        ><input
+          id="galleryPhotoInput"
+          type="file"
+          multiple
+          accept="image/jpeg,image/png,image/webp"
+          hidden
+        />
+        <p class="profile-help">
+          สูงสุด 5 รูป · JPG, PNG, WebP ไม่เกิน 8 MB ต่อรูป ระบบย่อรูปให้พอดี
+        </p>
+      </section>
+      <div class="profile-name-fields">
+        <div class="profile-field">
+          <label for="editDateOfBirth">วันเกิด</label
+          ><input type="date" id="editDateOfBirth" />
+        </div>
+        <div class="profile-field">
+          <label for="editYear">ชั้นปี</label
+          ><select id="editYear">
+            <option value="">เลือกชั้นปี</option>
+            <option value="1">ปี 1</option>
+            <option value="2">ปี 2</option>
+            <option value="3">ปี 3</option>
+            <option value="4">ปี 4</option>
+            <option value="5">ปี 5 ขึ้นไป</option>
+          </select>
+        </div>
+      </div>
+      <div class="profile-field">
+        <label for="editDepartment">สาขา</label
+        ><input id="editDepartment" maxlength="255" />
+      </div>
+      <p
+        id="profileEditStatus"
+        class="profile-edit-status"
+        role="status"
+        aria-live="polite"
+      ></p>
+      <footer class="profile-modal-actions">
+        <button
+          type="button"
+          id="cancelProfileEdit"
+          class="profile-cancel-button"
+        >
+          ยกเลิก</button
+        ><button type="button" id="saveProfileEdit" class="profile-save-button">
+          บันทึกการเปลี่ยนแปลง
+        </button>
+      </footer>
+    </div>
+  </section>
+</div>

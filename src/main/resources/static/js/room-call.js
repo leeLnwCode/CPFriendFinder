@@ -1,0 +1,351 @@
+document.addEventListener("DOMContentLoaded", () => {
+  const $ = (id) => document.getElementById(id),
+    roomId = new URLSearchParams(location.search).get("id");
+  if (!$("roomJoinVoice") || !window.CPCall) return;
+  let joined = false,
+    busy = false,
+    selected = null,
+    lastPeers = [],
+    self = null,
+    presence = [];
+  const members = new Map(),
+    cards = new Map();
+  const paths = {
+    mic: '<path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3Z"/><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3M8 22h8"/>',
+    camera:
+      '<rect x="3" y="6" width="12" height="12" rx="3"/><path d="m15 10 6-4v12l-6-4"/>',
+    screen:
+      '<rect x="3" y="3" width="18" height="14" rx="2"/><path d="M8 21h8M12 17v4m-4-12 4-4 4 4M12 5v8"/>',
+    leave: '<path d="M4 15c4-5 12-5 16 0l-1 4-5-2v-3h-4v3l-5 2Z"/>',
+    full: '<path d="M8 3H3v5m13-5h5v5M3 16v5h5m13-5v5h-5"/>',
+    grid: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
+  };
+  const svg = (icon, off = false) =>
+    `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${paths[icon]}${off ? '<path d="m3 3 18 18"/>' : ""}</svg>`;
+  function button(id, icon, label, off = false) {
+    const el = $(id);
+    el.innerHTML = svg(icon, off) + `<span>${label}</span>`;
+    el.title = label;
+    el.setAttribute("aria-label", label);
+    el.classList.toggle("is-off", off);
+  }
+  const active = () =>
+    joined && CPCall.isActive() && String(CPCall.getCurrentRoomId()) === roomId;
+  const name = (id) => {
+    if (id === "self") return "คุณ";
+    const m = members.get(String(id));
+    return m
+      ? `${m.firstname || ""} ${m.lastname || ""}`.trim() || "สมาชิกในสาย"
+      : "สมาชิกในสาย";
+  };
+  function controls() {
+    const on = active();
+    $("roomJoinVoice").hidden = $("roomJoinVideo").hidden = on;
+    $("roomJoinVoice").disabled = $("roomJoinVideo").disabled = busy;
+    for (const id of [
+      "roomCallMic",
+      "roomCallCamera",
+      "roomCallShare",
+      "roomCallLeave",
+    ])
+      $(id).hidden = !on;
+    const mic = !!CPCall.getLocalStream()?.getAudioTracks()[0]?.enabled,
+      camera = CPCall.isCameraEnabled(),
+      share = CPCall.isScreenSharing();
+    button("roomJoinVoice", "mic", "เข้าร่วมเสียง");
+    button("roomJoinVideo", "camera", "เข้าร่วมวิดีโอ");
+    button("roomCallMic", "mic", mic ? "ปิดไมค์" : "เปิดไมค์", !mic);
+    button(
+      "roomCallCamera",
+      "camera",
+      camera ? "ปิดกล้อง" : "เปิดกล้อง",
+      !camera,
+    );
+    $("roomCallMic").setAttribute("aria-pressed", String(mic));
+    $("roomCallCamera").setAttribute("aria-pressed", String(camera));
+    $("roomCallCamera").disabled = share;
+    button("roomCallShare", "screen", share ? "หยุดแชร์จอ" : "แชร์หน้าจอ");
+    $("roomCallShare").setAttribute("aria-pressed", String(share));
+    button("roomCallLeave", "leave", "ออกจากคอล");
+    button("roomStageFullscreen", "full", "เต็มจอ");
+    button("roomStageGrid", "grid", "ดูทุกคน");
+  }
+  function entries() {
+    const stream = CPCall.getLocalStream();
+    const missing = presence
+      .filter(
+        (p) =>
+          String(p.userId) !== String(self?.id) &&
+          !lastPeers.some((peer) => String(peer.userId) === String(p.userId)),
+      )
+      .map((p) => ({ ...p, stream: null }));
+    return [
+      ...lastPeers,
+      ...missing,
+      ...(stream
+        ? [
+            {
+              userId: "self",
+              stream,
+              videoEnabled: CPCall.isCameraEnabled(),
+              screenSharing: CPCall.isScreenSharing(),
+            },
+          ]
+        : []),
+    ];
+  }
+  function visible(peer) {
+    return (
+      !!peer.videoEnabled &&
+      peer.stream
+        ?.getVideoTracks()
+        .some((t) => t.readyState === "live" && !t.muted)
+    );
+  }
+  function focus() {
+    const stage = $("roomCallStage"),
+      player = $("roomStageVideo"),
+      peer = entries().find((p) => String(p.userId) === selected && visible(p));
+    if (!peer) {
+      selected = null;
+      stage.hidden = true;
+      player.srcObject = null;
+    } else {
+      stage.hidden = false;
+      if (player.srcObject !== peer.stream) player.srcObject = peer.stream;
+      player.hidden = false;
+      $("roomStagePlaceholder").hidden = true;
+      $("roomStageName").textContent =
+        name(selected) + (peer.screenSharing ? " · แชร์หน้าจอ" : "");
+      player.play().catch(() => {});
+    }
+    for (const [id, card] of cards) {
+      card.classList.toggle("selected", id === selected);
+      card
+        .querySelector("button")
+        .setAttribute("aria-pressed", String(id === selected));
+    }
+  }
+  function render(peers = lastPeers) {
+    lastPeers = peers;
+    const media = $("roomCallPeers"),
+      voices = $("roomCallVoices");
+    if (!active()) {
+      lastPeers = [];
+      for (const card of cards.values())
+        card.querySelector("video").srcObject = null;
+      cards.clear();
+      media.replaceChildren();
+      voices.replaceChildren();
+      for (const peer of presence) {
+        const card = document.createElement("article");
+        card.className = "room-call-peer";
+        const img = document.createElement("img");
+        img.className = "room-peer-avatar";
+        img.alt = "";
+        img.src =
+          members.get(String(peer.userId))?.imageUrl ||
+          "/images/avatar-placeholder.svg";
+        img.onerror = () => {
+          img.onerror = null;
+          img.src = "/images/avatar-placeholder.svg";
+        };
+        const label = document.createElement("p");
+        label.textContent = name(String(peer.userId));
+        const hint = document.createElement("span");
+        hint.textContent = peer.screenSharing
+          ? "แชร์หน้าจอ"
+          : peer.videoEnabled
+            ? "เปิดกล้อง"
+            : "คุยเสียง";
+        const body = document.createElement("div");
+        body.className = "room-peer-select";
+        body.append(img, label, hint);
+        card.append(body);
+        voices.append(card);
+      }
+      $("roomMediaEmpty").hidden = false;
+      $("roomCallStatus").textContent = presence.length
+        ? `${presence.length} คนในคอล · เข้าร่วมเพื่อฟังเสียงหรือดูภาพ`
+        : "ยังไม่มีคนในคอล · เลือกเข้าร่วมเสียงหรือวิดีโอ";
+      selected = null;
+      focus();
+      $("roomCallLocal").hidden = true;
+      controls();
+      return;
+    }
+    const ids = new Set();
+    let videoCount = 0;
+    for (const peer of entries()) {
+      const id = String(peer.userId);
+      ids.add(id);
+      const show = visible(peer);
+      if (show) videoCount++;
+      let card = cards.get(id);
+      if (!card) {
+        card = document.createElement("article");
+        card.className = "room-call-peer";
+        const select = document.createElement("button");
+        select.type = "button";
+        select.className = "room-peer-select";
+        const video = document.createElement("video");
+        video.autoplay = true;
+        video.playsInline = true;
+        video.muted = true;
+        const avatar = document.createElement("img");
+        avatar.className = "room-peer-avatar";
+        avatar.alt = "";
+        avatar.onerror = () => {
+          avatar.onerror = null;
+          avatar.src = "/images/avatar-placeholder.svg";
+        };
+        const label = document.createElement("p"),
+          hint = document.createElement("span");
+        select.append(video, avatar, label, hint);
+        card.append(select);
+        select.addEventListener("click", () => {
+          if (visible(entries().find((p) => String(p.userId) === id) || {})) {
+            selected = id;
+            focus();
+          }
+        });
+        cards.set(id, card);
+      }
+      const video = card.querySelector("video");
+      if (video.srcObject !== peer.stream) video.srcObject = peer.stream;
+      video.hidden = !show;
+      card.classList.toggle("has-video", show);
+      card.classList.toggle("is-sharing", !!peer.screenSharing);
+      const avatar = card.querySelector("img");
+      avatar.hidden = show;
+      const m = id === "self" ? self : members.get(id);
+      const image =
+        m?.imageUrl || m?.image_url || "/images/avatar-placeholder.svg";
+      if (avatar.getAttribute("src") !== image) avatar.src = image;
+      card.querySelector("p").textContent =
+        name(id) + (peer.screenSharing ? " · แชร์จอ" : "");
+      card.querySelector("span").textContent = show
+        ? "กดเพื่อขยาย"
+        : "คุยเสียง";
+      card
+        .querySelector("button")
+        .setAttribute("aria-label", show ? `ขยายภาพ ${name(id)}` : name(id));
+      const parent = show ? media : voices;
+      if (card.parentElement !== parent) parent.append(card);
+      if (show) video.play().catch(() => {});
+    }
+    for (const [id, card] of cards)
+      if (!ids.has(id)) {
+        card.querySelector("video").srcObject = null;
+        card.remove();
+        cards.delete(id);
+      }
+    media.dataset.count = String(videoCount);
+    $("roomMediaEmpty").hidden = videoCount > 0;
+    focus();
+    $("roomCallLocal").hidden = true;
+    controls();
+    $("roomCallStatus").textContent =
+      entries().length > 1
+        ? `${entries().length} คนในสาย · เลือกภาพเพื่อขยาย`
+        : "เข้าร่วมแล้ว · รอสมาชิกคนอื่นเข้าร่วม";
+  }
+  async function join(mode) {
+    if (busy) return;
+    if (CPCall.isBusy()) {
+      $("roomCallStatus").textContent = "คุณอยู่ในสายอื่น กรุณาวางสายก่อน";
+      return;
+    }
+    busy = true;
+    controls();
+    try {
+      self = await CPCall.loadMe();
+      await CPCall.joinRoomCall(roomId, mode);
+      joined = true;
+      CPCall.refreshMediaViews();
+      render();
+    } catch (error) {
+      $("roomCallStatus").textContent = error.message;
+    } finally {
+      busy = false;
+      controls();
+    }
+  }
+  $("roomJoinVoice").addEventListener("click", () => join("VOICE"));
+  $("roomJoinVideo").addEventListener("click", () => join("VIDEO"));
+  $("roomCallMic").addEventListener("click", () => {
+    CPCall.toggleMicrophone();
+    controls();
+  });
+  $("roomCallCamera").addEventListener("click", async () => {
+    try {
+      await CPCall.toggleCamera();
+    } catch (error) {
+      $("roomCallStatus").textContent = error.message;
+    }
+    render();
+  });
+  $("roomCallShare").addEventListener("click", async () => {
+    const el = $("roomCallShare");
+    el.disabled = true;
+    try {
+      if (CPCall.isScreenSharing()) await CPCall.stopScreenShare();
+      else await CPCall.startScreenShare();
+      render();
+    } catch (error) {
+      $("roomCallStatus").textContent =
+        error.name === "NotAllowedError"
+          ? "ยกเลิกแชร์จอ · คอลยังดำเนินต่อ"
+          : error.message;
+    } finally {
+      el.disabled = false;
+      controls();
+    }
+  });
+  $("roomCallLeave").addEventListener("click", () => {
+    CPCall.leaveCall();
+    joined = false;
+    render([]);
+    $("roomCallStatus").textContent = "ออกจากคอลแล้ว คุณยังเป็นสมาชิกห้อง";
+  });
+  $("roomStageGrid").addEventListener("click", () => {
+    selected = null;
+    focus();
+  });
+  $("roomStageFullscreen").addEventListener("click", async () => {
+    try {
+      if (document.fullscreenElement) await document.exitFullscreen();
+      else await $("roomCallStage").requestFullscreen();
+    } catch (error) {
+      $("roomCallStatus").textContent = "เบราว์เซอร์นี้ไม่สามารถเปิดเต็มจอได้";
+    }
+  });
+  window.addEventListener("cp-room-loaded", (e) => {
+    members.clear();
+    for (const m of e.detail.members || []) members.set(String(m.userId), m);
+    render();
+  });
+  window.addEventListener("cp-room-presence", (e) => {
+    presence = e.detail.map((p) => {
+      let media = {};
+      try {
+        media = JSON.parse(p.payload || "{}");
+      } catch (_) {}
+      return {
+        userId: p.userId,
+        videoEnabled: media.videoEnabled === true,
+        screenSharing: media.screenSharing === true,
+      };
+    });
+    render();
+  });
+  window.addEventListener("cp-call-streams", (e) => render(e.detail));
+  window.addEventListener("cp-call-mode-changed", () => {
+    controls();
+    if (active()) render();
+  });
+  window.addEventListener("cp-call-error", (e) => {
+    if (joined) $("roomCallStatus").textContent = e.detail.message;
+  });
+  controls();
+});
