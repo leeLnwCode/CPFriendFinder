@@ -30,7 +30,9 @@ public class UserController extends SessionController {
     @GetMapping("/me")
     public ResponseEntity<UpdateProfileResponse> getMe(HttpSession session) {
         User user = userService.getProfile(currentUserId(session));
-        return ResponseEntity.ok(userMapper.toProfileResponse(user));
+        return ResponseEntity.ok()
+                .header("X-Session-Timeout-Seconds", String.valueOf(session.getMaxInactiveInterval()))
+                .body(userMapper.toProfileResponse(user));
     }
 
     // Update own profile

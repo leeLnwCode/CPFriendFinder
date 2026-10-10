@@ -1,0 +1,92 @@
+/* Shared visual system; loaded after page styles. */
+:root { --bg-color:#f5f7fb; --surface-color:#fff; --text-color:#17243a; --secondary-text-color:#62718a; --border-color:#dce4ef; --sidebar-bg:#fff; --hover-bg:#edf3fc; --active-bg:#e6efff; --active-text:#245ac5; --accent:#245ac5; --shadow-color:rgba(28,53,92,.07); }
+body.theme-dark { --bg-color:#101827; --surface-color:#192438; --text-color:#e9effa; --secondary-text-color:#adbbd0; --border-color:#33425b; --sidebar-bg:#162033; --input-bg:#192438; --hover-bg:#243650; --active-bg:#263e62; --active-text:#9fc2ff; --accent:#9fc2ff; }
+body.theme-blue { --bg-color:#edf5ff; --sidebar-bg:#f7fbff; --surface-color:#fff; --border-color:#cee0f5; }
+body { color:var(--text-color); background:var(--bg-color); line-height:1.6; }
+button,input,select,textarea { font:inherit; }
+button,a,input,select,textarea,summary { -webkit-tap-highlight-color:transparent; }
+button { cursor:pointer; }
+button:disabled { cursor:not-allowed; opacity:.55; }
+:focus-visible { outline:3px solid var(--accent); outline-offset:3px; }
+input,select,textarea { border-color:var(--border-color); color:var(--text-color); background:var(--input-bg,var(--surface-color)); }
+.page-content { padding:36px clamp(20px,3vw,48px) 48px; }
+.sidebar { padding:28px 16px; }
+.sidebar-profile { border:1px solid var(--border-color); border-radius:14px; height:66px!important; margin-bottom:24px!important; background:var(--bg-color); }
+.sidebar-menu .menu-item { height:48px!important; margin-bottom:4px!important; border-radius:12px!important; }
+.sidebar-menu .menu-item.active { background:var(--active-bg); color:var(--active-text); font-weight:700!important; }
+.sidebar-menu .menu-item:hover { background:var(--hover-bg); }
+h1,h2,h3 { letter-spacing:-.025em; line-height:1.35; }
+.random-banner { background:linear-gradient(115deg,#214bb4,#407ed9); color:white; border:0; border-radius:24px; padding:36px; box-shadow:0 12px 36px var(--shadow-color); }
+.random-banner h1,.random-banner p { color:white; }
+.random-banner .random-button { background:white; color:#214bb4; border-radius:12px; min-height:46px; }
+.room-toolbar { display:flex; flex-wrap:wrap; gap:12px; margin:20px 0 26px; }
+.room-toolbar .search-box { flex:1 1 260px; }
+.room-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(min(100%,265px),1fr)); gap:20px; }
+.room-card,.settings-card,.random-profile-panel,.chat-container,.friend-list-section,.modal-box,.profile-modal-content { background:var(--surface-color); border:1px solid var(--border-color); border-radius:20px; box-shadow:0 4px 18px var(--shadow-color); }
+.room-card { padding:24px; min-width:0; }
+.room-card h3 { overflow-wrap:anywhere; }
+.room-tags span,.interest-tag { background:var(--active-bg); color:var(--active-text); border-radius:999px; padding:6px 12px; font-size:13px; }
+.join-button,.create-room-button,.profile-save-button,.add-friend-button { background:#245ac5; color:#fff; border:0; border-radius:12px; min-height:44px; }
+.friend-list-section { padding:20px; }
+.friend-empty,.ui-status { color:var(--secondary-text-color); padding:22px; border:1px dashed var(--border-color); border-radius:16px; background:var(--surface-color); }
+.room-grid>.friend-empty { grid-column:1/-1; text-align:center; }
+.settings-container { max-width:900px; margin-inline:auto; }
+.settings-card { padding:24px; text-align:left; }
+.settings-card:hover { border-color:var(--accent); background:var(--hover-bg); }
+.settings-header { margin-bottom:32px; }
+.account-note { color:var(--secondary-text-color); margin-bottom:18px; }
+.modal-box,.profile-modal-content,.create-room-modal { max-height:calc(100dvh - 48px); overflow-y:auto; }
+.discovery-heading { margin-bottom:24px; }
+.discovery-heading h1 { font-size:32px; margin:8px 0; }
+.eyebrow { color:var(--accent); font-size:12px; letter-spacing:.13em; font-weight:700; }
+.random-layout { min-height:0; grid-template-columns:minmax(280px,380px) minmax(0,1fr); margin-top:24px; align-items:start; }
+.discovery-guide { background:var(--surface-color); border:1px solid var(--border-color); border-radius:24px; padding:clamp(24px,4vw,48px); display:flex; flex-direction:column; gap:20px; }
+.discovery-guide p { color:var(--secondary-text-color); }
+.discovery-guide ol { padding-left:24px; }
+.discovery-guide li { margin:12px 0; }
+.discovery-guide a { color:var(--accent); }
+.primary-link { background:#245ac5; color:white!important; padding:13px 20px; border-radius:12px; text-decoration:none; align-self:start; }
+.ui-status button { padding:8px 14px; margin-left:8px; border:1px solid var(--border-color); border-radius:10px; color:var(--accent); background:var(--surface-color); }
+.login-page,.register-page { background:var(--bg-color); }
+.login-section { background:var(--surface-color); overflow-y:auto; }
+.login-body,.login-page { overflow:auto; }
+.register-card { background:var(--surface-color); border:1px solid var(--border-color); border-radius:24px; padding:32px; box-shadow:0 12px 40px var(--shadow-color); }
+.login-form input,.register-card input,.register-card select { min-height:46px; }
+@media(max-width:1100px) { .friend-page { grid-template-columns:280px minmax(0,1fr); gap:18px; } }
+@media(max-width:800px) {
+ .page-layout,.room-page { flex-direction:column; }
+ .sidebar { width:100%!important; min-width:0!important; max-width:none!important; position:relative; height:auto; min-height:0; padding:16px; border-right:0; border-bottom:1px solid var(--border-color); overflow:visible; }
+ .sidebar-logo { height:40px!important; margin-bottom:12px!important; }
+ .sidebar-logo img { width:160px!important; max-height:40px!important; }
+ .sidebar-profile { max-width:360px; margin-bottom:12px!important; }
+ .sidebar-menu { display:grid!important; grid-template-columns:repeat(6,minmax(0,1fr)); gap:4px!important; }
+ .sidebar-menu .menu-item { justify-content:center!important; flex-direction:column; gap:6px!important; height:62px!important; padding:6px 2px!important; font-size:11px!important; text-align:center; }
+ .page-content,.room-content { padding:24px 16px; width:100%; }
+ .friend-content { height:auto; min-height:100dvh; overflow:visible; }
+ .friend-page,.random-layout { grid-template-columns:1fr; height:auto; overflow:visible; }
+ .friend-list-section { max-height:360px; }
+ .chat-container { min-height:480px; }
+ .chat-panel { width:100%; min-width:0; min-height:420px; }
+ .random-content { overflow:visible; }
+ .random-banner { padding:26px 22px; }
+ .random-banner h1 { font-size:24px; }
+ .banner-decoration { display:none; }
+ .room-toolbar>select,.room-toolbar>button { flex:1 1 140px; }
+ .login-section { min-height:100dvh; height:auto; padding:28px 20px; }
+ .register-card { padding:24px 18px; }
+}
+@media(prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto!important; transition:none!important; animation:none!important; } }
+
+/* The friend call markup uses its own controls on the shared video window. */
+.video-call-overlay.show { display:flex; }
+.video-call-actions { position:absolute; bottom:24px; left:0; right:0; display:flex; justify-content:center; align-items:center; gap:20px; z-index:6; }
+.video-call-action,.video-call-end { display:flex; flex-direction:column; align-items:center; gap:8px; width:64px; border:0; background:transparent; color:white; font-size:12px; }
+.video-call-icon,.video-call-end-icon { width:54px; height:54px; border-radius:50%; display:flex; align-items:center; justify-content:center; position:relative; background:#334155; }
+.video-call-end-icon { background:#dc2626; }
+.video-call-icon img,.video-call-end-icon img { width:24px; height:24px; object-fit:contain; filter:brightness(0) invert(1); }
+.video-call-end-icon img { transform:rotate(135deg); }
+.video-call-action.muted .video-call-slash { position:absolute; width:3px; height:32px; background:#f87171; transform:rotate(-45deg); border-radius:2px; }
+.remote-video>video,.local-video>video { width:100%; height:100%; object-fit:cover; }
+@media(max-width:700px) { .video-call-window { max-width:100vw; height:100dvh; } .video-call-actions { bottom:24px; gap:16px; } }
+
+.sidebar-logout-status:empty{display:none}.sidebar-logout-status{grid-column:1/-1}@media(max-width:420px){.sidebar-menu .menu-item{font-size:10px!important}}

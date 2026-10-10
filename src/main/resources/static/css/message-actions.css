@@ -1,0 +1,22 @@
+.message-actions{display:flex;align-items:center;gap:3px;flex-shrink:0}
+.message-actions button{border:0;background:transparent;color:var(--text-muted,#64748b);min-width:32px;min-height:32px;border-radius:8px;display:inline-flex;align-items:center;justify-content:center;cursor:pointer}
+.message-actions button:hover,.message-actions button:focus-visible{background:var(--surface-muted,#e2e8f0);outline:2px solid #0ea5e9;outline-offset:2px}
+.message-actions .message-delete-button{color:#b91c1c}
+.friend-chat-message[data-deleted="true"] .friend-chat-message-content{font-style:italic;opacity:.65}
+.message-action-dialog,.room-editor-dialog{box-sizing:border-box;width:min(520px,calc(100vw - 32px));max-height:calc(100dvh - 40px);overflow:auto;border:1px solid var(--border-color,#cbd5e1);border-radius:18px;padding:24px;background:var(--surface-color,#fff);color:var(--text-color,#172033)}
+.message-action-dialog::backdrop,.room-editor-dialog::backdrop{background:rgba(15,23,42,.55)}
+.message-action-dialog h2,.room-editor-dialog h2{font-size:1.2rem;margin:0 0 16px}
+.message-action-dialog textarea,.room-editor-dialog input,.room-editor-dialog textarea,.room-editor-dialog select{box-sizing:border-box;width:100%;border:1px solid #94a3b8;border-radius:8px;padding:10px;background:var(--surface-color,#fff);color:inherit;font:inherit}
+.message-action-dialog textarea{resize:vertical}
+.message-action-dialog [role="status"],.room-editor-dialog [role="status"]{color:#b91c1c;min-height:1.5em}
+.message-dialog-buttons{display:flex;justify-content:flex-end;gap:10px;margin-top:16px}
+.message-dialog-buttons button,.room-edit-button{border:1px solid #94a3b8;border-radius:10px;padding:10px 16px;cursor:pointer;font:inherit;background:var(--surface-color,#fff);color:inherit}
+.message-dialog-buttons .primary{background:#0369a1;color:#fff;border-color:#0369a1}
+.message-dialog-buttons .danger{background:#b91c1c;color:#fff;border-color:#b91c1c}
+.room-editor-dialog label{display:block;margin:12px 0 5px}
+.room-editor-interests{display:flex;flex-wrap:wrap;gap:10px;padding:10px 0}
+.room-editor-interests label{display:flex;align-items:center;gap:6px;margin:0}
+.room-editor-interests input{width:auto}
+.room-pagination{display:flex;justify-content:center;align-items:center;gap:12px;flex-wrap:wrap;padding:20px}
+.room-pagination button{padding:10px 20px;border-radius:12px;border:1px solid #94a3b8;cursor:pointer;background:var(--surface-color,#fff);color:var(--text-color,#172033)}
+@media(max-width:600px){.message-action-dialog,.room-editor-dialog{padding:18px}.room-toolbar{flex-wrap:wrap}.room-toolbar select{max-width:100%}}
