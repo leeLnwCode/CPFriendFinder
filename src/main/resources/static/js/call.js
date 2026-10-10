@@ -366,6 +366,12 @@
     }
     if (!signal.payload) return;
     const description = JSON.parse(signal.payload);
+    if (
+      description.type === "answer" &&
+      pc.signalingState !== "have-local-offer"
+    ) {
+      return;
+    }
     const readyForOffer =
       !entry.makingOffer &&
       (pc.signalingState === "stable" || entry.isSettingRemoteAnswerPending);
