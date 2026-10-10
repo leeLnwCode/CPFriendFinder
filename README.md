@@ -170,7 +170,7 @@ HTTP Status Codes ที่ใช้: `200 / 201 / 204 / 400 / 401 / 403 / 404 /
 ## Deployment URL
 
 ```
-https://<ใส่ URL หลัง deploy เสร็จ>
+https://cpfriendfinder-final-production.up.railway.app/login
 ```
 
 แนวทางที่รองรับ: Render / Railway / Fly.io / VPS + Docker
