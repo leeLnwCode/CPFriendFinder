@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="th" xmlns:th="http://www.thymeleaf.org">
   <head>
+<script th:src="@{/js/auth-session.js(v=1)}"></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
@@ -13,9 +14,10 @@
     <link rel="stylesheet" th:href="@{/css/home.css}" />
     <link rel="stylesheet" th:href="@{/css/friend-profile-popup.css}" />
     <link rel="stylesheet" th:href="@{/css/profile-popup.css(v=11)}" />
-    <link rel="stylesheet" th:href="@{/css/ui-refresh.css}" />
-    <link rel="stylesheet" th:href="@{/css/call-ui.css}" />
-  </head>
+  <link rel="stylesheet" th:href="@{/css/ui-refresh.css}"/>
+<link rel="stylesheet" th:href="@{/css/call-ui.css(v=2)}"/>
+  <link rel="stylesheet" href="/css/message-actions.css?v=1" />
+</head>
 
   <body>
     <div class="page-layout">
@@ -49,6 +51,8 @@
 
         <div class="room-header">
           <h2>ค้นหาห้องพูดคุย</h2>
+
+          
         </div>
 
         <!-- Search + Filter -->
@@ -64,9 +68,11 @@
             />
           </div>
 
-          <select id="interestFilter">
-            <option value="">ทุกความสนใจ</option>
-          </select>
+          
+
+          <select id="interestFilter" aria-label="กรองตามความสนใจ"><option value="">ทุกความสนใจ</option></select>
+          <select id="yearFilter" aria-label="กรองตามชั้นปี"><option value="">ทุกชั้นปี</option><option value="1">ปี 1</option><option value="2">ปี 2</option><option value="3">ปี 3</option><option value="4">ปี 4</option><option value="5">ปี 5</option><option value="6">ปี 6</option></select>
+          <select id="roomSort" aria-label="เรียงลำดับห้อง"><option value="newest">ใหม่สุด</option><option value="oldest">เก่าสุด</option><option value="name">ชื่อห้อง</option></select>
 
           <button
             type="button"
@@ -87,7 +93,7 @@
 
             <input
               type="text"
-              id="roomName"
+              id="roomName" maxlength="100"
               placeholder="เช่น หาเพื่อนนั่งทำโปรเจค..."
             />
 
@@ -95,7 +101,7 @@
 
             <input
               type="text"
-              id="roomDescription"
+              id="roomDescription" maxlength="500"
               placeholder="เช่น ปั่นโปรเจค/การบ้านด้วยกัน..."
             />
 
@@ -111,9 +117,7 @@
                     <span class="dropdown-arrow"> ▼ </span>
                   </summary>
 
-                  <div class="multi-select-options">
-                    <p role="status">กำลังโหลดความสนใจ...</p>
-                  </div>
+                  <div class="multi-select-options"><p role="status">กำลังโหลดความสนใจ...</p></div>
                 </details>
               </div>
 
@@ -194,9 +198,7 @@
 
         <!-- ================= ROOM GRID ================= -->
 
-        <section class="room-grid" id="roomGrid" aria-live="polite">
-          <p class="friend-empty">กำลังโหลดห้องพูดคุย...</p>
-        </section>
+        <section class="room-grid" id="roomGrid" aria-live="polite"><p class="friend-empty">กำลังโหลดห้องพูดคุย...</p></section>
       </main>
     </div>
 
@@ -230,15 +232,15 @@
     ></div>
 
     <script th:src="@{/js/friend-profile-popup.js(v=20)}"></script>
-    <script th:src="@{/js/home.js(v=8)}"></script>
+    <script th:src="@{/js/home.js(v=9)}"></script>
     <script th:src="@{/js/theme.js}"></script>
     <script th:src="@{/js/profile-popup.js(v=11)}"></script>
-    <div th:replace="~{fragments/global-call :: globalCall}"></div>
+<div th:replace="~{fragments/global-call :: globalCall}"></div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7/bundles/stomp.umd.min.js"></script>
-    <script th:src="@{/js/call.js(v=8)}"></script>
-    <script th:src="@{/js/global-call.js}"></script>
-    <script th:src="@{/js/sidebar.js}"></script>
-    <script th:src="@{/js/room-live.js(v=1)}"></script>
-  </body>
+<script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7/bundles/stomp.umd.min.js"></script>
+<script th:src="@{/js/call.js(v=11)}"></script>
+<script th:src="@{/js/global-call.js}"></script>
+  <script th:src="@{/js/sidebar.js}"></script>
+<script th:src="@{/js/room-live.js(v=1)}"></script>
+</body>
 </html>

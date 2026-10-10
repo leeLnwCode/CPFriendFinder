@@ -2,12 +2,8 @@ document.addEventListener("DOMContentLoaded", () => {
   const notificationList = document.getElementById("friendRequestList");
   const messageList = document.querySelector(".message-list");
 
-  const escapeHtml = (value) => {
-    const el = document.createElement("span");
-    el.textContent = value ?? "";
-    return el.innerHTML;
-  };
-  let notificationSocket = null;
+  const escapeHtml=value=>{const el=document.createElement("span");el.textContent=value??"";return el.innerHTML;};
+  let notificationSocket = null, stopped = false, reconnectTimer;
   let stompSubscriptionId = null;
 
   /* =====================================================
@@ -142,19 +138,19 @@ document.addEventListener("DOMContentLoaded", () => {
     try {
       button.disabled = true;
 
-      const response = await fetch(`/api/friend-requests/${requestId}/accept`, {
-        method: "POST",
-        headers: {
-          Accept: "application/json",
+      const response = await fetch(
+        `/api/friend-requests/${requestId}/accept`,
+        {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+          },
+          credentials: "include",
         },
-        credentials: "include",
-      });
+      );
 
       if (!response.ok) {
-        if ([404, 409].includes(response.status)) {
-          await loadFriendRequests();
-          return;
-        }
+        if([404,409].includes(response.status)){await loadFriendRequests();return;}
         throw new Error(`Accept ไม่สำเร็จ (${response.status})`);
       }
 
@@ -201,10 +197,7 @@ document.addEventListener("DOMContentLoaded", () => {
       );
 
       if (!response.ok) {
-        if ([404, 409].includes(response.status)) {
-          await loadFriendRequests();
-          return;
-        }
+        if([404,409].includes(response.status)){await loadFriendRequests();return;}
         throw new Error(`Decline ไม่สำเร็จ (${response.status})`);
       }
 
@@ -266,7 +259,9 @@ document.addEventListener("DOMContentLoaded", () => {
       );
 
       if (!response.ok) {
-        throw new Error(`โหลดการแจ้งเตือนไม่สำเร็จ (${response.status})`);
+        throw new Error(
+          `โหลดการแจ้งเตือนไม่สำเร็จ (${response.status})`,
+        );
       }
 
       const notifications = await response.json();
@@ -331,12 +326,12 @@ document.addEventListener("DOMContentLoaded", () => {
       <div class="message-avatar">
         <img
           src="${escapeHtml(image)}"
-          alt="${fullname}"
+          alt="${escapeHtml(fullname)}"
         />
       </div>
 
       <div class="message-text">
-        ${fullname} ส่งข้อความใหม่ถึงคุณ!
+        ${escapeHtml(fullname)} ส่งข้อความใหม่ถึงคุณ!
       </div>
     `;
 
@@ -361,17 +356,23 @@ document.addEventListener("DOMContentLoaded", () => {
        */
       if (notificationId) {
         try {
-          await fetch(`/api/notifications/${notificationId}/read`, {
-            method: "POST",
-            headers: {
-              Accept: "application/json",
+          const readResponse = await fetch(
+            `/api/notifications/${notificationId}/read`,
+            {
+              method: "POST",
+              headers: {
+                Accept: "application/json",
+              },
+              credentials: "include",
             },
-            credentials: "include",
-          });
+          );
 
-          item.classList.remove("unread");
+          if (readResponse.ok) item.classList.remove("unread");
         } catch (error) {
-          console.error("mark notification เป็นอ่านแล้วไม่สำเร็จ:", error);
+          console.error(
+            "mark notification เป็นอ่านแล้วไม่สำเร็จ:",
+            error,
+          );
         }
       }
 
@@ -380,19 +381,12 @@ document.addEventListener("DOMContentLoaded", () => {
        */
       if (roomId) {
         try {
-          const response = await fetch(
-            `/api/chats/${encodeURIComponent(roomId)}`,
-            { credentials: "include" },
-          );
+          const response = await fetch(`/api/chats/${encodeURIComponent(roomId)}`, {credentials: "include"});
           if (!response.ok) throw new Error("ไม่สามารถเปิดบทสนทนาได้");
           const room = await response.json();
-          window.location.href =
-            room.roomType === "DIRECT"
-              ? `/friend?roomId=${encodeURIComponent(roomId)}`
-              : `/room?id=${encodeURIComponent(roomId)}`;
-        } catch (error) {
-          alert(error.message);
-        }
+          window.location.href = room.roomType === "DIRECT"
+            ? `/friend?roomId=${encodeURIComponent(roomId)}` : `/room?id=${encodeURIComponent(roomId)}`;
+        } catch (error) { alert(error.message); }
       }
     });
   }
@@ -427,7 +421,9 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     if (!response.ok) {
-      throw new Error(`โหลดข้อมูลผู้ใช้ไม่สำเร็จ (${response.status})`);
+      throw new Error(
+        `โหลดข้อมูลผู้ใช้ไม่สำเร็จ (${response.status})`,
+      );
     }
 
     return await response.json();
@@ -439,28 +435,39 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function loadUnreadCount() {
     try {
-      const response = await fetch("/api/notifications/unread-count", {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
+      const response = await fetch(
+        "/api/notifications/unread-count",
+        {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+          },
+          credentials: "include",
         },
-        credentials: "include",
-      });
+      );
 
       if (!response.ok) {
-        throw new Error(`โหลดจำนวนแจ้งเตือนไม่สำเร็จ (${response.status})`);
+        throw new Error(
+          `โหลดจำนวนแจ้งเตือนไม่สำเร็จ (${response.status})`,
+        );
       }
 
       const data = await response.json();
 
-      console.log("จำนวน Notification ที่ยังไม่อ่าน:", data.count);
+      console.log(
+        "จำนวน Notification ที่ยังไม่อ่าน:",
+        data.count,
+      );
 
       /*
        * ตอนนี้ notification.html ยังไม่มี badge
        * ดังนั้นเก็บไว้ใน console ก่อน
        */
     } catch (error) {
-      console.error("โหลดจำนวนแจ้งเตือนไม่สำเร็จ:", error);
+      console.error(
+        "โหลดจำนวนแจ้งเตือนไม่สำเร็จ:",
+        error,
+      );
     }
   }
 
@@ -493,7 +500,10 @@ document.addEventListener("DOMContentLoaded", () => {
   function parseStompFrame(data) {
     const nullIndex = data.indexOf("\0");
 
-    const frameText = nullIndex >= 0 ? data.substring(0, nullIndex) : data;
+    const frameText =
+      nullIndex >= 0
+        ? data.substring(0, nullIndex)
+        : data;
 
     const separatorIndex = frameText.indexOf("\n\n");
 
@@ -501,9 +511,14 @@ document.addEventListener("DOMContentLoaded", () => {
       return null;
     }
 
-    const headerText = frameText.substring(0, separatorIndex);
+    const headerText = frameText.substring(
+      0,
+      separatorIndex,
+    );
 
-    const body = frameText.substring(separatorIndex + 2);
+    const body = frameText.substring(
+      separatorIndex + 2,
+    );
 
     const lines = headerText.split("\n");
 
@@ -543,16 +558,26 @@ document.addEventListener("DOMContentLoaded", () => {
         throw new Error("ไม่พบ user.id ของผู้ใช้ปัจจุบัน");
       }
 
-      console.log("Current notification user:", user.id);
+      console.log(
+        "Current notification user:",
+        user.id,
+      );
 
-      const protocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+      const protocol =
+        window.location.protocol === "https:"
+          ? "wss:"
+          : "ws:";
 
-      const socketUrl = `${protocol}//${window.location.host}/ws`;
+      const socketUrl =
+        `${protocol}//${window.location.host}/ws`;
 
-      notificationSocket = new WebSocket(socketUrl);
+      notificationSocket =
+        new WebSocket(socketUrl);
 
       notificationSocket.onopen = () => {
-        console.log("Notification WebSocket connected");
+        console.log(
+          "Notification WebSocket connected",
+        );
 
         /*
          * STOMP CONNECT
@@ -570,23 +595,33 @@ document.addEventListener("DOMContentLoaded", () => {
           return;
         }
 
-        console.log("Notification STOMP frame:", frame);
+        console.log(
+          "Notification STOMP frame:",
+          frame,
+        );
 
         /*
          * Server ตอบ CONNECTED
          */
         if (frame.command === "CONNECTED") {
-          console.log("Notification STOMP connected");
+          console.log(
+            "Notification STOMP connected",
+          );
 
-          stompSubscriptionId = `notification-${user.id}`;
+          stompSubscriptionId =
+            `notification-${user.id}`;
 
           sendStompFrame("SUBSCRIBE", {
             id: stompSubscriptionId,
-            destination: `/topic/notifications/${user.id}`,
+            destination:
+              `/topic/notifications/${user.id}`,
             ack: "auto",
           });
 
-          console.log("Subscribed:", `/topic/notifications/${user.id}`);
+          console.log(
+            "Subscribed:",
+            `/topic/notifications/${user.id}`,
+          );
 
           return;
         }
@@ -596,47 +631,67 @@ document.addEventListener("DOMContentLoaded", () => {
          */
         if (frame.command === "MESSAGE") {
           try {
-            const notification = JSON.parse(frame.body);
-            if (notification.type === "FRIEND_REQUEST") loadFriendRequests();
+            const notification =
+              JSON.parse(frame.body);
+            if(notification.type === "FRIEND_REQUEST") loadFriendRequests();
 
-            console.log("New notification received:", notification);
+            console.log(
+              "New notification received:",
+              notification,
+            );
 
             /*
              * สนใจเฉพาะข้อความใหม่
              */
-            if (notification.type === "NEW_MESSAGE") {
-              createMessageNotification(notification, true);
+            if (
+              notification.type === "NEW_MESSAGE"
+            ) {
+              createMessageNotification(
+                notification,
+                true,
+              );
 
               /*
                * ถ้ามีข้อความใหม่เข้ามา
                * เอา "ไม่มีข้อความใหม่" ออก
                */
-              const emptyMessage = messageList?.querySelector(".friend-empty");
+              const emptyMessage =
+                messageList?.querySelector(
+                  ".friend-empty",
+                );
 
               if (emptyMessage) {
                 emptyMessage.remove();
               }
             }
           } catch (error) {
-            console.error("อ่าน notification ไม่สำเร็จ:", error);
+            console.error(
+              "อ่าน notification ไม่สำเร็จ:",
+              error,
+            );
           }
         }
       };
 
       notificationSocket.onerror = (error) => {
-        console.error("Notification WebSocket error:", error);
+        console.error(
+          "Notification WebSocket error:",
+          error,
+        );
       };
 
       notificationSocket.onclose = () => {
-        console.log("Notification WebSocket disconnected");
+        console.log(
+          "Notification WebSocket disconnected",
+        );
 
-        /*
-         * ยังไม่ reconnect อัตโนมัติ
-         * เพื่อป้องกันเปิด connection ซ้ำไม่หยุด
-         */
+        if (!stopped) { clearTimeout(reconnectTimer); reconnectTimer = setTimeout(connectNotificationWebSocket,5000); }
       };
     } catch (error) {
-      console.error("เชื่อมต่อ Notification WebSocket ไม่สำเร็จ:", error);
+      console.error(
+        "เชื่อมต่อ Notification WebSocket ไม่สำเร็จ:",
+        error,
+      );
     }
   }
 
@@ -644,11 +699,10 @@ document.addEventListener("DOMContentLoaded", () => {
      INITIAL LOAD
   ====================================================== */
 
-  window.addEventListener("focus", loadFriendRequests);
-  window.addEventListener("cp-friends-updated", loadFriendRequests);
-  setInterval(() => {
-    if (!document.hidden) loadFriendRequests();
-  }, 15000);
+  window.addEventListener("focus", () => { loadFriendRequests(); loadMessageNotifications(); loadUnreadCount(); });
+  window.addEventListener("cp-friends-updated",loadFriendRequests);
+  const refreshTimer=setInterval(()=>{if(!document.hidden){loadFriendRequests();loadMessageNotifications();loadUnreadCount();}},15000);
+  window.addEventListener('pagehide',()=>{stopped=true;clearInterval(refreshTimer);clearTimeout(reconnectTimer);notificationSocket?.close();},{once:true});
   loadFriendRequests();
 
   loadMessageNotifications();

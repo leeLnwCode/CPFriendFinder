@@ -255,7 +255,10 @@ public class ChatMessageService {
         }
 
         message.setDeletedAt(Instant.now());
-        return toResponse(messageRepository.save(message));
+        Message saved = messageRepository.save(message);
+        messagingTemplate.convertAndSend("/topic/rooms/" + roomId + "/message-updates",
+                (Object) java.util.Map.of("type", "DELETE", "roomId", roomId, "messageId", messageId));
+        return toResponse(saved);
     }
 
     @Transactional

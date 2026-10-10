@@ -1,12 +1,25 @@
 <!doctype html>
-<html lang="th" xmlns:th="http://www.thymeleaf.org">
+<html
+  lang="th"
+  xmlns:th="http://www.thymeleaf.org"
+>
   <body>
-    <aside th:fragment="sidebar(activePage)" class="sidebar">
+
+    <aside
+      th:fragment="sidebar(activePage)"
+      class="sidebar"
+    >
       <div class="sidebar-logo">
-        <img th:src="@{/images/Full_logo.png}" alt="CP Friend Finder" />
+        <img
+          th:src="@{/images/Full_logo.png}"
+          alt="CP Friend Finder"
+        />
       </div>
 
-      <div class="sidebar-profile profile-loaded" id="sidebarProfileButton">
+      <div
+        class="sidebar-profile profile-loaded"
+        id="sidebarProfileButton"
+      >
         <img
           id="sidebarProfileImage"
           th:src="${currentUser != null
@@ -92,7 +105,10 @@
           <span class="menu-icon">⚙</span>
           <span>การตั้งค่า</span>
         </a>
+        <button type="button" class="menu-item sidebar-logout" id="logoutButton"><span class="menu-icon" aria-hidden="true">↪</span><span>ออกจากระบบ</span></button>
+        <p id="logoutStatus" role="status" class="sidebar-logout-status"></p>
       </nav>
     </aside>
+
   </body>
 </html>

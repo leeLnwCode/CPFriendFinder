@@ -50,24 +50,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
   function connectWebSocket() {
     if (!window.CPCall?.watchTopic) return;
-    CPCall.watchTopic("/topic/rooms/" + roomId, (frame) => {
-      try {
-        const message = JSON.parse(frame.body);
-        createMessageElement(message);
-        scrollChatToBottom();
-      } catch (error) {
-        console.error("อ่านข้อความไม่สำเร็จ", error);
-      }
+    CPCall.watchTopic('/topic/rooms/'+roomId, frame => {
+      try {const message=JSON.parse(frame.body);createMessageElement(message);scrollChatToBottom();}catch(error){console.error('อ่านข้อความไม่สำเร็จ',error);}
     });
-    CPCall.connectWS(() => {
-      webSocketConnected = true;
-    });
-    window.addEventListener("cp-ws-connected", () => {
-      webSocketConnected = true;
-    });
-    window.addEventListener("cp-ws-disconnected", () => {
-      webSocketConnected = false;
-    });
+    CPCall.connectWS(()=>{webSocketConnected=true;});
+    window.addEventListener('cp-ws-connected',()=>{webSocketConnected=true;});
+    window.addEventListener('cp-ws-disconnected',()=>{webSocketConnected=false;});
   }
 
   // =========================
@@ -107,18 +95,40 @@ document.addEventListener("DOMContentLoaded", function () {
         credentials: "include",
       });
 
+      if(response.status===401){window.CPAuthSession?.expire();return;}
+      if(response.status===404){
+        if(window.CPCall?.getCurrentRoomId?.()===roomId)window.CPCall.leaveCall();
+        window.location.replace('/home');return;
+      }
       if (!response.ok) {
         throw new Error(`โหลดข้อมูลห้องไม่สำเร็จ (${response.status})`);
       }
 
       room = await response.json();
+      // Keep displayed membership and its count based on the same unique users.
+      if (Array.isArray(room.members)) {
+        room.members = [...new Map(room.members.filter(m=>m.userId!=null).map(m=>[String(m.userId),m])).values()];
+        room.memberCount = room.members.length;
+      }
       if (room.roomType === "DIRECT") {
         window.location.replace(`/friend?roomId=${encodeURIComponent(roomId)}`);
         return;
       }
-      window.dispatchEvent(new CustomEvent("cp-room-loaded", { detail: room }));
+      window.dispatchEvent(new CustomEvent("cp-room-loaded", {detail:room}));
 
       renderRoom();
+      let deleteButton=document.getElementById('deleteRoomButton');
+      if(!deleteButton && leaveRoomButton){
+        deleteButton=document.createElement('button');deleteButton.type='button';deleteButton.id='deleteRoomButton';deleteButton.className='room-delete-button';deleteButton.textContent='ลบห้อง';deleteButton.style.cssText='color:#b91c1c;border:1px solid #fecaca;background:#fff;padding:10px 16px;border-radius:12px;cursor:pointer';leaveRoomButton.after(deleteButton);
+        deleteButton.addEventListener('click',async()=>{
+          if(!confirm('ลบห้องนี้และยุติการเข้าร่วมของสมาชิกทุกคน?'))return;
+          deleteButton.disabled=true;
+          try{const response=await fetch(`/api/chats/${roomId}`,{method:'DELETE',credentials:'include'});if(!response.ok)throw new Error();window.CPCall?.leaveCall();window.location.assign('/home');}
+          catch(_){alert('ลบห้องไม่สำเร็จ กรุณาลองอีกครั้ง');deleteButton.disabled=false;}
+        });
+      }
+      const me=window.CP_CURRENT_USER?.id || window.CP_CURRENT_USER?.userId || (()=>{try{const u=JSON.parse(sessionStorage.getItem('currentUser')||'{}');return u.id||u.userId;}catch(_){return null;}})() || (await window.CPCall?.loadMe?.())?.id;
+      if(deleteButton)deleteButton.hidden=!(room.members||[]).some(m=>String(m.userId)===String(me)&&m.role==='OWNER');
       renderMembers();
       if (!quiet) await loadMessages();
     } catch (error) {
@@ -283,11 +293,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // =========================
 
   function createMessageElement(message) {
-    if (
-      !message ||
-      (message.roomId && String(message.roomId) !== String(roomId))
-    )
-      return;
+    if (!message || (message.roomId && String(message.roomId)!==String(roomId))) return;
     if (message.id && renderedMessageIds.has(String(message.id))) return;
     if (message.id) renderedMessageIds.add(String(message.id));
     if (!chatMessages) {
@@ -325,14 +331,8 @@ document.addEventListener("DOMContentLoaded", function () {
     `;
 
     if (message.messageType === "IMAGE" && /^https?:\/\/|^\//.test(content)) {
-      messageElement.querySelector("p")?.remove();
-      const image = document.createElement("img");
-      image.src = content;
-      image.alt = "รูปภาพในแชท";
-      image.loading = "lazy";
-      image.style.cssText =
-        "max-width:min(240px,100%);max-height:300px;object-fit:contain;border-radius:12px";
-      messageElement.append(image);
+      messageElement.querySelector('p')?.remove();
+      const image=document.createElement('img');image.src=content;image.alt='รูปภาพในแชท';image.loading='lazy';image.style.cssText='max-width:min(240px,100%);max-height:300px;object-fit:contain;border-radius:12px';messageElement.append(image);
     }
     chatMessages.appendChild(messageElement);
   }
@@ -395,6 +395,7 @@ document.addEventListener("DOMContentLoaded", function () {
         createMessageElement(sentMessage);
         scrollChatToBottom();
       }
+
     } catch (error) {
       if (!chatInput.value) chatInput.value = draft;
       console.error("ส่งข้อความล้มเหลว:", error);
@@ -477,21 +478,11 @@ document.addEventListener("DOMContentLoaded", function () {
     });
 
     imageInput.addEventListener("change", async function () {
-      const file = this.files[0];
-      this.value = "";
-      if (!file || imageButton.disabled) return;
-      imageButton.disabled = true;
-      imageButton.setAttribute("aria-busy", "true");
-      try {
-        const sent = await CPChatImages.send(roomId, file);
-        createMessageElement(sent);
-        scrollChatToBottom();
-      } catch (error) {
-        alert(error.message || "ส่งรูปไม่สำเร็จ");
-      } finally {
-        imageButton.disabled = false;
-        imageButton.removeAttribute("aria-busy");
-      }
+      const file=this.files[0];this.value='';if(!file || imageButton.disabled)return;
+      imageButton.disabled=true;imageButton.setAttribute('aria-busy','true');
+      try { const sent=await CPChatImages.send(roomId,file);createMessageElement(sent);scrollChatToBottom(); }
+      catch(error){alert(error.message || 'ส่งรูปไม่สำเร็จ');}
+      finally{imageButton.disabled=false;imageButton.removeAttribute('aria-busy');}
     });
   }
 
@@ -509,10 +500,7 @@ document.addEventListener("DOMContentLoaded", function () {
   // START
   // =========================
 
-  window.addEventListener("pagehide", () => {
-    socket?.close();
-    window.CPCall?.leaveCall();
-  });
+  window.addEventListener("pagehide", () => { socket?.close(); window.CPCall?.leaveCall(); });
   connectWebSocket();
   window.addEventListener("cp-room-refresh", () => loadRoom(true));
   loadRoom();
