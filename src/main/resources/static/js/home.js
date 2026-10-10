@@ -192,10 +192,6 @@ document.addEventListener("DOMContentLoaded", function () {
           <strong>
             ห้องพูดคุย
           </strong>
-
-          <small>
-            ${room.isPrivate ? "Private" : "Public"}
-          </small>
         </div>
       </div>
 
