@@ -1,0 +1,11 @@
+# TURN configuration preparation — 9 October 2026
+
+No usable TURN configuration was found in the process environment or project. A private .turn-servers.json file was created with an empty array; it is excluded in .gitignore. It accepts the provider's ICE Servers Array (STUN/TURN urls, username and credential). No live credentials have been received, no account/service was created, and relayConfigured remains false.
+
+turn-config.js validates addresses and required TURN credentials, supports UDP/TCP/TLS URLs, rejects partial environment settings and malformed JSON without printing credential values, and rereads the private file per request. server.js serves the resulting ICE config only after validating the existing backend session. The gateway was restarted in session 95238; the approved existing public tunnel remains session 60843. Browser sessions should refresh after valid credentials are added to retrieve new ICE configuration.
+
+https://life-train-operator-emily.trycloudflare.com/turn-check is installed. Its browser test uses iceTransportPolicy:relay on two native peer connections, sends/echoes a random data-channel value, and verifies both selected ICE candidate types are relay. It requests no microphone/camera. This is a tool ready to test a real TURN service, not evidence that relay connectivity has already succeeded. An independent-network audio/video call still needs verification afterward.
+
+Validation: four Node configuration tests passed (STUN-only status, valid TURN URL variants, reload without gateway restart, malformed/partial settings). Six HTTP/authentication/native-WebSocket gateway checks passed using a test backend and test-only TURN values. Live public /turn-check returned HTTP 200; /health returned gatewayReady:true, backendReady:true, relayConfigured:false. Live relay test not run because credentials are missing. Excel was not edited; no Git commands or PR operations were used.
+
+ICE candidates already exchange automatically through the application's WebSocket signaling. They are connection-specific browser-generated network routes, not provider credentials. For activation, use the TURN provider's ICE Servers Array rather than a captured candidate string. References: https://webrtc.org/getting-started/peer-connections and https://www.metered.ca/docs/turn-server-service/quickstart/ .
