@@ -1,762 +1,523 @@
 (() => {
   "use strict";
-
-  // ─────────────────────────────────────────────
-  // STATE
-  // ─────────────────────────────────────────────
-  let stompClient   = null;
-  const wsWaiters   = [];
-  let me            = null;
-  let localStream   = null;
-  let screenStream  = null;
+  let stompClient = null;
+  const wsWaiters = [];
+  const topicWatches = new Map();
+  function watchTopic(destination, callback) {
+    const watch={destination,callback,subscription:null};
+    topicWatches.set(watch,watch);
+    const subscribe=()=>{watch.subscription=stompClient.subscribe(destination,callback);};
+    if(stompClient?.connected)subscribe();else connectWS();
+    return ()=>{watch.subscription?.unsubscribe();topicWatches.delete(watch);};
+  }
+  let me = null;
+  let localStream = null;
   let currentRoomId = null;
-  let currentMode   = null;
-  let activeCall    = false;
+  let currentMode = null;
+  let activeCall = false;
   let currentCallFriendId = null;
-
-  // peerId → { pc, polite, makingOffer, ignoreOffer, pendingCandidates, remoteStream }
-  const peers = new Map();
-
-  // remoteAudio elements keyed by userId
-  const remoteAudios = new Map();
-
   let roomCallSubscription = null;
-  let roomChatSubscription = null;
   let incomingCallSubscription = null;
+  const remoteAudios = new Map();
+  let mediaGeneration = 0;
+  let cameraTask = null;
+  let displayStream = null, savedCameraTrack = null, sharingTask = null;
+  let meTask = null, iceTask = null, iceExpiresAt = 0;
+  let audioResumeButton = null;
+  const blockedAudios = new Set();
+  const peers = new Map();
+  const ICE_CONFIG = { iceServers: [{ urls: "stun:stun.relay.metered.ca:80" }] };
 
-  // ─────────────────────────────────────────────
-  // ICE / TURN CONFIG
-  // ─────────────────────────────────────────────
-  const ICE_CONFIG = {
-    iceServers: [
-      { urls: "stun:stun.relay.metered.ca:80" },
-      {
-        urls: "turn:asia-east.relay.metered.ca:80",
-        username: "9163b771c40b903fe9b0a80d",
-        credential: "Avx5pFF0JyQ3Fm1i",
-      },
-      {
-        urls: "turn:asia-east.relay.metered.ca:80?transport=tcp",
-        username: "9163b771c40b903fe9b0a80d",
-        credential: "Avx5pFF0JyQ3Fm1i",
-      },
-      {
-        urls: "turn:asia-east.relay.metered.ca:443",
-        username: "9163b771c40b903fe9b0a80d",
-        credential: "Avx5pFF0JyQ3Fm1i",
-      },
-      {
-        urls: "turns:asia-east.relay.metered.ca:443?transport=tcp",
-        username: "9163b771c40b903fe9b0a80d",
-        credential: "Avx5pFF0JyQ3Fm1i",
-      },
-    ],
-  };
-
-  // ─────────────────────────────────────────────
-  // USER
-  // ─────────────────────────────────────────────
   async function loadMe() {
-    if (me?.id) return me;
-    const res = await fetch("/api/users/me", { credentials: "include" });
-    if (!res.ok) throw new Error("โหลด user ไม่ได้");
-    me = await res.json();
-    if (!me.id && me.userId) me.id = me.userId;
+    if (!me?.id) {
+      if (!meTask) meTask = (async () => {
+        const response = await fetch("/api/users/me", { headers: { Accept: "application/json" }, credentials: "include" });
+        if (!response.ok) throw new Error("ไม่สามารถโหลดข้อมูลผู้ใช้ปัจจุบันได้");
+        const user = await response.json();
+        user.id ||= user.userId;
+        if (!user.id) throw new Error("ไม่พบ user id");
+        me = user;
+      })();
+      try { await meTask; } finally { meTask = null; }
+    }
     return me;
   }
-
-  // ─────────────────────────────────────────────
-  // STOMP / WS
-  // ─────────────────────────────────────────────
+  async function loadIceConfig() {
+    if (Date.now() < iceExpiresAt) return;
+    if (!iceTask) iceTask = (async () => {
+      const controller = new AbortController();
+      const timer = setTimeout(() => controller.abort(), 12000);
+      try {
+        const response = await fetch("/api/call/ice-config", {credentials:"include", cache:"no-store", signal:controller.signal});
+        if (!response.ok) throw new Error(`โหลดการเชื่อมต่อเสียง/วิดีโอไม่สำเร็จ (HTTP ${response.status}) กรุณาตรวจเซิร์ฟเวอร์ TURN แล้วลองใหม่`);
+        const config = await response.json();
+        if (!Array.isArray(config.iceServers) || !config.iceServers.length) throw new Error("เซิร์ฟเวอร์ยังไม่ได้ตั้งค่าการเชื่อมต่อเสียง/วิดีโอ");
+        ICE_CONFIG.iceServers = config.iceServers;
+        const expires = Date.parse(config.expiresAt);
+        iceExpiresAt = Math.min(Date.now()+60000, Number.isFinite(expires) ? expires-30000 : Infinity);
+      } catch (error) {
+        if (error.name === "AbortError") throw new Error("โหลดการเชื่อมต่อเสียง/วิดีโอนานเกินไป กรุณาลองอีกครั้ง");
+        throw error;
+      } finally { clearTimeout(timer); }
+    })();
+    try { await iceTask; } finally { iceTask = null; }
+  }
+  function hasRelayConfigured() {
+    return ICE_CONFIG.iceServers.some(server => (Array.isArray(server.urls) ? server.urls : [server.urls]).some(url => /^turns?:/i.test(url || "")));
+  }
+  async function getDiagnostics() {
+    // Deliberately omit URLs, addresses, SDP, usernames, credentials and user IDs.
+    const connections = [];
+    for (const {pc} of peers.values()) {
+      const item = {connectionState:pc.connectionState, iceConnectionState:pc.iceConnectionState, signalingState:pc.signalingState, audioPacketsReceived:0, audioBytesReceived:0};
+      try {
+        const stats = await pc.getStats();
+        const transport = [...stats.values()].find(s=>s.type==="transport" && s.selectedCandidatePairId);
+        const pair = transport ? stats.get(transport.selectedCandidatePairId) : [...stats.values()].find(s=>s.type==="candidate-pair" && s.state==="succeeded" && s.nominated);
+        if (pair) {
+          const local=stats.get(pair.localCandidateId), remote=stats.get(pair.remoteCandidateId);
+          item.selectedPair={localType:local?.candidateType,remoteType:remote?.candidateType,protocol:local?.protocol,relayProtocol:local?.relayProtocol};
+        }
+        for (const stat of stats.values()) if(stat.type==="inbound-rtp" && stat.kind==="audio") {
+          item.audioPacketsReceived += stat.packetsReceived || 0; item.audioBytesReceived += stat.bytesReceived || 0;
+        }
+      } catch (_) {}
+      connections.push(item);
+    }
+    return {active:activeCall, mode:currentMode, signalingConnected:!!stompClient?.connected, relayConfigured:hasRelayConfigured(), connections};
+  }
   function connectWS(onConnected) {
     if (stompClient?.connected) { onConnected?.(); return; }
     if (onConnected) wsWaiters.push(onConnected);
-    if (stompClient) return; // already connecting
-
+    if (stompClient) return;
     const scheme = location.protocol === "https:" ? "wss" : "ws";
-    console.info("[WS] connecting | userId=", me?.id);
-
-    stompClient = new StompJs.Client({
-      brokerURL: `${scheme}://${location.host}/ws`,
-      reconnectDelay: 5000,
-      debug: (s) => console.debug("[STOMP]", s),
-      connectHeaders: { login: me?.id || "" },
-    });
-
-    stompClient.onStompError = (f) =>
-      console.error("[WS] STOMP error:", f.headers?.message || f.body);
-
-    stompClient.onWebSocketError = (e) =>
-      console.error("[WS] WebSocket error:", e);
-
-    stompClient.onConnect = async () => {
-      console.info("[WS] connected | me=", me?.id);
-
-      // re-subscribe incoming calls
-      if (me?.id) subscribeIncomingCalls();
-
-      // reconnect scenario — restore room subscriptions
-      if (currentRoomId && activeCall) {
+    stompClient = new StompJs.Client({ brokerURL: `${scheme}://${location.host}/ws`, reconnectDelay: 5000, debug: () => {} });
+    stompClient.onStompError = (frame) => console.error("Call STOMP error:", frame.headers?.message || frame.body);
+    stompClient.onWebSocketError = (error) => console.error("Call WebSocket error:", error);
+    stompClient.onConnect = () => {
+      subscribeIncomingCalls();
+      for(const watch of topicWatches.values())watch.subscription=stompClient.subscribe(watch.destination,watch.callback);
+      window.dispatchEvent(new CustomEvent("cp-ws-connected"));
+      if (activeCall && currentRoomId) {
         subscribeRoomCall(currentRoomId);
-
-        // รอ rollback ทุก peer ที่ค้างใน have-local-offer ให้เสร็จก่อน
-        // ถ้าไม่รอ browser จะ fire onnegotiationneeded ใหม่ไม่ได้เพราะยัง have-local-offer อยู่
-        const rollbacks = [];
-        peers.forEach((entry, peerId) => {
-          if (entry.pc.signalingState === "have-local-offer") {
-            console.info("[WS] reconnect: rolling back stuck peer", peerId);
-            rollbacks.push(
-              entry.pc.setLocalDescription({ type: "rollback" })
-                .then(() => { entry.makingOffer = false; })
-                .catch((e) => console.warn("[WS] rollback failed:", e.message))
-            );
-          }
-        });
-
-        if (rollbacks.length > 0) {
-          await Promise.allSettled(rollbacks);
-          console.info("[WS] rollback(s) done, sending JOIN");
-        }
-
         wsPublish(`/app/rooms/${currentRoomId}/call`, { type: "JOIN" });
-        broadcastMediaState();
+        publishMediaState();
       }
-
-      wsWaiters.splice(0).forEach((cb) => { try { cb(); } catch (e) { console.error(e); } });
+      wsWaiters.splice(0).forEach(callback => callback());
     };
-
+    stompClient.onWebSocketClose = () => window.dispatchEvent(new CustomEvent("cp-ws-disconnected"));
     stompClient.activate();
   }
-
+  function waitForWS() {
+    return new Promise((resolve, reject) => {
+      let settled = false;
+      const timer = setTimeout(() => { settled = true; reject(new Error("เชื่อมต่อระบบโทรไม่สำเร็จ กรุณาลองใหม่")); }, 15000);
+      connectWS(() => { if (settled) return; settled = true; clearTimeout(timer); resolve(); });
+    });
+  }
   function wsPublish(destination, body) {
-    if (!stompClient?.connected) {
-      console.warn("[WS] not connected, drop:", destination, body?.type);
-      return false;
-    }
+    if (!stompClient?.connected) return false;
     stompClient.publish({ destination, body: JSON.stringify(body) });
-    if (body?.type !== "ICE" && body?.type !== "MEDIA") {
-      console.info("[WS] sent", body?.type, "→", destination);
-    }
     return true;
   }
-
-  function subscribeIncomingCalls() {
-    if (!me?.id || !stompClient?.connected) return;
-    if (incomingCallSubscription) {
-      try { incomingCallSubscription.unsubscribe(); } catch (_) {}
-    }
-    incomingCallSubscription = stompClient.subscribe(
-      `/topic/call/${me.id}`,
-      (frame) => {
-        try { onCallInvite(JSON.parse(frame.body)); } catch (e) { console.error(e); }
-      }
-    );
+  function publish(destination, body) {
+    if (!wsPublish(destination, body)) throw new Error("การเชื่อมต่อระบบโทรขาดหาย กรุณาลองใหม่");
   }
-
-  function subscribeRoomCall(roomId) {
-    if (!stompClient?.connected || !roomId) return;
-    if (roomCallSubscription) {
-      try { roomCallSubscription.unsubscribe(); } catch (_) {}
-    }
-    roomCallSubscription = stompClient.subscribe(
-      `/topic/rooms/${roomId}/call`,
-      (frame) => {
-        try { onRoomSignal(JSON.parse(frame.body), roomId); } catch (e) { console.error(e); }
-      }
-    );
+  function cameraEnabled() {
+    return !!localStream?.getVideoTracks().some(track => track.readyState === "live" && track.enabled);
   }
-
-  function subscribeRoomChat(roomId, onMessage) {
-    if (!stompClient?.connected || !roomId) {
-      console.warn("[WS] subscribeRoomChat: not ready");
-      return;
-    }
-    if (roomChatSubscription) {
-      try { roomChatSubscription.unsubscribe(); } catch (_) {}
-    }
-    roomChatSubscription = stompClient.subscribe(
-      `/topic/rooms/${roomId}`,
-      (frame) => {
-        try { onMessage(JSON.parse(frame.body)); } catch (e) { console.error(e); }
-      }
-    );
-    console.info("[WS] subscribed room chat:", roomId);
+  function publishMediaState() {
+    if (currentRoomId) wsPublish(`/app/rooms/${currentRoomId}/call`, { type: "MEDIA", payload: JSON.stringify({ mode: currentMode, videoEnabled: cameraEnabled(), screenSharing: !!displayStream }) });
   }
-
-  // ─────────────────────────────────────────────
-  // MEDIA
-  // ─────────────────────────────────────────────
-  async function acquireMedia(video, audio) {
-    return navigator.mediaDevices.getUserMedia({ video, audio });
+  function emitMode(reason) {
+    window.dispatchEvent(new CustomEvent("cp-call-mode-changed", { detail: { mode: currentMode, reason, localCameraEnabled: cameraEnabled() } }));
   }
-
-  async function startMedia(mode, opts = {}) {
-    const wantVideo = (opts.videoEnabled ?? mode === "VIDEO");
-    const wantAudio = (opts.audioEnabled ?? true);
-
-    if (localStream) {
-      const needVideo = wantVideo && !getCameraTrack();
-      const needAudio = wantAudio && localStream.getAudioTracks().length === 0;
-      if (needVideo || needAudio) {
-        const extra = await acquireMedia(needVideo, needAudio);
-        for (const t of extra.getTracks()) {
-          localStream.addTrack(t);
-          if (t.kind === "video") {
-            for (const { pc } of peers.values()) replaceTrackOnPeer(pc, "video", t, localStream);
-          }
-        }
-      }
-      currentMode = mode;
-      showLocalStream(localStream, mode);
-      return localStream;
-    }
-
-    currentMode = mode;
-    localStream = await acquireMedia(wantVideo, wantAudio);
-    showLocalStream(localStream, mode);
-    return localStream;
+  function play(element) { element?.play()?.catch(() => {}); }
+  function showLocalStream(stream) {
+    const video = document.getElementById("videoCallLocalVideo");
+    if (!video) return;
+    const enabled = cameraEnabled();
+    video.srcObject = stream;
+    video.muted = true;
+    video.style.display = enabled ? "block" : "none";
+    const placeholder = video.parentElement?.querySelector(".local-video-placeholder");
+    if (placeholder) placeholder.style.display = enabled ? "none" : "flex";
+    if (enabled) play(video);
   }
-
-  function getCameraTrack() {
-    return localStream?.getVideoTracks()
-      .find((t) => !screenStream?.getTracks().includes(t)) || null;
-  }
-
-  // ─────────────────────────────────────────────
-  // PEER CONNECTION
-  // ─────────────────────────────────────────────
-
-  /**
-   * polite = UUID string comparison.
-   * peer ที่มี UUID น้อยกว่าเป็น impolite (initiator)
-   * peer ที่มี UUID มากกว่าเป็น polite (yields on collision)
-   */
-  function createPeer(remoteId) {
-    const id = String(remoteId);
-    if (peers.has(id)) return peers.get(id);
-
-    const pc = new RTCPeerConnection(ICE_CONFIG);
-    const entry = {
-      pc,
-      polite: String(me.id) > id,   // polite = UUID ใหญ่กว่า → yields
-      makingOffer: false,
-      ignoreOffer: false,
-      pendingCandidates: [],
-      remoteStream: new MediaStream(),
-    };
-    peers.set(id, entry);
-    console.info("[Peer] created", { local: me.id, remote: id, polite: entry.polite });
-
-    // ── add local tracks ──
-    // ใช้ sendrecv เสมอ ตาม Perfect Negotiation standard
-    // ถ้าไม่มี track ให้ใส่ null ผ่าน addTransceiver direction=sendrecv
-    // เพื่อให้ negotiate ได้สองทางตั้งแต่แรก
-    const audioTrack = localStream?.getAudioTracks()[0];
-    if (audioTrack) {
-      pc.addTrack(audioTrack, localStream);
-    } else {
-      // ไม่มี track แต่ยัง sendrecv เพื่อรับ remote audio
-      pc.addTransceiver("audio", { direction: "sendrecv" });
-    }
-
-    const videoTrack = screenStream?.getVideoTracks()[0] || getCameraTrack();
-    if (videoTrack?.readyState === "live") {
-      pc.addTrack(videoTrack, screenStream || localStream);
-    } else {
-      // ไม่มี track แต่ยัง sendrecv เพื่อรับ remote video
-      pc.addTransceiver("video", { direction: "sendrecv" });
-    }
-
-    // ── callbacks ──
-    pc.onicecandidate = ({ candidate }) => {
-      if (!candidate || !currentRoomId) return;
-      wsPublish(`/app/rooms/${currentRoomId}/call`, {
-        type: "ICE",
-        targetUserId: id,
-        payload: JSON.stringify(candidate),
+  function updateAudioResume() {
+    for (const audio of blockedAudios) if (!audio.isConnected || !audio.paused) blockedAudios.delete(audio);
+    if (blockedAudios.size && !audioResumeButton) {
+      audioResumeButton = document.createElement("button");
+      audioResumeButton.type = "button"; audioResumeButton.className = "cp-call-audio-resume";
+      audioResumeButton.textContent = "ไม่ได้ยินเสียง? กดเพื่อเปิดเสียงคอล";
+      audioResumeButton.addEventListener("click", () => {
+        // Invoke play synchronously within the user gesture for every blocked peer.
+        for (const audio of [...blockedAudios]) playRemoteAudio(audio);
       });
-    };
-
-    pc.ontrack = ({ track, streams }) => {
-      const stream = streams[0] || entry.remoteStream;
-      if (!entry.remoteStream.getTracks().includes(track)) {
-        entry.remoteStream.addTrack(track);
+      document.body.append(audioResumeButton);
+    }
+    if (audioResumeButton) audioResumeButton.hidden = !blockedAudios.size;
+  }
+  function playRemoteAudio(audio) {
+    audio.muted = false; audio.volume = 1;
+    const attempt = audio.play();
+    attempt?.then(() => { blockedAudios.delete(audio); updateAudioResume(); }).catch(error => {
+      if (!activeCall || !audio.isConnected) return;
+      if (error.name === "NotAllowedError") { blockedAudios.add(audio); updateAudioResume(); }
+      else if (error.name !== "AbortError") window.dispatchEvent(new CustomEvent("cp-call-error", {detail:{message:"เล่นเสียงจากอีกฝั่งไม่สำเร็จ กรุณาออกจากคอลแล้วเข้าร่วมใหม่"}}));
+    });
+  }
+  function showRemoteStream(stream, userId = "default") {
+    if (!stream?.getAudioTracks().some(track => track.readyState === "live")) return;
+    let audio = remoteAudios.get(String(userId));
+    if (!audio) {
+      audio = document.createElement("audio");
+      audio.id = remoteAudios.size ? `remoteCallAudio-${userId}` : "remoteCallAudio";
+      audio.autoplay = true; audio.setAttribute("aria-hidden", "true"); audio.style.display = "none";
+      document.body.append(audio); remoteAudios.set(String(userId), audio);
+    }
+    // Reassigning srcObject during every presence/video refresh interrupts audio.
+    if (audio.srcObject !== stream) audio.srcObject = stream;
+    if (audio.paused) playRemoteAudio(audio);
+  }
+  function showRemoteVideo(stream, enabled = true) {
+    const video = document.getElementById("videoCallRemoteVideo");
+    if (!video) return;
+    video.srcObject = stream;
+    // Audio plays once through remoteCallAudio, not twice through both elements.
+    video.muted = true;
+    const hasVideo = !!stream?.getVideoTracks().some(track => track.readyState === "live" && !track.muted);
+    const visible = enabled && hasVideo;
+    video.style.display = visible ? "block" : "none";
+    const placeholder = video.parentElement?.querySelector(".video-placeholder");
+    if (placeholder) placeholder.style.display = visible ? "none" : "flex";
+    const image = document.getElementById("videoCallRemoteImage");
+    if (image) image.style.display = "block";
+    if (visible) play(video);
+  }
+  function refreshMediaViews() {
+    showLocalStream(localStream);
+    const entries = [...peers.values()];
+    for (const [userId, entry] of peers) {
+      const tracks = entry.pc.getTransceivers().filter(transceiver =>
+        ["sendrecv", "recvonly"].includes(transceiver.currentDirection) && transceiver.receiver.track.readyState === "live"
+      ).map(transceiver => transceiver.receiver.track);
+      if (tracks.length) {
+        for (const track of entry.remoteStream.getTracks()) if (!tracks.includes(track)) entry.remoteStream.removeTrack(track);
+        for (const track of tracks) if (!entry.remoteStream.getTracks().includes(track)) entry.remoteStream.addTrack(track);
+        if (tracks.some(track => track.kind === "audio")) showRemoteStream(entry.remoteStream, userId);
       }
-      console.info("[Peer] remote track", { remote: id, kind: track.kind });
-      window.dispatchEvent(new CustomEvent("cp-call-track", {
-        detail: { userId: id, stream, connectionState: pc.connectionState, iceConnectionState: pc.iceConnectionState, signalingState: pc.signalingState },
-      }));
-      showRemoteStream(stream, id);
-      if (currentMode === "VIDEO") showRemoteVideo(stream);
+    }
+    const remote = entries.find(entry => entry.remoteStream?.getVideoTracks().length) || entries[0];
+    showRemoteVideo(remote?.remoteStream || null, remote?.videoEnabled !== false);
+    window.dispatchEvent(new CustomEvent("cp-call-streams", {detail: [...peers].map(([userId, entry]) => ({userId, stream:entry.remoteStream, videoEnabled:entry.videoEnabled !== false, screenSharing:entry.screenSharing === true}))}));
+  }
+  function createPeer(userId) {
+    if (!localStream) throw new Error("ยังไม่มี local media stream");
+    const key = String(userId);
+    if (peers.has(key)) return peers.get(key);
+    const pc = new RTCPeerConnection(ICE_CONFIG);
+    const entry = { pc, polite: String(me.id) < key, makingOffer: false, ignoreOffer: false, isSettingRemoteAnswerPending: false, pendingCandidates: [], remoteStream: new MediaStream(), videoEnabled: null, signalQueue: Promise.resolve() };
+    peers.set(key, entry);
+    pc.onicecandidate = event => {
+      if (event.candidate && currentRoomId) wsPublish(`/app/rooms/${currentRoomId}/call`, { type: "ICE", targetUserId: key, payload: JSON.stringify(event.candidate) });
     };
-
+    pc.ontrack = event => {
+      const stream = entry.remoteStream;
+      // Glare rollback can replace a receiver track. Keep one stable stream and
+      // prevent late mute events on the old track from restoring obsolete media.
+      for (const oldTrack of stream.getTracks().filter(track => track.kind === event.track.kind && track !== event.track)) stream.removeTrack(oldTrack);
+      if (!stream.getTracks().includes(event.track)) stream.addTrack(event.track);
+      const refresh = () => {
+        if (!activeCall || !peers.has(key) || !stream.getTracks().includes(event.track)) return;
+        showRemoteStream(stream, key);
+        if (event.track.kind === "video" && !event.track.muted && entry.videoEnabled !== false && currentMode !== "VIDEO") {
+          currentMode = "VIDEO"; emitMode("remote");
+        }
+        refreshMediaViews();
+      };
+      event.track.onunmute = refresh;
+      event.track.onmute = refresh;
+      event.track.onended = refresh;
+      refresh();
+    };
     pc.onconnectionstatechange = () => {
-      console.info("[Peer] state", { remote: id, state: pc.connectionState });
-      if (pc.connectionState === "connected") {
-        window.dispatchEvent(new CustomEvent("cp-call-connected", { detail: { userId: id, mode: currentMode } }));
-      }
-      if (["failed", "closed"].includes(pc.connectionState)) removePeer(id);
+      if (pc.connectionState === "connected") window.dispatchEvent(new CustomEvent("cp-call-connected", { detail: { userId: key, mode: currentMode } }));
+      if (pc.connectionState === "failed") window.dispatchEvent(new CustomEvent("cp-call-error", { detail: { message: hasRelayConfigured() ? "เชื่อมต่อเสียง/วิดีโอไม่สำเร็จ กรุณาตรวจ TURN และเครือข่าย แล้วโทรใหม่" : "เชื่อมต่อเสียง/วิดีโอไม่สำเร็จ เซิร์ฟเวอร์ยังไม่มี TURN สำหรับเครือข่ายที่ต้องใช้ตัวกลาง" } }));
     };
-
-    pc.oniceconnectionstatechange = () => {
-      console.info("[Peer] ICE", { remote: id, state: pc.iceConnectionState });
-      if (pc.iceConnectionState === "failed") {
-        try { pc.restartIce(); } catch (_) {}
-      }
-    };
-
-    // ── Perfect Negotiation: onnegotiationneeded ──
+    pc.oniceconnectionstatechange = () => { if (pc.iceConnectionState === "failed") pc.restartIce?.(); };
     pc.onnegotiationneeded = async () => {
-      // ต้อง stable เท่านั้น — ถ้าไม่ stable browser จะ fire ซ้ำเองหลัง stable
-      if (pc.signalingState !== "stable" || entry.makingOffer) {
-        console.info("[Peer] negotiation skip (not stable)", { remote: id, state: pc.signalingState });
-        return;
-      }
-      if (!currentRoomId || !peers.has(id)) return;
+      if (!currentRoomId || !peers.has(key)) return;
+      // Pick one initial offerer. Avoid rolling back newly-created media tracks
+      // when both participants receive JOIN at nearly the same time.
+      if (!pc.remoteDescription && entry.polite) return;
       try {
         entry.makingOffer = true;
-        await pc.setLocalDescription();            // implicit offer
-        wsPublish(`/app/rooms/${currentRoomId}/call`, {
-          type: "OFFER",
-          targetUserId: id,
-          payload: JSON.stringify(pc.localDescription),
-        });
-        console.info("[Peer] OFFER sent", { local: me.id, remote: id, polite: entry.polite });
-      } catch (err) {
-        console.error("[Peer] offer error:", err);
-      } finally {
-        entry.makingOffer = false;
-      }
+        await pc.setLocalDescription();
+        if (currentRoomId && peers.has(key)) publish(`/app/rooms/${currentRoomId}/call`, { type: "OFFER", targetUserId: key, payload: JSON.stringify(pc.localDescription) });
+      } catch (error) { console.error("สร้าง OFFER ไม่สำเร็จ:", error); }
+      finally { entry.makingOffer = false; }
     };
-
+    localStream.getTracks().forEach(track => pc.addTrack(track, localStream));
     return entry;
   }
-
-  function removePeer(id) {
-    const entry = peers.get(String(id));
+  function removePeer(userId) {
+    const key = String(userId);
+    const entry = peers.get(key);
     if (!entry) return;
-    try { entry.pc.close(); } catch (_) {}
-    peers.delete(String(id));
-    const audio = remoteAudios.get(String(id));
-    if (audio) { audio.srcObject = null; audio.remove(); remoteAudios.delete(String(id)); }
-    window.dispatchEvent(new CustomEvent("cp-call-peer-left", { detail: { userId: String(id) } }));
+    peers.delete(key);
+    const audio = remoteAudios.get(key); if (audio) {audio.srcObject=null; audio.remove(); blockedAudios.delete(audio); remoteAudios.delete(key); updateAudioResume();}
+    entry.pc.close();
+    refreshMediaViews();
   }
-
-  async function flushCandidates(entry) {
-    const list = entry.pendingCandidates.splice(0);
-    for (const c of list) {
-      try { await entry.pc.addIceCandidate(c); } catch (_) {}
-    }
-  }
-
-  // ─────────────────────────────────────────────
-  // SIGNAL HANDLER (Perfect Negotiation)
-  // ─────────────────────────────────────────────
-  async function handleSignal(signal) {
-    const fromId = String(signal.fromUserId);
-    if (fromId === String(me.id)) return;
-
-    const entry = peers.get(fromId) || createPeer(fromId);
-    const { pc } = entry;
-
-    try {
-      // ── OFFER ──
-      if (signal.type === "OFFER") {
-        const offer = JSON.parse(signal.payload);
-        const collision = entry.makingOffer || pc.signalingState !== "stable";
-        entry.ignoreOffer = collision && !entry.polite;
-
-        if (entry.ignoreOffer) {
-          console.info("[Peer] OFFER ignored (impolite collision)", { remote: fromId });
-          return;
-        }
-
-        if (collision) {
-          // polite peer: rollback ตัวเอง รับ offer อีกฝั่ง
-          console.info("[Peer] polite rollback", { remote: fromId });
-          await pc.setLocalDescription({ type: "rollback" });
-          entry.makingOffer = false;
-        }
-
-        await pc.setRemoteDescription(offer);
-        entry.ignoreOffer = false;
-        await flushCandidates(entry);
-
-        await pc.setLocalDescription();            // implicit answer
-        wsPublish(`/app/rooms/${currentRoomId}/call`, {
-          type: "ANSWER",
-          targetUserId: fromId,
-          payload: JSON.stringify(pc.localDescription),
-        });
-        console.info("[Peer] ANSWER sent", { local: me.id, remote: fromId });
-        return;
-      }
-
-      // ── ANSWER ──
-      if (signal.type === "ANSWER") {
-        if (pc.signalingState !== "have-local-offer") {
-          console.info("[Peer] ANSWER ignored (state=" + pc.signalingState + ")", { remote: fromId });
-          return;
-        }
-        await pc.setRemoteDescription(JSON.parse(signal.payload));
-        console.info("[Peer] ANSWER applied", { remote: fromId });
-        await flushCandidates(entry);
-        return;
-      }
-
-      // ── ICE ──
-      if (signal.type === "ICE") {
-        const candidate = JSON.parse(signal.payload);
-        if (pc.remoteDescription?.type) {
-          try { await pc.addIceCandidate(candidate); }
-          catch (e) { if (!entry.ignoreOffer) console.warn("[Peer] ICE add failed:", e.message); }
-        } else {
-          entry.pendingCandidates.push(candidate);
-        }
-      }
-    } catch (err) {
-      if (!entry.ignoreOffer) console.error("[Peer] signal error:", err, signal.type);
-    }
-  }
-
-  // ─────────────────────────────────────────────
-  // ROOM SIGNAL ROUTER
-  // ─────────────────────────────────────────────
-  function onRoomSignal(signal, roomId) {
-    if (!signal || !me?.id) return;
-    const myId   = String(me.id);
-    const fromId = signal.fromUserId != null ? String(signal.fromUserId) : null;
-    const toId   = signal.toUserId   != null ? String(signal.toUserId)   : null;
-
-    if (fromId === myId) return;   // echo จากตัวเอง
-
-    if (signal.type === "JOIN") {
-      if (!fromId) return;
-      console.info("[Room] JOIN from", fromId);
-      createPeer(fromId);
-      broadcastMediaState();
+  async function handleWebRTCSignal(signal, entry) {
+    const pc = entry.pc;
+    const fromUserId = String(signal.fromUserId);
+    if (!currentRoomId || !peers.has(fromUserId)) return;
+    if (signal.type === "ICE") {
+      if (!signal.payload || entry.ignoreOffer) return;
+      const candidate = JSON.parse(signal.payload);
+      if (pc.remoteDescription) await pc.addIceCandidate(candidate);
+      else entry.pendingCandidates.push(candidate);
       return;
     }
-
+    if (!signal.payload) return;
+    const description = JSON.parse(signal.payload);
+    const readyForOffer = !entry.makingOffer && (pc.signalingState === "stable" || entry.isSettingRemoteAnswerPending);
+    const offerCollision = description.type === "offer" && !readyForOffer;
+    entry.ignoreOffer = !entry.polite && offerCollision;
+    if (entry.ignoreOffer) return;
+    entry.isSettingRemoteAnswerPending = description.type === "answer";
+    try { await pc.setRemoteDescription(description); }
+    finally { entry.isSettingRemoteAnswerPending = false; }
+    if (description.type === "offer") {
+      await pc.setLocalDescription();
+      if (currentRoomId) publish(`/app/rooms/${currentRoomId}/call`, { type: "ANSWER", targetUserId: fromUserId, payload: JSON.stringify(pc.localDescription) });
+    }
+    for (const candidate of entry.pendingCandidates.splice(0)) await pc.addIceCandidate(candidate);
+    refreshMediaViews();
+  }
+  function onCallSignal(signal) {
+    if (!activeCall || !localStream || !signal || !me?.id) return;
+    const fromUserId = signal.fromUserId == null ? null : String(signal.fromUserId);
+    if (!fromUserId || fromUserId === String(me.id)) return;
+    if (signal.targetUserId && String(signal.targetUserId) !== String(me.id)) return;
     if (signal.type === "LEAVE") {
-      if (fromId) removePeer(fromId);
+      removePeer(fromUserId);
+      if (!peers.size && currentCallFriendId) window.dispatchEvent(new CustomEvent("cp-call-ended", { detail: { userId: fromUserId, reason: "LEAVE" } }));
       return;
     }
-
+    const entry = peers.get(fromUserId) || createPeer(fromUserId);
+    if (signal.type === "JOIN") { publishMediaState(); return; }
     if (signal.type === "MEDIA") {
-      let media = null;
-      try { media = signal.payload ? JSON.parse(signal.payload) : null; } catch (_) {}
-      if (media && fromId) {
-        window.dispatchEvent(new CustomEvent("cp-call-media-state", {
-          detail: { userId: fromId, ...media },
-        }));
-      }
+      if (!signal.payload) return;
+      const state = JSON.parse(signal.payload);
+      entry.videoEnabled = state.videoEnabled === true;
+      entry.screenSharing = state.screenSharing === true;
+      // Receiving a friend's camera never opens this user's camera.
+      if ((state.mode === "VIDEO" || entry.videoEnabled) && currentMode !== "VIDEO") { currentMode = "VIDEO"; emitMode("remote"); }
+      refreshMediaViews();
+      window.dispatchEvent(new CustomEvent("cp-call-media-state", { detail: { userId: fromUserId, videoEnabled: entry.videoEnabled } }));
       return;
     }
-
-    // directed signals: OFFER / ANSWER / ICE
     if (["OFFER", "ANSWER", "ICE"].includes(signal.type)) {
-      if (!toId || toId !== myId) return;  // ไม่ใช่ของเรา
-      handleSignal(signal);
+      entry.signalQueue = entry.signalQueue.then(() => handleWebRTCSignal(signal, entry)).catch(error => { if (!entry.ignoreOffer) console.error("WebRTC signal error:", error); });
     }
   }
-
-  // ─────────────────────────────────────────────
-  // TRACK HELPERS
-  // ─────────────────────────────────────────────
-  function replaceTrackOnPeer(pc, kind, track, stream) {
-    // หา transceiver ด้วย sender.track หรือ receiver.track
-    const transceiver = pc.getTransceivers().find((t) => {
-      if (t.stopped) return false;
-      // ตรวจทั้ง sender และ receiver kind
-      return (t.sender.track?.kind === kind) ||
-             (t.receiver.track?.kind === kind);
-    });
-    if (!transceiver) {
-      // ไม่มี transceiver เลย -- addTrack ใหม่
-      if (track && stream) pc.addTrack(track, stream);
-      return;
-    }
-    transceiver.sender.replaceTrack(track || null).catch(() => {});
-    if (track) {
-      // เปลี่ยน direction ให้ส่งได้
-      if (transceiver.direction === "recvonly") {
-        transceiver.direction = "sendrecv";
-      } else if (transceiver.direction === "inactive") {
-        transceiver.direction = "sendonly";
-      }
-    } else {
-      // ไม่มี track -- เปลี่ยนกลับเป็น recvonly
-      if (transceiver.direction === "sendrecv") {
-        transceiver.direction = "recvonly";
-      } else if (transceiver.direction === "sendonly") {
-        transceiver.direction = "inactive";
-      }
-    }
-  }
-
-  async function replaceVideoAllPeers(track, stream) {
-    for (const { pc } of peers.values()) {
-      replaceTrackOnPeer(pc, "video", track, stream);
-    }
-  }
-
-  function broadcastMediaState() {
-    if (!currentRoomId) return;
-    wsPublish(`/app/rooms/${currentRoomId}/call`, {
-      type: "MEDIA",
-      payload: JSON.stringify({
-        video: Boolean(getCameraTrack()?.enabled),
-        screen: Boolean(screenStream),
-      }),
+  function unsubscribeRoomCall() { roomCallSubscription?.unsubscribe(); roomCallSubscription = null; }
+  function subscribeRoomCall(roomId) {
+    if (!stompClient?.connected || !roomId) return;
+    unsubscribeRoomCall();
+    roomCallSubscription = stompClient.subscribe(`/topic/rooms/${roomId}/call`, frame => {
+      if (String(currentRoomId) !== String(roomId)) return;
+      try { onCallSignal(JSON.parse(frame.body)); } catch (error) { console.error("อ่าน call signal ไม่ได้:", error); }
     });
   }
-
-  // ─────────────────────────────────────────────
-  // PUBLIC API
-  // ─────────────────────────────────────────────
-
-  /** เข้าห้อง */
-  async function joinRoomCall(roomId, mode, opts = {}) {
+  async function startMedia(mode) {
+    if (!navigator.mediaDevices?.getUserMedia) throw new Error("การโทรต้องเปิดผ่าน HTTPS หรือ localhost และอนุญาตไมค์/กล้อง");
+    const generation = mediaGeneration;
+    const wantsVideo = mode === "VIDEO";
+    const existingVideo = localStream?.getVideoTracks().find(track => track.readyState === "live");
+    let acquired = null;
+    if (!localStream) acquired = await navigator.mediaDevices.getUserMedia({ audio: true, video: wantsVideo });
+    else if (wantsVideo && !existingVideo) acquired = await navigator.mediaDevices.getUserMedia({ audio: false, video: true });
+    if (generation !== mediaGeneration) { acquired?.getTracks().forEach(track => track.stop()); throw new Error("สายนี้สิ้นสุดแล้ว"); }
+    if (!localStream) localStream = acquired;
+    else if (acquired) {
+      // Reuse a previously negotiated sender when a camera device was lost.
+      for (const oldTrack of localStream.getVideoTracks().filter(track => track.readyState === "ended")) localStream.removeTrack(oldTrack);
+      for (const track of acquired.getVideoTracks()) {
+        localStream.addTrack(track);
+        for (const {pc} of peers.values()) {
+          const sender = pc.getSenders().find(sender => sender.track?.kind === "video");
+          if (sender) await sender.replaceTrack(track);
+          else pc.addTrack(track, localStream);
+        }
+      }
+    }
+    if (wantsVideo) localStream.getVideoTracks().forEach(track => { track.enabled = true; });
+    currentMode = wantsVideo ? "VIDEO" : "VOICE";
+    showLocalStream(localStream);
+    return localStream;
+  }
+  async function joinRoomCall(roomId, mode) {
     if (!roomId) throw new Error("ไม่พบ roomId");
     await loadMe();
     currentRoomId = roomId;
-    currentMode   = mode === "VIDEO" ? "VIDEO" : "VOICE";
-    activeCall    = true;
-
-    if (opts.receiveOnly) {
-      localStream = localStream || new MediaStream();
-    } else {
-      await startMedia(currentMode, opts);
-    }
-
-    return new Promise((resolve, reject) => {
-      connectWS(() => {
-        try {
-          subscribeRoomCall(roomId);
-          if (!wsPublish(`/app/rooms/${roomId}/call`, { type: "JOIN" }))
-            throw new Error("ส่ง JOIN ไม่สำเร็จ");
-          broadcastMediaState();
-          resolve();
-        } catch (e) { reject(e); }
-      });
-    });
+    const generation = mediaGeneration;
+    try {
+      await loadIceConfig();
+      if (generation !== mediaGeneration) throw new Error("สายนี้สิ้นสุดแล้ว");
+      await startMedia(mode);
+      await waitForWS();
+      if (generation !== mediaGeneration || currentRoomId !== roomId) throw new Error("สายนี้สิ้นสุดแล้ว");
+      activeCall = true;
+      subscribeRoomCall(roomId);
+      publish(`/app/rooms/${roomId}/call`, { type: "JOIN" });
+      publishMediaState();
+    } catch (error) { if (generation === mediaGeneration) leaveCall(false); throw error; }
   }
-
-  /** ออกจากห้อง */
-  function leaveCall() {
+  function leaveCall(notifyPeer = true) {
     const roomId = currentRoomId;
-    if (roomId && stompClient?.connected) {
-      wsPublish(`/app/rooms/${roomId}/call`, { type: "LEAVE" });
+    if (notifyPeer && roomId && activeCall) wsPublish(`/app/rooms/${roomId}/call`, { type: "LEAVE" });
+    activeCall = false;
+    mediaGeneration += 1;
+    cameraTask = null;
+    displayStream?.getTracks().forEach(track => {track.onended = null; track.stop();});
+    savedCameraTrack?.stop(); displayStream = savedCameraTrack = null;
+    unsubscribeRoomCall();
+    const oldPeers = [...peers.values()]; peers.clear(); oldPeers.forEach(({pc}) => pc.close());
+    localStream?.getTracks().forEach(track => track.stop());
+    localStream = null;
+    for (const id of ["videoCallLocalVideo", "videoCallRemoteVideo"]) {
+      const video = document.getElementById(id); if (video) { video.srcObject = null; video.style.display = "none"; }
     }
-    if (roomCallSubscription) { try { roomCallSubscription.unsubscribe(); } catch (_) {} roomCallSubscription = null; }
-
-    peers.forEach(({ pc }) => { try { pc.close(); } catch (_) {} });
-    peers.clear();
-
-    if (screenStream) {
-      screenStream.getTracks().forEach((t) => { t.onended = null; t.stop(); });
-      screenStream = null;
-    }
-    if (localStream) {
-      localStream.getTracks().forEach((t) => { try { t.stop(); } catch (_) {} });
-      localStream = null;
-    }
-
-    remoteAudios.forEach((el) => { el.srcObject = null; el.remove(); });
-    remoteAudios.clear();
-
-    const lv = document.getElementById("videoCallLocalVideo");
-    const rv = document.getElementById("videoCallRemoteVideo");
-    if (lv) lv.srcObject = null;
-    if (rv) rv.srcObject = null;
-
-    currentRoomId = null;
-    currentMode   = null;
-    activeCall    = false;
-    currentCallFriendId = null;
+    for (const audio of remoteAudios.values()) { audio.srcObject = null; audio.remove(); } remoteAudios.clear();
+    blockedAudios.clear(); audioResumeButton?.remove(); audioResumeButton = null;
+    currentRoomId = currentMode = currentCallFriendId = null;
+    refreshMediaViews();
   }
-
-  /** toggle mic */
   function toggleMicrophone() {
-    const t = localStream?.getAudioTracks()[0];
-    if (!t) return false;
-    t.enabled = !t.enabled;
-    return t.enabled;
+    const track = localStream?.getAudioTracks()[0];
+    if (!track) return false;
+    track.enabled = !track.enabled; return track.enabled;
   }
-
-  /** toggle camera */
-  function toggleCamera() {
-    const t = getCameraTrack();
-    if (!t) return false;
-    t.enabled = !t.enabled;
-    if (!screenStream) replaceVideoAllPeers(t.enabled ? t : null, localStream).catch(() => {});
-    broadcastMediaState();
-    return t.enabled;
+  async function upgradeToVideo() {
+    if (!activeCall) throw new Error("รอให้รับสายและเชื่อมต่อก่อนเปิดกล้อง");
+    if (cameraTask) return cameraTask;
+    const task = (async () => {
+      await startMedia("VIDEO");
+      publishMediaState(); emitMode("local"); refreshMediaViews();
+      return cameraEnabled();
+    })();
+    cameraTask = task;
+    try { return await task; } finally { if (cameraTask === task) cameraTask = null; }
   }
-
-  async function setRoomCameraEnabled(enabled) {
-    const t = getCameraTrack();
-    if (!t) return null;
-    t.enabled = enabled;
-    if (!screenStream) await replaceVideoAllPeers(enabled ? t : null, localStream);
-    broadcastMediaState();
-    return t.enabled;
+  async function toggleCamera() {
+    if (displayStream) throw new Error("หยุดแชร์จอก่อนเปลี่ยนกล้อง");
+    const track = localStream?.getVideoTracks().find(track => track.readyState === "live");
+    if (!track) return upgradeToVideo();
+    track.enabled = !track.enabled;
+    publishMediaState(); refreshMediaViews();
+    return track.enabled;
   }
-
-  /** screen share */
-  async function startScreenShare(stream = null) {
-    if (screenStream) return screenStream;
-    const capture = stream || await navigator.mediaDevices.getDisplayMedia({ video: true, audio: true });
-    const vt = capture.getVideoTracks()[0];
-    if (!vt) throw new Error("ไม่พบ video track");
-    screenStream = capture;
-    await replaceVideoAllPeers(vt, capture);
-    vt.onended = () => stopScreenShare();
-    broadcastMediaState();
-    window.dispatchEvent(new CustomEvent("cp-call-screen-share", { detail: { active: true, stream: capture } }));
-    return capture;
+  async function startScreenShare() {
+    if (!activeCall) throw new Error("เข้าร่วมคอลก่อนแชร์จอ");
+    if (displayStream) return;
+    if (sharingTask) return sharingTask;
+    if (!navigator.mediaDevices?.getDisplayMedia) throw new Error("แชร์จอต้องใช้เบราว์เซอร์บนคอมพิวเตอร์ผ่าน HTTPS หรือ localhost");
+    const generation = mediaGeneration;
+    // The browser picker must open directly from the user's click.
+    const picked = navigator.mediaDevices.getDisplayMedia({video:true, audio:false, preferCurrentTab:true});
+    const task = (async () => {
+      const captured = await picked;
+      if (!activeCall || generation !== mediaGeneration) {captured.getTracks().forEach(track=>track.stop()); return;}
+      const track = captured.getVideoTracks()[0];
+      savedCameraTrack = localStream.getVideoTracks()[0] || null;
+      displayStream = captured;
+      try {
+        if (savedCameraTrack) localStream.removeTrack(savedCameraTrack);
+        localStream.addTrack(track);
+        for (const {pc} of peers.values()) {
+          const sender = pc.getSenders().find(sender=>sender.track?.kind==='video');
+          if (sender) await sender.replaceTrack(track); else pc.addTrack(track,localStream);
+        }
+        track.onended = () => stopScreenShare().catch(error=>window.dispatchEvent(new CustomEvent('cp-call-error',{detail:{message:error.message}})));
+        currentMode = 'VIDEO'; publishMediaState(); refreshMediaViews(); emitMode('screen');
+      } catch (error) {await stopScreenShare(); throw error;}
+    })();
+    sharingTask = task;
+    try {await task;} finally {if(sharingTask===task)sharingTask=null;}
   }
-
   async function stopScreenShare() {
-    if (!screenStream) return false;
-    const prev = screenStream;
-    screenStream = null;
-    const cam = getCameraTrack();
-    await replaceVideoAllPeers(cam?.enabled ? cam : null, localStream);
-    broadcastMediaState();
-    prev.getTracks().forEach((t) => { t.onended = null; t.stop(); });
-    window.dispatchEvent(new CustomEvent("cp-call-screen-share", { detail: { active: false, stream: localStream } }));
+    if (!displayStream) return;
+    const captured=displayStream, screen=captured.getVideoTracks()[0], camera=savedCameraTrack;
+    displayStream=savedCameraTrack=null;
+    screen.onended=null;
+    if(localStream){localStream.removeTrack(screen);if(camera?.readyState==='live')localStream.addTrack(camera);}
+    try {
+      for(const {pc} of peers.values()) {const sender=pc.getSenders().find(sender=>sender.track===screen);if(sender)await sender.replaceTrack(camera?.readyState==='live'?camera:null);}
+    } finally {captured.getTracks().forEach(track=>track.stop());publishMediaState();refreshMediaViews();emitMode('screen-ended');}
+  }
+  async function startFriendCall(friendId, roomId, mode) {
+    if (currentRoomId) throw new Error("มีสายกำลังโทรอยู่ กรุณาวางสายก่อน");
+    if (!friendId || !roomId) throw new Error("กรุณาเลือกเพื่อนก่อนโทร");
+    await loadMe();
+    currentCallFriendId = friendId; currentRoomId = roomId; currentMode = mode === "VIDEO" ? "VIDEO" : "VOICE";
+    const generation = mediaGeneration;
+    try {
+      // Ask for device permission before ringing, so failed permissions don't leave the other party waiting.
+      await loadIceConfig();
+      if (generation !== mediaGeneration) throw new Error("สายนี้สิ้นสุดแล้ว");
+      await startMedia(currentMode);
+      await waitForWS();
+      if (generation !== mediaGeneration) throw new Error("สายนี้สิ้นสุดแล้ว");
+      publish("/app/call", { type: "INVITE", toUserId: friendId, roomId, mode: currentMode });
+    } catch (error) { if (generation === mediaGeneration) leaveCall(false); throw error; }
+  }
+  async function acceptFriendCall(signal) {
+    if (!signal?.fromUserId || !signal?.roomId) throw new Error("ข้อมูลสายเรียกเข้าไม่ครบ");
+    await loadMe();
+    currentRoomId = signal.roomId; currentCallFriendId = signal.fromUserId;
+    const generation = mediaGeneration;
+    try {
+      await loadIceConfig();
+      if (generation !== mediaGeneration) throw new Error("สายนี้สิ้นสุดแล้ว");
+      await startMedia(signal.mode === "VIDEO" ? "VIDEO" : "VOICE");
+      await waitForWS();
+      if (generation !== mediaGeneration) throw new Error("สายนี้สิ้นสุดแล้ว");
+      activeCall = true;
+      // Subscribe before ACCEPT: the caller may immediately publish an offer/JOIN.
+      subscribeRoomCall(signal.roomId);
+      publish("/app/call", { type: "ACCEPT", toUserId: signal.fromUserId, roomId: signal.roomId, mode: currentMode });
+      publish(`/app/rooms/${signal.roomId}/call`, { type: "JOIN" });
+      publishMediaState();
+    } catch (error) { if (generation === mediaGeneration) leaveCall(false); throw error; }
+  }
+  async function declineFriendCall(signal) {
+    if (!signal?.fromUserId) return;
+    await loadMe(); await waitForWS();
+    publish("/app/call", { type: "DECLINE", toUserId: signal.fromUserId, roomId: signal.roomId || null });
+  }
+  async function cancelFriendCall(signal = null) {
+    const target = signal?.fromUserId || currentCallFriendId;
+    const roomId = signal?.roomId || currentRoomId;
+    if (!target) return false;
+    const generation = mediaGeneration;
+    await loadMe(); await waitForWS();
+    publish("/app/call", { type: "CANCEL", toUserId: target, roomId });
+    if (!signal && generation === mediaGeneration) leaveCall(false);
     return true;
   }
-
-  // ─────────────────────────────────────────────
-  // DISPLAY HELPERS
-  // ─────────────────────────────────────────────
-  function showRemoteStream(stream, userId) {
-    const key = String(userId);
-    let el = remoteAudios.get(key);
-    if (!el) {
-      el = document.createElement("audio");
-      el.autoplay = el.playsInline = true;
-      el.setAttribute("aria-hidden", "true");
-      el.style.display = "none";
-      document.body.appendChild(el);
-      remoteAudios.set(key, el);
-    }
-    el.srcObject = stream;
-    el.play().catch(() => {});
-  }
-
-  function showLocalStream(stream, mode) {
-    const v = document.getElementById("videoCallLocalVideo");
-    if (!v) return;
-    v.srcObject = stream; v.muted = true; v.autoplay = v.playsInline = true;
-    v.style.display = mode === "VIDEO" ? "block" : "none";
-    v.play().catch(() => {});
-  }
-
-  function showRemoteVideo(stream) {
-    const v = document.getElementById("videoCallRemoteVideo");
-    if (!v) return;
-    v.srcObject = stream; v.autoplay = v.playsInline = true; v.style.display = "block";
-    v.play().catch(() => {});
-    const ph = v.parentElement?.querySelector(".video-placeholder");
-    if (ph) ph.style.display = "none";
-  }
-
-  // ─────────────────────────────────────────────
-  // FRIEND CALL (INVITE flow)
-  // ─────────────────────────────────────────────
-  function onCallInvite(signal) {
-    window.dispatchEvent(new CustomEvent("cp-incoming-call", { detail: signal }));
-  }
-
-  async function startFriendCall(friendId, roomId, mode) {
-    await loadMe();
-    currentCallFriendId = friendId;
-    currentRoomId = roomId;
-    currentMode   = mode === "VIDEO" ? "VIDEO" : "VOICE";
-    activeCall    = false;
-    return new Promise((resolve, reject) => {
-      connectWS(() => {
-        if (!wsPublish("/app/call", { type: "INVITE", toUserId: friendId, roomId, mode: currentMode }))
-          return reject(new Error("ส่งสายเรียกเข้าไม่สำเร็จ"));
-        resolve();
-      });
+  function subscribeIncomingCalls() {
+    if (!stompClient?.connected || !me?.id) return;
+    incomingCallSubscription?.unsubscribe();
+    incomingCallSubscription = stompClient.subscribe(`/topic/call/${me.id}`, frame => {
+      try { window.dispatchEvent(new CustomEvent("cp-call-signal", { detail: JSON.parse(frame.body) })); }
+      catch (error) { console.error("อ่าน incoming call ไม่ได้:", error); }
     });
   }
-
-  async function acceptFriendCall(signal) {
-    await loadMe();
-    currentRoomId       = signal.roomId;
-    currentCallFriendId = signal.fromUserId;
-    currentMode         = signal.mode === "VIDEO" ? "VIDEO" : "VOICE";
-    activeCall          = true;
-    await startMedia(currentMode);
-    return new Promise((resolve, reject) => {
-      connectWS(() => {
-        try {
-          wsPublish("/app/call", { type: "ACCEPT", toUserId: signal.fromUserId, roomId: signal.roomId, mode: currentMode });
-          subscribeRoomCall(signal.roomId);
-          wsPublish(`/app/rooms/${signal.roomId}/call`, { type: "JOIN" });
-          resolve();
-        } catch (e) { reject(e); }
-      });
-    });
-  }
-
-  async function declineFriendCall(signal) {
-    await loadMe();
-    return new Promise((resolve, reject) => {
-      connectWS(() => {
-        if (!wsPublish("/app/call", { type: "DECLINE", toUserId: signal.fromUserId, roomId: signal.roomId }))
-          return reject(new Error("ส่ง decline ไม่สำเร็จ"));
-        resolve();
-      });
-    });
-  }
-
-  async function cancelFriendCall(toUserId, roomId) {
-    await loadMe();
-    return new Promise((resolve, reject) => {
-      connectWS(() => {
-        if (!wsPublish("/app/call", { type: "CANCEL", toUserId, roomId }))
-          return reject(new Error("ส่ง cancel ไม่สำเร็จ"));
-        currentCallFriendId = null;
-        activeCall = false;
-        resolve();
-      });
-    });
-  }
-
-  // ─────────────────────────────────────────────
-  // EXPORTS
-  // ─────────────────────────────────────────────
-  window.CPCall = {
-    connectWS,
-    wsPublish,
-    loadMe,
-    subscribeIncomingCalls,
-    subscribeRoomChat,
-    startMedia,
-    joinRoomCall,
-    leaveCall,
-    toggleMicrophone,
-    toggleCamera,
-    setRoomCameraEnabled,
-    startScreenShare,
-    stopScreenShare,
-    startFriendCall,
-    acceptFriendCall,
-    declineFriendCall,
-    cancelFriendCall,
-    showRemoteVideo,
-    getLocalStream:      () => localStream,
-    isScreenSharing:     () => Boolean(screenStream),
-    getCurrentRoomId:    () => currentRoomId,
-    getCurrentMode:      () => currentMode,
-    getCurrentFriendId:  () => currentCallFriendId,
-    isActive:            () => activeCall,
-  };
+  window.addEventListener("pagehide", () => { leaveCall(); stompClient?.deactivate(); });
+  window.CPCall = { getDiagnostics, watchTopic, connectWS, wsPublish, loadMe, subscribeIncomingCalls, startMedia, joinRoomCall, leaveCall, toggleMicrophone, toggleCamera, upgradeToVideo, refreshMediaViews, startFriendCall, acceptFriendCall, declineFriendCall, cancelFriendCall, showRemoteVideo,
+    startScreenShare, stopScreenShare, isScreenSharing: () => !!displayStream, getLocalStream: () => localStream, getCurrentRoomId: () => currentRoomId, getCurrentMode: () => currentMode, getCurrentFriendId: () => currentCallFriendId, isActive: () => activeCall, isBusy: () => !!currentRoomId, isCameraEnabled: cameraEnabled };
 })();

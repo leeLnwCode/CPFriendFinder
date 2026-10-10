@@ -25,6 +25,11 @@ public class S3Config {
     @Value("${AWS_REGION}")
     private String region;
 
+    @Value("${AWS_PUBLIC_URL_S3:${AWS_ENDPOINT_URL_S3}}")
+    private String publicEndpoint;
+
+    public String getPublicEndpoint() { return publicEndpoint == null ? endpoint : publicEndpoint; }
+
     public String getEndpoint() {
         return endpoint;
     }

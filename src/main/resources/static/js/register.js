@@ -174,6 +174,17 @@ async function createAccount() {
   const year = Number(document.getElementById("year").value);
   const department = document.getElementById("department").value;
   const profileInput = document.getElementById("profileImage");
+  const selectedInterests = Array.from(
+    document.querySelectorAll("#step3 .interest.selected"),
+  )
+    .map(function (button) {
+      const parts = button.textContent.trim().split(/\s+/);
+
+      return parts.length > 1 ? parts.slice(1).join(" ") : parts[0];
+    })
+    .filter(function (name) {
+      return name !== "";
+    });
 
   // ตรวจสอบรหัสผ่านอย่างน้อย 8 ตัว
   if (password.length < 8) {
@@ -263,55 +274,68 @@ async function createAccount() {
     year: year,
 
     department: department,
+
+    interests: selectedInterests,
   };
 
-  console.log("Register request:", requestData);
-  console.log(requestData);
-
-  /* =========================
-     Call Backend
-  ========================= */
-
+  if (window.registrationSubmitting) return;
+  window.registrationSubmitting = true;
+  const submit = document.querySelector("#step3 .next-button");
+  if (submit) {
+    submit.disabled = true;
+    submit.textContent = "กำลังสร้างบัญชี...";
+  }
+  let response;
   try {
-    const response = await fetch("/api/auth/register", {
+    response = await fetch("/api/auth/register", {
       method: "POST",
-
-      headers: {
-        "Content-Type": "application/json",
-      },
-
+      credentials: "include",
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(requestData),
     });
-
-    const data = await response.json();
-
-    console.log("Register response:", data);
-
-    /* =========================
-       Error
-    ========================= */
-
-    if (!response.ok) {
-      console.error("Register failed:", data);
-
-      alert("สมัครสมาชิกไม่สำเร็จ");
-
+  } catch (_) {
+    alert(
+      "การเชื่อมต่อขัดข้อง หากสร้างบัญชีแล้ว ให้ลองเข้าสู่ระบบก่อนสมัครซ้ำ",
+    );
+  }
+  if (response) {
+    if (response.ok) {
+      // Successful creation does not depend on parsing an optional body or browser storage.
+      try {
+        sessionStorage.setItem(
+          "registrationLogin",
+          JSON.stringify({
+            email,
+            password,
+            expiresAt: Date.now() + 10 * 60 * 1000,
+          }),
+        );
+      } catch (_) {}
+      window.location.assign(
+        "/login?registered=1&email=" + encodeURIComponent(email),
+      );
       return;
     }
-
-    /* =========================
-       Success
-    ========================= */
-
-    console.log("Register success:", data);
-
-    alert("สมัครสมาชิกสำเร็จ");
-
-    window.location.href = "/login";
-  } catch (error) {
-    console.error("Register connection error:", error);
-
-    alert("ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้");
+    let data = {};
+    try {
+      data = await response.json();
+    } catch (_) {}
+    const message = String(data.message || "");
+    if (/email.*exists/i.test(message))
+      alert("อีเมลนี้มีบัญชีแล้ว กรุณาเข้าสู่ระบบ");
+    else if (response.status === 400)
+      alert(
+        "สมัครไม่สำเร็จ: " +
+          (data.errors?.map((e) => e.message).join(" · ") ||
+            message ||
+            "ตรวจสอบข้อมูลที่กรอก"),
+      );
+    else alert("ระบบสมัครสมาชิกขัดข้อง กรุณาลองใหม่ภายหลัง");
+  }
+  window.registrationSubmitting = false;
+  if (submit) {
+    submit.disabled = false;
+    submit.textContent = "สร้างบัญชี";
   }
 }
 

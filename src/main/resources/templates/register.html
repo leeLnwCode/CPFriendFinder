@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
   <head>
+    <link rel="stylesheet" th:href="@{/css/theme.css}" />
     <meta charset="UTF-8" />
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -8,6 +9,7 @@
     <title>Create Account - CP Friend Finder</title>
 
     <link rel="stylesheet" th:href="@{/css/register.css}" />
+    <link rel="stylesheet" th:href="@{/css/ui-refresh.css}" />
   </head>
 
   <body class="register-body">
@@ -339,8 +341,6 @@
       </div>
     </div>
 
-    <script th:src="@{/js/register.js}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+    <script th:src="@{/js/register.js(v=6)}"></script>
   </body>
 </html>

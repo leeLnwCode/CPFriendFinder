@@ -1,0 +1,67 @@
+.global-call-overlay {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 9999;
+}
+
+.global-call-overlay.show {
+  display: flex;
+}
+
+.global-call-card {
+  width: min(420px, 90vw);
+  padding: 28px;
+  border-radius: 20px;
+  background: white;
+  text-align: center;
+}
+
+.global-call-avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.global-call-video {
+  display: none;
+  margin-top: 16px;
+}
+
+.global-call-video.show {
+  display: block;
+}
+
+.global-call-video video {
+  width: 100%;
+  border-radius: 12px;
+}
+
+#videoCallLocalVideo {
+  width: 120px;
+  margin-top: 8px;
+}
+
+.global-call-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 20px;
+}
+
+.global-call-actions button,
+.global-call-end {
+  padding: 10px 20px;
+  border: 0;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.global-call-end {
+  display: none;
+  margin: 20px auto 0;
+}

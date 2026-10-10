@@ -1,189 +1,58 @@
 <!doctype html>
 <html lang="th" xmlns:th="http://www.thymeleaf.org">
   <head>
+<script th:src="@{/js/auth-session.js(v=1)}"></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>Home - CP Friend Finder</title>
+    <link rel="stylesheet" th:href="@{/css/global-call.css}" />
 
     <link rel="stylesheet" th:href="@{/css/theme.css}" />
     <link rel="stylesheet" th:href="@{/css/sidebar.css}" />
     <link rel="stylesheet" th:href="@{/css/layout.css}" />
     <link rel="stylesheet" th:href="@{/css/home.css}" />
     <link rel="stylesheet" th:href="@{/css/friend-profile-popup.css}" />
-    <link rel="stylesheet" th:href="@{/css/profile-popup.css}" />
-  </head>
+    <link rel="stylesheet" th:href="@{/css/profile-popup.css(v=11)}" />
+  <link rel="stylesheet" th:href="@{/css/ui-refresh.css}"/>
+<link rel="stylesheet" th:href="@{/css/call-ui.css(v=2)}"/>
+  <link rel="stylesheet" href="/css/message-actions.css?v=1" />
+</head>
 
   <body>
     <div class="page-layout">
       <!-- ================= SIDEBAR ================= -->
 
-      <aside class="sidebar">
-        <!-- Logo -->
-        <div class="sidebar-logo">
-          <img th:src="@{/images/Full_logo.png}" alt="CP Friend Finder" />
-        </div>
+      <aside th:replace="~{fragments/sidebar :: sidebar('home')}"></aside>
 
-        <!-- Profile -->
-        <div class="sidebar-profile" id="sidebarProfileButton">
-          <img
-            id="sidebarProfileImage"
-            th:src="@{/images/man.jpg}"
-            alt="Profile"
-            class="profile-image"
-          />
-
-          <div class="profile-info">
-            <div id="sidebarProfileName" class="profile-name">กำลังโหลด...</div>
-
-            <div id="sidebarProfileYear" class="profile-year"></div>
-
-            <div id="sidebarProfileDepartment" class="profile-department"></div>
-          </div>
-
-          <button class="profile-arrow">⌄</button>
-        </div>
-
-        <!-- Navigation -->
-        <nav class="sidebar-menu">
-          <a href="/home" class="menu-item active">
-            <span class="menu-icon">⌂</span>
-            <span>หน้าหลัก</span>
-          </a>
-
-          <a href="/friend" class="menu-item">
-            <span class="menu-icon">☺︎</span>
-            <span>เพื่อนของฉัน</span>
-          </a>
-
-          <a href="/notification" class="menu-item">
-            <span class="menu-icon">☏</span>
-            <span>การแจ้งเตือน</span>
-            <span id="notificationBadge" class="notification-badge"></span>
-          </a>
-
-          <a href="/setting" class="menu-item">
-            <span class="menu-icon">⚙</span>
-            <span>การตั้งค่า</span>
-          </a>
-        </nav>
-      </aside>
-
-      <div class="profile-modal" id="profileModal">
-        <div class="profile-modal-overlay" id="profileModalOverlay"></div>
-
-        <div class="profile-modal-content">
-          <div class="profile-modal-header">
-            <h2>แก้ไขโปรไฟล์</h2>
-
-            <button
-              type="button"
-              class="profile-modal-close"
-              id="closeProfileModal"
-            >
-              ×
-            </button>
-          </div>
-
-          <div class="profile-edit-form">
-            <!-- รูปโปรไฟล์ -->
-            <div class="profile-image-edit">
-              <img
-                id="editProfileImage"
-                th:src="@{/images/man.jpg}"
-                alt="Profile"
-              />
-
-              <button
-                type="button"
-                class="change-image-button"
-                id="changeProfileImage"
-              >
-                เปลี่ยนรูป
-              </button>
-
-              <input
-                type="file"
-                id="profileImageInput"
-                accept="image/*"
-                hidden
-              />
-            </div>
-
-            <!-- ชื่อ -->
-            <div class="profile-field">
-              <label for="editFirstname">ชื่อ</label>
-              <input type="text" id="editFirstname" placeholder="กรอกชื่อ" />
-            </div>
-
-            <!-- นามสกุล -->
-            <div class="profile-field">
-              <label for="editLastname">นามสกุล</label>
-              <input type="text" id="editLastname" placeholder="กรอกนามสกุล" />
-            </div>
-
-            <!-- Bio -->
-            <div class="profile-field">
-              <label for="editBio">เกี่ยวกับฉัน</label>
-              <textarea
-                id="editBio"
-                rows="4"
-                placeholder="บอกเกี่ยวกับตัวคุณ..."
-              ></textarea>
-            </div>
-
-            <div class="profile-field">
-              <label for="editDateOfBirth">วันเกิด</label>
-              <input type="date" id="editDateOfBirth" />
-            </div>
-
-            <!-- ปี -->
-            <div class="profile-field">
-              <label for="editYear">ชั้นปี</label>
-              <select id="editYear">
-                <option value="">เลือกชั้นปี</option>
-                <option value="1">ปี 1</option>
-                <option value="2">ปี 2</option>
-                <option value="3">ปี 3</option>
-                <option value="4">ปี 4</option>
-              </select>
-            </div>
-
-            <!-- สาขา -->
-            <div class="profile-field">
-              <label for="editDepartment">สาขา</label>
-              <input type="text" id="editDepartment" placeholder="กรอกสาขา" />
-            </div>
-
-            <!-- ปุ่ม -->
-            <div class="profile-modal-actions">
-              <button
-                type="button"
-                class="profile-cancel-button"
-                id="cancelProfileEdit"
-              >
-                ยกเลิก
-              </button>
-
-              <button
-                type="button"
-                class="profile-save-button"
-                id="saveProfileEdit"
-              >
-                บันทึก
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <div th:replace="~{fragments/profile-editor :: profileEditor}"></div>
 
       <!-- ================= MAIN ================= -->
 
       <main class="page-content home-content">
+        <!-- Random Friend Banner -->
+
+        <section class="random-banner">
+          <div class="banner-content">
+            <h1>ไม่รู้จะคุยกับใคร? ลองสุ่มเพื่อนดู!</h1>
+
+            <p>เจอเพื่อนใหม่จากความสนใจที่เหมือนกัน แล้วเริ่มคุยกันได้เลย</p>
+
+            <button class="random-button">
+              เริ่มค้นหาเพื่อนเลย
+              <span>▶</span>
+            </button>
+          </div>
+
+          <div class="banner-decoration">✦</div>
+        </section>
+
         <!-- Room Header -->
 
         <div class="room-header">
-          <h2>ห้องที่กำลังคุย</h2>
+          <h2>ค้นหาห้องพูดคุย</h2>
+
+          
         </div>
 
         <!-- Search + Filter -->
@@ -199,28 +68,11 @@
             />
           </div>
 
-          <select id="yearFilter">
-            <option value="">ทุกปี</option>
-            <option value="1">ปี 1</option>
-            <option value="2">ปี 2</option>
-            <option value="3">ปี 3</option>
-            <option value="4">ปี 4</option>
-            <option value="other">ปีลึก</option>
-          </select>
+          
 
-          <select id="interestFilter">
-            <option value="">ทุกความสนใจ</option>
-            <option value="Gaming">Gaming</option>
-            <option value="ROV">ROV</option>
-            <option value="Minecraft">Minecraft</option>
-            <option value="Valorant">Valorant</option>
-            <option value="Programming">Programming</option>
-            <option value="Project">Project</option>
-            <option value="Hackathon">Hackathon</option>
-            <option value="Anime">Anime</option>
-            <option value="Book">Book</option>
-            <option value="Calculus1">Calculus 1</option>
-          </select>
+          <select id="interestFilter" aria-label="กรองตามความสนใจ"><option value="">ทุกความสนใจ</option></select>
+          <select id="yearFilter" aria-label="กรองตามชั้นปี"><option value="">ทุกชั้นปี</option><option value="1">ปี 1</option><option value="2">ปี 2</option><option value="3">ปี 3</option><option value="4">ปี 4</option><option value="5">ปี 5</option><option value="6">ปี 6</option></select>
+          <select id="roomSort" aria-label="เรียงลำดับห้อง"><option value="newest">ใหม่สุด</option><option value="oldest">เก่าสุด</option><option value="name">ชื่อห้อง</option></select>
 
           <button
             type="button"
@@ -233,132 +85,120 @@
 
         <!-- Create Room Popup -->
 
-        <div id="createRoomModal" class="modal-overlay" aria-hidden="true">
-          <section
-            class="create-room-modal"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="createRoomTitle"
-          >
-            <header class="create-room-modal-header">
+        <div id="createRoomModal" class="modal-overlay">
+          <div class="create-room-modal">
+            <h2>สร้างห้องพูดคุย</h2>
+
+            <label>ชื่อห้อง</label>
+
+            <input
+              type="text"
+              id="roomName" maxlength="100"
+              placeholder="เช่น หาเพื่อนนั่งทำโปรเจค..."
+            />
+
+            <label>คำอธิบายเพิ่มเติม</label>
+
+            <input
+              type="text"
+              id="roomDescription" maxlength="500"
+              placeholder="เช่น ปั่นโปรเจค/การบ้านด้วยกัน..."
+            />
+
+            <div class="form-row">
+              <!-- ความสนใจ -->
               <div>
-                <p class="create-room-eyebrow">ROOM SETTINGS</p>
-                <h2 id="createRoomTitle">สร้างห้องพูดคุย</h2>
-              </div>
-
-              <button
-                type="button"
-                class="create-room-close"
-                id="closeCreateRoom"
-                aria-label="ปิดหน้าต่าง"
-              >
-                ×
-              </button>
-            </header>
-
-            <form id="createRoomForm" novalidate>
-              <div class="create-room-field">
-                <label for="roomName">ชื่อห้อง</label>
-                <input
-                  type="text"
-                  id="roomName"
-                  maxlength="100"
-                  placeholder="เช่น หาเพื่อนนั่งทำโปรเจค..."
-                  required
-                />
-              </div>
-
-              <div class="create-room-field">
-                <label for="roomDescription">คำอธิบายเพิ่มเติม</label>
-                <textarea
-                  id="roomDescription"
-                  rows="3"
-                  maxlength="500"
-                  placeholder="เล่าให้เพื่อนรู้ว่าห้องนี้คุยเรื่องอะไร"
-                ></textarea>
-              </div>
-
-              <div class="form-row">
-                <div class="create-room-field">
-                  <label for="roomYear">ชั้นปีเป้าหมาย</label>
-                  <select id="roomYear">
-                    <option value="">ทุกชั้นปี</option>
-                    <option value="1">ปี 1</option>
-                    <option value="2">ปี 2</option>
-                    <option value="3">ปี 3</option>
-                    <option value="4">ปี 4</option>
-                    <option value="5">ปีลึก</option>
-                  </select>
-                </div>
-
-                <div class="create-room-field">
-                  <label for="roomMax">จำนวนคนสูงสุด</label>
-                  <input
-                    type="number"
-                    id="roomMax"
-                    value="10"
-                    min="2"
-                    max="10"
-                    required
-                  />
-                </div>
-              </div>
-
-              <div class="create-room-field">
                 <label>ความสนใจ</label>
-                <div
-                  id="roomInterestOptions"
-                  class="create-room-interests"
-                  aria-label="เลือกความสนใจของห้อง"
-                >
-                  <p class="create-room-interest-empty">กำลังโหลดความสนใจ...</p>
-                </div>
+
+                <details class="multi-select" id="roomInterest">
+                  <summary class="multi-select-display">
+                    <span id="selectedInterestText"> เลือกความสนใจ </span>
+
+                    <span class="dropdown-arrow"> ▼ </span>
+                  </summary>
+
+                  <div class="multi-select-options"><p role="status">กำลังโหลดความสนใจ...</p></div>
+                </details>
               </div>
 
-              <div class="form-row">
-                <div class="create-room-field">
-                  <label for="roomType">ประเภทห้อง</label>
-                  <select id="roomType">
-                    <option value="Public">Public</option>
-                    <option value="Private">Private</option>
-                  </select>
-                </div>
+              <!-- ชั้นปี -->
+              <div>
+                <label>ชั้นปี</label>
 
-                <div
-                  class="create-room-field create-room-password"
-                  id="roomPasswordField"
-                  hidden
-                >
-                  <label for="roomPassword">รหัสเข้าห้อง</label>
-                  <input
-                    type="password"
-                    id="roomPassword"
-                    minlength="4"
-                    maxlength="100"
-                    autocomplete="new-password"
-                    placeholder="อย่างน้อย 4 ตัวอักษร"
-                  />
-                </div>
+                <details class="multi-select" id="roomYearSelect">
+                  <summary class="multi-select-display">
+                    <span id="selectedYearText">ปี 1</span>
+                    <span class="dropdown-arrow">▼</span>
+                  </summary>
+
+                  <div class="multi-select-options year-options">
+                    <label>
+                      <input type="checkbox" name="roomYear" value="all" />
+                      ทุกชั้นปี
+                    </label>
+
+                    <label>
+                      <input
+                        type="checkbox"
+                        name="roomYear"
+                        value="1"
+                        checked
+                      />
+                      ปี 1
+                    </label>
+
+                    <label>
+                      <input type="checkbox" name="roomYear" value="2" />
+                      ปี 2
+                    </label>
+
+                    <label>
+                      <input type="checkbox" name="roomYear" value="3" />
+                      ปี 3
+                    </label>
+
+                    <label>
+                      <input type="checkbox" name="roomYear" value="4" />
+                      ปี 4
+                    </label>
+
+                    <label>
+                      <input type="checkbox" name="roomYear" value="5" />
+                      ปีลึก
+                    </label>
+                  </div>
+                </details>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div>
+                <label>จำนวนคนสูงสุด</label>
+
+                <input type="number" id="roomMax" value="10" min="2" max="10" />
               </div>
 
-              <p
-                class="create-room-error"
-                id="createRoomError"
-                role="alert"
-                hidden
-              ></p>
+              <div>
+                <label>ประเภทห้อง</label>
 
-              <div class="modal-buttons">
-                <button type="button" id="cancelCreateRoom">ยกเลิก</button>
-                <button type="submit" id="confirmCreateRoom">สร้างห้อง</button>
+                <select id="roomType">
+                  <option value="Public">Public</option>
+                  <option value="Private">Private</option>
+                </select>
               </div>
-            </form>
-          </section>
+            </div>
+
+            <div class="modal-buttons">
+              <button type="button" id="cancelCreateRoom">ยกเลิก</button>
+
+              <button type="button" id="confirmCreateRoom">ยืนยัน</button>
+            </div>
+          </div>
         </div>
 
         <!-- ================= ROOM GRID ================= -->
 
-        <section class="room-grid" id="roomGrid"></section>
+        <section class="room-grid" id="roomGrid" aria-live="polite"><p class="friend-empty">กำลังโหลดห้องพูดคุย...</p></section>
       </main>
     </div>
 
@@ -374,7 +214,7 @@
           type="text"
           id="privateRoomCode"
           placeholder="กรอกรหัสเข้าห้อง"
-          maxlength="6"
+          maxlength="100"
         />
 
         <p id="privateRoomError"></p>
@@ -391,11 +231,16 @@
       th:replace="~{fragments/friend-profile-popup :: friendProfilePopup}"
     ></div>
 
-    <script th:src="@{/js/friend-profile-popup.js}"></script>
-    <script th:src="@{/js/home.js(v=3)}"></script>
+    <script th:src="@{/js/friend-profile-popup.js(v=20)}"></script>
+    <script th:src="@{/js/home.js(v=9)}"></script>
     <script th:src="@{/js/theme.js}"></script>
-    <script th:src="@{/js/sidebar.js}"></script>
-    <script th:src="@{/js/profile-popup.js}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-  </body>
+    <script th:src="@{/js/profile-popup.js(v=11)}"></script>
+<div th:replace="~{fragments/global-call :: globalCall}"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7/bundles/stomp.umd.min.js"></script>
+<script th:src="@{/js/call.js(v=11)}"></script>
+<script th:src="@{/js/global-call.js}"></script>
+  <script th:src="@{/js/sidebar.js}"></script>
+<script th:src="@{/js/room-live.js(v=1)}"></script>
+</body>
 </html>

@@ -1,147 +1,97 @@
 document.addEventListener("DOMContentLoaded", async () => {
   const profileImage = document.getElementById("sidebarProfileImage");
-
   const profileName = document.getElementById("sidebarProfileName");
-
   const profileYear = document.getElementById("sidebarProfileYear");
+  const sidebarProfile =
+  document.querySelector(".sidebar-profile");
+  const profileDepartment = document.getElementById(
+    "sidebarProfileDepartment",
+  );
 
-  const profileDepartment = document.getElementById("sidebarProfileDepartment");
-
-  const notificationBadge = document.getElementById("notificationBadge");
-
-  /* =====================================================
-     LOAD CURRENT USER
-  ====================================================== */
-
-  async function loadCurrentUser() {
+  if (!profileName) return;
+  const logout = document.getElementById('logoutButton');
+  logout?.addEventListener('click',async()=>{
+    const status = document.getElementById('logoutStatus');
+    logout.disabled=true;status.textContent='กำลังออกจากระบบ…';
     try {
-      const response = await fetch("/api/users/me", {
-        method: "GET",
+      window.CPCall?.leaveCall();
+      const response=await fetch('/api/auth/logout',{method:'POST',credentials:'include'});
+      if(!response.ok && response.status!==401)throw Error('ออกจากระบบไม่สำเร็จ กรุณาลองอีกครั้ง');
+      try { for(const key of Object.keys(sessionStorage))if(key.startsWith('cp-')||key==='currentUser'||key==='registrationLogin')sessionStorage.removeItem(key); } catch (_) {}
+      if(window.CPAuthSession)window.CPAuthSession.expire();else location.replace('/login');
+    } catch(error) { status.textContent=error.message||'การเชื่อมต่อขัดข้อง';logout.disabled=false; }
+  });
 
-        headers: {
-          Accept: "application/json",
-        },
+  function renderUser(user) {
+    sidebarProfile?.classList.add("profile-loaded");
+    if (!user) return;
 
-        credentials: "include",
-      });
+    const firstname = user.firstname || "";
+    const lastname = user.lastname || "";
+    const fullname = `${firstname} ${lastname}`.trim();
 
-      if (response.status === 401 || response.status === 403) {
-        sessionStorage.removeItem("currentUser");
+    profileName.textContent = fullname || "ไม่ระบุชื่อ";
 
-        window.location.href = "/login";
+    profileYear.textContent =
+      user.year !== null && user.year !== undefined
+        ? `ปี ${user.year}`
+        : "";
 
-        return null;
-      }
+    profileDepartment.textContent = user.department || "";
 
-      if (!response.ok) {
-        throw new Error(`โหลดข้อมูลผู้ใช้ไม่สำเร็จ (${response.status})`);
-      }
-
-      const user = await response.json();
-
-      sessionStorage.setItem("currentUser", JSON.stringify(user));
-
-      return user;
-    } catch (error) {
-      console.error("โหลดข้อมูลผู้ใช้ไม่สำเร็จ:", error);
-
-      return null;
-    }
+    profileImage.onerror = () => {
+      profileImage.onerror = null;
+      profileImage.src = "/images/avatar-placeholder.svg";
+    };
+    profileImage.src = user.image_url || user.imageUrl || "/images/avatar-placeholder.svg";
   }
 
-  /* =====================================================
-     RENDER SIDEBAR PROFILE
-  ====================================================== */
+  const cached = sessionStorage.getItem("cp-current-user");
 
-  function renderProfile(user) {
-    if (!user) {
-      return;
-    }
-
-    if (profileName) {
-      const firstname = user.firstname || "";
-
-      const lastname = user.lastname || "";
-
-      const fullname = `${firstname} ${lastname}`.trim();
-
-      profileName.textContent = fullname || "ไม่ระบุชื่อ";
-    }
-
-    if (profileYear) {
-      if (user.year !== null && user.year !== undefined && user.year !== "") {
-        profileYear.textContent = `ปี ${user.year}`;
-      } else {
-        profileYear.textContent = "";
-      }
-    }
-
-    if (profileDepartment) {
-      profileDepartment.textContent = user.department || "";
-    }
-
-    if (profileImage && user.image_url) {
-      profileImage.src = user.image_url;
-    }
-  }
-
-  /* =====================================================
-     LOAD NOTIFICATION BADGE
-  ====================================================== */
-
-  async function loadNotificationBadge() {
-    if (!notificationBadge) {
-      return;
-    }
-
+  if (cached) {
     try {
-      const response = await fetch("/api/notifications/unread-count", {
-        method: "GET",
-
-        headers: {
-          Accept: "application/json",
-        },
-
-        credentials: "include",
-      });
-
-      if (response.status === 401 || response.status === 403) {
-        return;
-      }
-
-      if (!response.ok) {
-        throw new Error(`โหลดจำนวนแจ้งเตือนไม่สำเร็จ (${response.status})`);
-      }
-
-      const data = await response.json();
-
-      const count = Number(data?.count || 0);
-
-      if (!Number.isFinite(count) || count <= 0) {
-        notificationBadge.textContent = "";
-
-        notificationBadge.classList.remove("show");
-
-        return;
-      }
-
-      notificationBadge.textContent = count > 99 ? "99+" : String(count);
-
-      notificationBadge.classList.add("show");
-    } catch (error) {
-      console.error("โหลด Notification Badge ไม่สำเร็จ:", error);
+      renderUser(JSON.parse(cached));
+    } catch (_) {
+      sessionStorage.removeItem("cp-current-user");
     }
   }
+  if (!cached) {
+  profileName.textContent = "กำลังโหลด...";
+  profileYear.textContent = "";
+  profileDepartment.textContent = "";
 
-  /* =====================================================
-     START
-  ====================================================== */
+  sidebarProfile?.classList.add("profile-loaded");
+}
 
-  const user = await loadCurrentUser();
+  try {
+    const response = await fetch("/api/users/me", {
+      method: "GET",
+      headers: {
+        Accept: "application/json",
+      },
+      credentials: "include",
+    });
 
-  if (user) {
-    renderProfile(user);
+    if (response.status===401) { if(window.CPAuthSession)window.CPAuthSession.expire();else location.replace("/login"); return; }
+    if (!response.ok) {
+      throw new Error(`โหลดข้อมูลผู้ใช้ไม่สำเร็จ (${response.status})`);
+    }
+
+    const user = await response.json();
+
+    sessionStorage.setItem(
+      "cp-current-user",
+      JSON.stringify(user),
+    );
+
+    renderUser(user);
+  } catch (error) {
+    console.error("โหลดข้อมูล Sidebar ไม่สำเร็จ:", error);
+
+    if (!cached) {
+      profileName.textContent = "ไม่สามารถโหลดข้อมูล";
+      profileYear.textContent = "";
+      profileDepartment.textContent = "";
+    }
   }
-
-  await loadNotificationBadge();
 });

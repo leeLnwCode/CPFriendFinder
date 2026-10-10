@@ -42,31 +42,20 @@ document.addEventListener("DOMContentLoaded", () => {
   // ACCOUNT EDIT
   // =========================
 
-  const accountFields = {
-    email: { id: "accountEmail", message: "กรอกอีเมลใหม่" },
-    username: { id: "accountUsername", message: "กรอกชื่อผู้ใช้งานใหม่" },
-    password: { id: "accountPassword", message: "กรอกรหัสผ่านใหม่" },
-  };
-
-  document.querySelectorAll(".edit-button").forEach((button) => {
-    button.addEventListener("click", () => {
-      const type = button.dataset.edit;
-      const field = accountFields[type];
-      const element = field && document.getElementById(field.id);
-
-      if (!element) {
-        return;
-      }
-
-      const newValue = prompt(field.message)?.trim();
-
-      if (!newValue) {
-        return;
-      }
-
-      element.textContent = type === "password" ? "• • • • • • • •" : newValue;
-    });
-  });
+  async function loadAccount() {
+    try {
+      const response = await fetch("/api/users/me", {credentials: "include", headers: {Accept: "application/json"}});
+      if (!response.ok) throw new Error("โหลดบัญชีไม่สำเร็จ");
+      const user = await response.json();
+      document.getElementById("accountEmail").textContent = user.email || "ไม่ระบุ";
+      document.getElementById("accountUsername").textContent = `${user.firstname || ""} ${user.lastname || ""}`.trim() || "ไม่ระบุชื่อ";
+    } catch (error) {
+      document.getElementById("accountEmail").textContent = error.message;
+      document.getElementById("accountUsername").textContent = "—";
+    }
+  }
+  loadAccount();
+  document.getElementById('settingsEditProfile')?.addEventListener('click',()=>{closeAllModals();window.dispatchEvent(new CustomEvent('cp-edit-own-profile'));});
 
   // =========================
   // THEME (ใช้ applyTheme / setTheme จาก theme.js)

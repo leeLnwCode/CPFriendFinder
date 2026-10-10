@@ -1,7 +1,15 @@
 /* =========================================================
    CP FRIEND FINDER
 ========================================================= */
+.sidebar-profile .profile-image,
+.sidebar-profile .profile-info {
+  visibility: hidden;
+}
 
+.sidebar-profile.profile-loaded .profile-image,
+.sidebar-profile.profile-loaded .profile-info {
+  visibility: visible;
+}
 .sidebar,
 .sidebar *,
 .sidebar *::before,
@@ -269,3 +277,5 @@ body.theme-dark .sidebar-logo img {
     padding: 0 14px !important;
   }
 }
+
+.sidebar-logout{width:100%;text-align:left;border:0;font:inherit;cursor:pointer}.sidebar-logout:disabled{opacity:.5;cursor:wait}.sidebar-logout-status{font-size:.8rem;color:#b91c1c;padding:0 16px}

@@ -32,6 +32,7 @@ E2E-004 Register And Login Successfully
 
     # Registration should return to login
     Wait For Elements State    id=email    visible    10s
+    Wait For Load State    domcontentloaded
     Get Url    ==    ${BASE_URL}/login
 
     # Login with the newly-created account
@@ -40,5 +41,4 @@ E2E-004 Register And Login Successfully
     Click    css=.login-button
 
     # Successful login should open Home
-    Wait For Elements State    css=body    visible    10s
-    Get Url    ==    ${BASE_URL}/home
+    Wait Until Keyword Succeeds    15s    500ms    Get Url    ==    ${BASE_URL}/home

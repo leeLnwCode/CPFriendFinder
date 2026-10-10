@@ -1,109 +1,49 @@
 <!doctype html>
 <html lang="th">
   <head>
+<script th:src="@{/js/auth-session.js(v=1)}"></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <title>การแจ้งเตือน - CP Friend Finder</title>
+    <link rel="stylesheet" th:href="@{/css/global-call.css}" />
 
     <link rel="stylesheet" th:href="@{/css/theme.css}" />
     <link rel="stylesheet" th:href="@{/css/sidebar.css}" />
     <link rel="stylesheet" th:href="@{/css/layout.css}" />
     <link rel="stylesheet" th:href="@{/css/notification.css}" />
     <link rel="stylesheet" th:href="@{/css/friend-profile-popup.css}" />
-    <link rel="stylesheet" th:href="@{/css/profile-popup.css}" />
-  </head>
+    <link rel="stylesheet" th:href="@{/css/profile-popup.css(v=11)}" />
+  <link rel="stylesheet" th:href="@{/css/ui-refresh.css}"/>
+<link rel="stylesheet" th:href="@{/css/call-ui.css(v=2)}"/>
+</head>
 
   <body>
     <div class="page-layout">
-      <!-- =====================================================
-           SIDEBAR
-      ====================================================== -->
-      <aside class="sidebar">
-        <div class="sidebar-logo">
-          <img src="/images/Full_logo.png" alt="CP Friend Finder" />
-        </div>
+      <!-- ========================= SIDEBAR ========================== -->
+      <aside th:replace="~{fragments/sidebar :: sidebar('notification')}"></aside>
 
-        <div class="sidebar-profile" id="sidebarProfileButton">
-          <img
-            id="sidebarProfileImage"
-            th:src="@{/images/man.jpg}"
-            alt="Profile"
-            class="profile-image"
-          />
+      <div th:replace="~{fragments/profile-editor :: profileEditor}"></div>
 
-          <div class="profile-info">
-            <div id="sidebarProfileName" class="profile-name">กำลังโหลด...</div>
+      <!-- =========================  MAIN CONTENT ========================== -->
 
-            <div id="sidebarProfileYear" class="profile-year"></div>
-
-            <div id="sidebarProfileDepartment" class="profile-department"></div>
-          </div>
-
-          <button type="button" class="profile-arrow">⌄</button>
-        </div>
-
-        <nav class="sidebar-menu">
-          <a href="/home" class="menu-item">
-            <span class="menu-icon">⌂</span>
-            <span>หน้าหลัก</span>
-          </a>
-
-          <a href="/friend" class="menu-item">
-            <span class="menu-icon">☺︎</span>
-            <span>เพื่อนของฉัน</span>
-          </a>
-
-          <a href="/notification" class="menu-item active">
-            <span class="menu-icon">☏</span>
-            <span>การแจ้งเตือน</span>
-
-            <span
-              id="notificationBadge"
-              class="notification-badge"
-              aria-label="จำนวนการแจ้งเตือน"
-              aria-live="polite"
-            ></span>
-          </a>
-
-          <a href="/setting" class="menu-item">
-            <span class="menu-icon">⚙</span>
-            <span>การตั้งค่า</span>
-          </a>
-        </nav>
-      </aside>
-
-      <!-- =====================================================
-           PROFILE MODAL
-      ====================================================== -->
-      <div class="profile-modal" id="profileModal">
-        <!-- profile-popup.js จัดการส่วนนี้ -->
-      </div>
-
-      <!-- =====================================================
-           MAIN CONTENT
-      ====================================================== -->
       <main class="page-content main-content">
-        <!-- ===================================================
-             FRIEND REQUEST
-        ==================================================== -->
+        <!-- ========================= FRIEND REQUEST ========================== -->
+
         <section class="notification-section">
           <div class="section-title">
-            <span class="title-icon"> ٩( ᐛ )( ᐖ )۶ </span>
-
+            <span class="title-icon">٩( ᐛ )( ᐖ )۶</span>
             <h1>คำขอเป็นเพื่อน</h1>
           </div>
 
           <div id="friendRequestList" class="friend-request-list"></div>
         </section>
 
-        <!-- ===================================================
-             MESSAGE
-        ==================================================== -->
+        <!-- ========================= MESSAGE ========================== -->
+
         <section class="notification-section message-section">
           <div class="section-title">
-            <span class="title-icon message-icon"> ✉︎ </span>
-
+            <span class="title-icon message-icon">✉︎</span>
             <h1>ข้อความ</h1>
           </div>
 
@@ -112,86 +52,50 @@
       </main>
     </div>
 
-    <!-- =======================================================
-         FRIEND PROFILE POPUP
-    ======================================================== -->
-    <div
-      id="friendProfileOverlay"
-      class="friend-profile-overlay"
-      aria-hidden="true"
-    >
+    <div id="friendProfileOverlay" class="friend-profile-overlay">
       <div class="friend-profile-popup">
         <button
           type="button"
           id="friendProfileClose"
           class="friend-profile-close"
-          aria-label="ปิด"
         >
           ×
         </button>
 
-        <!-- รูป -->
-        <div class="friend-profile-image-wrapper">
-          <img
-            id="friendProfileImage"
-            src="/images/man.jpg"
-            alt="Profile"
-            class="friend-profile-image"
-          />
-        </div>
+        <img
+          id="friendProfileImage"
+          src="/images/avatar-placeholder.svg"
+          alt="Profile"
+          class="friend-profile-image"
+        />
 
-        <!-- ชื่อ -->
-        <h2 id="friendProfileName" class="friend-profile-name">ชื่อเพื่อน</h2>
+        <h2 id="friendProfileName">ชื่อเพื่อน</h2>
 
-        <!-- ชั้นปี -->
-        <p id="friendProfileYear" class="friend-profile-year">ปี 1</p>
+        <p id="friendProfileYear"></p>
 
-        <!-- Interests -->
-        <div class="friend-profile-section">
-          <div class="friend-profile-section-title">
-            <span class="friend-profile-section-icon"> ♡ </span>
+        <div id="friendProfileInterests" class="friend-profile-interests"></div>
 
-            <span>ความสนใจ</span>
-          </div>
+        <p id="friendProfileBio" class="friend-profile-bio"></p>
 
-          <div
-            id="friendProfileInterests"
-            class="friend-profile-interests"
-          ></div>
-        </div>
-
-        <!-- Bio -->
-        <div class="friend-profile-section">
-          <div class="friend-profile-section-title">
-            <span class="friend-profile-section-icon"> ☺ </span>
-
-            <span>เกี่ยวกับฉัน</span>
-          </div>
-
-          <p id="friendProfileBio" class="friend-profile-bio"></p>
-        </div>
-
-        <!-- Action -->
-        <div class="friend-profile-actions">
-          <button
-            type="button"
-            id="friendProfileAction"
-            class="friend-profile-action"
-          >
-            <span id="friendProfileActionIcon" aria-hidden="true"> 👤+ </span>
-
-            <span id="friendProfileActionText"> เพิ่มเพื่อน </span>
-          </button>
-        </div>
+        <button
+          type="button"
+          id="friendProfileAction"
+          class="friend-profile-action"
+        >
+          <span id="friendProfileActionText"> เพิ่มเพื่อน </span>
+        </button>
       </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7/bundles/stomp.umd.min.js"></script>
-    <script th:src="@{/js/friend-profile-popup.js}"></script>
+    <script th:src="@{/js/friend-profile-popup.js(v=20)}"></script>
     <script th:src="@{/js/theme.js}"></script>
     <script th:src="@{/js/notification.js}"></script>
     <script th:src="@{/js/sidebar.js}"></script>
-    <script th:src="@{/js/profile-popup.js}"></script>
+    <script th:src="@{/js/profile-popup.js(v=11)}"></script>
+<div th:replace="~{fragments/global-call :: globalCall}"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7/bundles/stomp.umd.min.js"></script>
+<script th:src="@{/js/call.js(v=11)}"></script>
+<script th:src="@{/js/global-call.js}"></script>
   </body>
 </html>

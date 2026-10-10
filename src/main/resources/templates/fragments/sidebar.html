@@ -1,0 +1,114 @@
+<!doctype html>
+<html
+  lang="th"
+  xmlns:th="http://www.thymeleaf.org"
+>
+  <body>
+
+    <aside
+      th:fragment="sidebar(activePage)"
+      class="sidebar"
+    >
+      <div class="sidebar-logo">
+        <img
+          th:src="@{/images/Full_logo.png}"
+          alt="CP Friend Finder"
+        />
+      </div>
+
+      <div
+        class="sidebar-profile profile-loaded"
+        id="sidebarProfileButton"
+      >
+        <img
+          id="sidebarProfileImage"
+          th:src="${currentUser != null
+            and currentUser.image_url != null
+            and !#strings.isEmpty(currentUser.image_url)
+            ? currentUser.image_url
+            : '/images/avatar-placeholder.svg'}"
+          alt="Profile"
+          class="profile-image"
+        />
+
+        <div class="profile-info">
+          <div
+            id="sidebarProfileName"
+            class="profile-name"
+            th:text="${currentUser != null
+              ? currentUser.firstname + ' ' + currentUser.lastname
+              : ''}"
+          ></div>
+
+          <div
+            id="sidebarProfileYear"
+            class="profile-year"
+            th:text="${currentUser != null and currentUser.year != null
+              ? 'ปี ' + currentUser.year
+              : ''}"
+          ></div>
+
+          <div
+            id="sidebarProfileDepartment"
+            class="profile-department"
+            th:text="${currentUser != null
+              ? currentUser.department
+              : ''}"
+          ></div>
+        </div>
+
+        <button class="profile-arrow">⌄</button>
+      </div>
+
+      <nav class="sidebar-menu">
+        <a
+          href="/home"
+          class="menu-item"
+          th:classappend="${activePage == 'home'} ? ' active' : ''"
+        >
+          <span class="menu-icon">⌂</span>
+          <span>หน้าหลัก</span>
+        </a>
+
+        <a
+          href="/random"
+          class="menu-item"
+          th:classappend="${activePage == 'random'} ? ' active' : ''"
+        >
+          <span class="menu-icon">✌︎</span>
+          <span>สุ่มคุย</span>
+        </a>
+
+        <a
+          href="/friend"
+          class="menu-item"
+          th:classappend="${activePage == 'friend'} ? ' active' : ''"
+        >
+          <span class="menu-icon">☺︎</span>
+          <span>เพื่อนของฉัน</span>
+        </a>
+
+        <a
+          href="/notification"
+          class="menu-item"
+          th:classappend="${activePage == 'notification'} ? ' active' : ''"
+        >
+          <span class="menu-icon">☏</span>
+          <span>การแจ้งเตือน</span>
+        </a>
+
+        <a
+          href="/setting"
+          class="menu-item"
+          th:classappend="${activePage == 'setting'} ? ' active' : ''"
+        >
+          <span class="menu-icon">⚙</span>
+          <span>การตั้งค่า</span>
+        </a>
+        <button type="button" class="menu-item sidebar-logout" id="logoutButton"><span class="menu-icon" aria-hidden="true">↪</span><span>ออกจากระบบ</span></button>
+        <p id="logoutStatus" role="status" class="sidebar-logout-status"></p>
+      </nav>
+    </aside>
+
+  </body>
+</html>
