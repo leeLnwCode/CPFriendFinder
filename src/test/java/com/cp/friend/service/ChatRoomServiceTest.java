@@ -2,6 +2,7 @@ package com.cp.friend.service;
 
 import com.cp.friend.dto.request.CreateChatRoomRequest;
 import com.cp.friend.dto.request.UpdateChatRoomRequest;
+import com.cp.friend.dto.response.ChatRoomDetailResponse;
 import com.cp.friend.dto.response.ChatRoomSummaryResponse;
 import com.cp.friend.model.ChatRoom;
 import com.cp.friend.model.Friendship;
@@ -363,7 +364,7 @@ class ChatRoomServiceTest {
     }
 
     @Test
-    void joinRoom_existingMember_returnsConflict() {
+    void joinRoom_existingMember_returnsRoomIdempotently() {
         UUID userId = UUID.randomUUID();
         UUID roomId = UUID.randomUUID();
 
@@ -386,24 +387,17 @@ class ChatRoomServiceTest {
                 .isActiveMember(roomId, userId))
                 .thenReturn(true);
 
-        ResponseStatusException ex = assertThrows(
-                ResponseStatusException.class,
-                () -> chatRoomService.joinRoom(
-                        userId,
-                        roomId,
-                        null
-                )
+        // Membership survives page reloads: rejoining must not throw and must not
+        // create a duplicate member row — the existing room detail is returned as-is.
+        ChatRoomDetailResponse result = chatRoomService.joinRoom(
+                userId,
+                roomId,
+                null
         );
 
-        assertEquals(
-                HttpStatus.CONFLICT,
-                ex.getStatusCode()
-        );
+        assertEquals(roomId, result.id());
 
-        assertEquals(
-                "Already a member of this room",
-                ex.getReason()
-        );
+        verify(roomMemberRepository, never()).save(any());
     }
 
     @Test

@@ -1,11 +1,11 @@
 <!doctype html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
   <head>
     <link rel="stylesheet" th:href="@{/css/theme.css}" />
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>Login - CP Friend Finder</title>
+    <title>เข้าสู่ระบบ - CP Friend Finder</title>
 
     <link rel="stylesheet" th:href="@{/css/login.css}" />
     <link rel="stylesheet" th:href="@{/css/ui-refresh.css}" />
@@ -22,27 +22,27 @@
           class="login-logo"
         />
 
-        <h1>Welcome Back!</h1>
+        <h1>ยินดีต้อนรับกลับมา!</h1>
 
-        <p class="login-subtitle">Login to find your friends</p>
+        <p class="login-subtitle">ล็อกอินเพื่อเริ่มหาเพื่อนใหม่ ๆ</p>
 
         <!-- Login Form -->
         <form id="loginForm" class="login-form">
           <!-- Email -->
-          <label for="email"> Email address </label>
+          <label for="email"> อีเมล </label>
 
           <div class="input-wrapper">
             <img th:src="@{/images/email.png}" alt="Email" class="input-icon" />
             <input
               id="email"
               type="email"
-              placeholder="Enter your email"
+              placeholder="ใส่อีเมลของคุณ"
               required
             />
           </div>
 
           <!-- Password -->
-          <label for="password"> Password </label>
+          <label for="password"> รหัสผ่าน </label>
 
           <div class="input-wrapper">
             <img
@@ -53,29 +53,29 @@
             <input
               id="password"
               type="password"
-              placeholder="Enter your password"
+              placeholder="ใส่รหัสผ่านของคุณ"
               required
             />
 
             <button type="button" id="showPassword" class="show-password">
-              Show
+              แสดง
             </button>
           </div>
 
           <!-- Login Button -->
-          <button type="submit" class="login-button">Login now →</button>
+          <button type="submit" class="login-button">เข้าสู่ระบบ →</button>
         </form>
 
         <!-- OR -->
         <div class="or-divider">
-          <span>OR</span>
+          <span>หรือ</span>
         </div>
 
         <!-- Register -->
         <div class="signup-link">
-          <span>Don't have an account?</span>
+          <span>ยังไม่มีบัญชี?</span>
 
-          <a th:href="@{/register}"> Signup now </a>
+          <a th:href="@{/register}"> สมัครเลย </a>
         </div>
       </div>
 
@@ -85,6 +85,6 @@
       </div>
     </div>
 
-    <script th:src="@{/js/login.js(v=7)}"></script>
+    <script th:src="@{/js/login.js(v=8)}"></script>
   </body>
 </html>

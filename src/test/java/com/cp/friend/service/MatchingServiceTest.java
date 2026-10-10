@@ -1,6 +1,8 @@
 package com.cp.friend.service;
 
 import com.cp.friend.dto.matching.MatchCandidateResponse;
+import com.cp.friend.model.FriendRequest;
+import com.cp.friend.model.Friendship;
 import com.cp.friend.model.Interest;
 import com.cp.friend.model.User;
 import com.cp.friend.model.UserInterest;
@@ -104,22 +106,17 @@ class MatchingServiceTest {
                 createUserInterest(baseId, "Web")
         ));
 
+        // Service โหลด interests ของ candidate แบบ batch ผ่าน findByUserIdsWithInterest
         // Candidate 1 has: Java, AI, Mobile -> 2/3 = 66.67%
-        when(userInterestRepository.findByUserIdWithInterest(cand1Id)).thenReturn(List.of(
+        // Candidate 2 has: Java, AI, Web -> 3/3 = 100.0%
+        when(userInterestRepository.findByUserIdsWithInterest(any())).thenReturn(List.of(
                 createUserInterest(cand1Id, "Java"),
                 createUserInterest(cand1Id, "AI"),
-                createUserInterest(cand1Id, "Mobile")
-        ));
-
-        // Candidate 2 has: Java, AI, Web -> 3/3 = 100.0%
-        when(userInterestRepository.findByUserIdWithInterest(cand2Id)).thenReturn(List.of(
+                createUserInterest(cand1Id, "Mobile"),
                 createUserInterest(cand2Id, "Java"),
                 createUserInterest(cand2Id, "AI"),
                 createUserInterest(cand2Id, "Web")
         ));
-
-        when(friendshipRepository.existsBetween(any(), any())).thenReturn(false);
-        when(friendRequestRepository.existsPendingBetween(any(), any())).thenReturn(false);
 
         List<MatchCandidateResponse> results = matchingService.recommendFriends(baseId, 10);
 
@@ -150,12 +147,18 @@ class MatchingServiceTest {
         when(userRepository.findAllActive()).thenReturn(List.of(baseUser, candidateUser1, candidateUser2));
         when(userInterestRepository.findByUserIdWithInterest(baseId)).thenReturn(Collections.emptyList());
 
-        // Candidate 1 is already a friend
-        when(friendshipRepository.existsBetween(baseId, friendId)).thenReturn(true);
+        // Candidate 1 is already a friend — service อ่านรายการเพื่อนจาก findAllByMember
+        Friendship friendship = new Friendship();
+        friendship.setUser(baseUser);
+        friendship.setFriend(candidateUser1);
+        when(friendshipRepository.findAllByMember(baseId)).thenReturn(List.of(friendship));
 
-        // Candidate 2 has a pending request
-        when(friendshipRepository.existsBetween(baseId, pendingId)).thenReturn(false);
-        when(friendRequestRepository.existsPendingBetween(baseId, pendingId)).thenReturn(true);
+        // Candidate 2 has a pending request — service อ่านจาก friend_requests ทั้งสองทิศ
+        FriendRequest pendingRequest = new FriendRequest();
+        pendingRequest.setSender(candidateUser2);
+        pendingRequest.setReceiver(baseUser);
+        when(friendRequestRepository.findByReceiverIdAndStatus(baseId, FriendRequest.Status.PENDING))
+                .thenReturn(List.of(pendingRequest));
 
         List<MatchCandidateResponse> results = matchingService.recommendFriends(baseId, 10);
 

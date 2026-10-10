@@ -3,6 +3,7 @@ package com.cp.friend.controller;
 import com.cp.friend.dto.request.CreateChatRoomRequest;
 import com.cp.friend.exception.GlobalExceptionHandler;
 import com.cp.friend.service.ChatRoomService;
+import com.cp.friend.service.RoomRealtimeService;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,13 +27,17 @@ class ChatRoomControllerMvcTest {
     @Mock
     private ChatRoomService chatRoomService;
 
+    @Mock
+    private RoomRealtimeService roomRealtimeService;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
         ChatRoomController controller =
                 new ChatRoomController(
-                        chatRoomService
+                        chatRoomService,
+                        roomRealtimeService
                 );
 
         mockMvc = MockMvcBuilders

@@ -9,12 +9,14 @@ import org.springframework.boot.test.context.SpringBootTest;
         "AWS_SECRET_ACCESS_KEY=test-secret-key",
         "AWS_REGION=us-east-1",
 
-        "spring.datasource.url=jdbc:h2:mem:cpfriendfinder;MODE=PostgreSQL;DB_CLOSE_DELAY=-1",
+        "spring.datasource.url=jdbc:h2:mem:cpfriendfinder;MODE=PostgreSQL;DB_CLOSE_DELAY=-1;NON_KEYWORDS=YEAR",
         "spring.datasource.driver-class-name=org.h2.Driver",
         "spring.datasource.username=sa",
         "spring.datasource.password=",
 
-        "spring.jpa.hibernate.ddl-auto=none"
+        // schema.sql เป็น PostgreSQL-only (partial index) — ให้ Hibernate สร้าง schema จาก entity แทน
+        "spring.sql.init.mode=never",
+        "spring.jpa.hibernate.ddl-auto=create-drop"
 })
 class FriendApplicationTests {
 

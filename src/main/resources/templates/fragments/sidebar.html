@@ -57,7 +57,7 @@
           ></div>
         </div>
 
-        <button class="profile-arrow">⌄</button>
+        <button class="profile-arrow" type="button" aria-label="เปิดเมนูโปรไฟล์">⌄</button>
       </div>
 
       <nav class="sidebar-menu">
@@ -109,6 +109,24 @@
         <p id="logoutStatus" role="status" class="sidebar-logout-status"></p>
       </nav>
     </aside>
+
+    <script>
+      // session หมดอายุ (API ตอบ 401) → พากลับหน้า login อัตโนมัติ
+      (function () {
+        const originalFetch = window.fetch;
+        window.fetch = function (...args) {
+          return originalFetch.apply(this, args).then(function (response) {
+            if (
+              response.status === 401 &&
+              !window.location.pathname.startsWith("/login")
+            ) {
+              window.location.href = "/login?expired=1";
+            }
+            return response;
+          });
+        };
+      })();
+    </script>
 
   </body>
 </html>

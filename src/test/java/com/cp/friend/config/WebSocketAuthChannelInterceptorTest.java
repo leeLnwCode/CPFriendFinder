@@ -1,8 +1,8 @@
 package com.cp.friend.config;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
 
 import java.security.Principal;
@@ -16,6 +16,9 @@ import org.springframework.messaging.simp.stomp.StompCommand;
 import org.springframework.messaging.simp.stomp.StompHeaderAccessor;
 import org.springframework.messaging.support.MessageBuilder;
 import org.springframework.messaging.support.MessageHeaderAccessor;
+import org.springframework.security.access.AccessDeniedException;
+
+import com.cp.friend.service.RoomMembershipService;
 
 class WebSocketAuthChannelInterceptorTest {
 
@@ -25,7 +28,8 @@ class WebSocketAuthChannelInterceptorTest {
     @BeforeEach
     void setUp() {
         channel = mock(MessageChannel.class);
-        interceptor = new WebSocketAuthChannelInterceptor();
+        interceptor = new WebSocketAuthChannelInterceptor(
+                mock(RoomMembershipService.class));
     }
 
     @Test
@@ -68,16 +72,9 @@ class WebSocketAuthChannelInterceptorTest {
                         new byte[0],
                         accessor.getMessageHeaders());
 
-        Message<?> result = interceptor.preSend(message, channel);
-
-        StompHeaderAccessor resultAccessor =
-                MessageHeaderAccessor.getAccessor(
-                        result,
-                        StompHeaderAccessor.class);
-
-        assertNotNull(resultAccessor);
-        assertNull(
-                resultAccessor.getUser(),
-                "Unauthenticated client must not become authenticated from STOMP login header");
+        assertThrows(
+                AccessDeniedException.class,
+                () -> interceptor.preSend(message, channel),
+                "Unauthenticated client must not be trusted from STOMP login header");
     }
 }

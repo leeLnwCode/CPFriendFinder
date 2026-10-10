@@ -537,7 +537,8 @@ class ChatMessageServiceTest {
                         payload("hello", "TEXT")
                 );
 
-        assertNull(result.id());
+        // Broadcast ไม่ persist ลง DB แต่สร้าง transport id ให้ client ใช้เรียงลำดับ/กัน duplicate
+        assertNotNull(result.id());
         assertEquals("hello", result.content());
 
         verify(messageRepository, never())

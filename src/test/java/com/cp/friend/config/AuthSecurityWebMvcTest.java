@@ -7,7 +7,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 import com.cp.friend.controller.AuthController;
+import com.cp.friend.mapper.UserMapper;
 import com.cp.friend.service.AuthService;
+import com.cp.friend.service.UserService;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,6 +39,12 @@ class AuthSecurityWebMvcTest {
 
     @MockitoBean
     private AuthService authService;
+
+    @MockitoBean
+    private UserService userService;
+
+    @MockitoBean
+    private UserMapper userMapper;
 
     @Test
     void publicPages_areNotBlockedBySecurity() throws Exception {
