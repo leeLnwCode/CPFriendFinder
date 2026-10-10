@@ -32,5 +32,6 @@ public abstract class AbstractMessageContentStrategy implements MessageContentSt
     protected abstract String transform(String content);
 
     // ให้ resolver หา strategy จาก type ได้
+    @Override
     public abstract Message.MessageType supportedType();
 }
