@@ -42,3 +42,10 @@ src/main/resources/application.properties
 ### Robot Framework / E2E ###
 .venv-robot/
 test/e2e/robot/results/
+server.log
+
+# Private TURN credentials
+.turn-servers.json
+
+# Private Cloudflare TURN key
+.cloudflare-turn.json
