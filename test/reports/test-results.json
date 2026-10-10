@@ -2494,207 +2494,6 @@
     ],
     "note": "Earlier real deployment smoke run; separate from the upcoming full E2E round."
   },
-  "nextFullE2E": [
-    {
-      "id": "E2E-001",
-      "name": "Login Page Loads",
-      "thaiName": "หน้าเข้าสู่ระบบโหลดได้",
-      "status": "PASS",
-      "sourceFile": "test\\e2e\\robot\\tests\\login_smoke.robot",
-      "start": "2026-10-10T18:25:09.754857",
-      "seconds": 1.064919,
-      "message": "",
-      "robotName": "E2E-001 Login Page Loads",
-      "retryObservations": [],
-      "expected": "แสดงหน้า login และช่องกรอกครบ"
-    },
-    {
-      "id": "E2E-002",
-      "name": "Password Can Be Shown And Hidden",
-      "thaiName": "แสดงและซ่อนรหัสผ่าน",
-      "status": "PASS",
-      "sourceFile": "test\\e2e\\robot\\tests\\login_smoke.robot",
-      "start": "2026-10-10T18:25:10.825038",
-      "seconds": 0.783837,
-      "message": "",
-      "robotName": "E2E-002 Password Can Be Shown And Hidden",
-      "retryObservations": [],
-      "expected": "เปลี่ยนชนิดช่องรหัสผ่านเมื่อกด Show/Hide"
-    },
-    {
-      "id": "E2E-003",
-      "name": "Register Link Opens Register Page",
-      "thaiName": "ลิงก์สมัครสมาชิก",
-      "status": "PASS",
-      "sourceFile": "test\\e2e\\robot\\tests\\login_smoke.robot",
-      "start": "2026-10-10T18:25:11.615507",
-      "seconds": 1.078888,
-      "message": "",
-      "robotName": "E2E-003 Register Link Opens Register Page",
-      "retryObservations": [],
-      "expected": "เปิดหน้า register จากลิงก์ได้"
-    },
-    {
-      "id": "E2E-004",
-      "name": "Register And Login Successfully",
-      "thaiName": "สมัครสมาชิก กรอกข้อมูลให้อัตโนมัติ และเข้าสู่ระบบ",
-      "status": "PASS",
-      "sourceFile": "test\\e2e\\robot\\tests\\auth_flow.robot",
-      "start": "2026-10-10T18:24:29.604027",
-      "seconds": 3.420732,
-      "message": "",
-      "robotName": "E2E-004 Register And Login Successfully",
-      "retryObservations": [],
-      "expected": "สมัครสำเร็จ กลับ login พร้อมกรอกข้อมูล และเข้าสู่ home ได้"
-    },
-    {
-      "id": "E2E-005",
-      "name": "Selected Interest Is Saved After Registration",
-      "thaiName": "บันทึกความสนใจหลังสมัคร",
-      "status": "PASS",
-      "sourceFile": "test\\e2e\\robot\\tests\\register_interest.robot",
-      "start": "2026-10-10T18:25:13.778211",
-      "seconds": 3.209394,
-      "message": "",
-      "robotName": "E2E-005 Selected Interest Is Saved After Registration",
-      "retryObservations": [],
-      "expected": "API คืนความสนใจ Gaming ที่เลือกตอนสมัคร"
-    },
-    {
-      "id": "E2E-006",
-      "name": "Home Loads Real Rooms And Search Controls",
-      "thaiName": "หน้าหลักและข้อมูลห้องจริง",
-      "status": "PASS",
-      "sourceFile": "test\\e2e\\robot\\tests\\authenticated_regression.robot",
-      "start": "2026-10-10T18:24:37.762055",
-      "seconds": 1.419008,
-      "message": "",
-      "robotName": "E2E-006 Home Loads Real Rooms And Search Controls",
-      "retryObservations": [],
-      "expected": "แสดงตัวกรองห้องและ API discover คืนรายการ"
-    },
-    {
-      "id": "E2E-007",
-      "name": "Friends Page Handles Account Without Friends",
-      "thaiName": "หน้าเพื่อนเมื่อยังไม่มีเพื่อน",
-      "status": "PASS",
-      "sourceFile": "test\\e2e\\robot\\tests\\authenticated_regression.robot",
-      "start": "2026-10-10T18:24:39.187067",
-      "seconds": 1.496242,
-      "message": "",
-      "robotName": "E2E-007 Friends Page Handles Account Without Friends",
-      "retryObservations": [],
-      "expected": "หน้าเพื่อนแสดงได้และ API คืนรายการว่างสำหรับบัญชีใหม่"
-    },
-    {
-      "id": "E2E-008",
-      "name": "Notifications Page And API Load",
-      "thaiName": "หน้าการแจ้งเตือน",
-      "status": "PASS",
-      "sourceFile": "test\\e2e\\robot\\tests\\authenticated_regression.robot",
-      "start": "2026-10-10T18:24:40.689871",
-      "seconds": 1.738393,
-      "message": "",
-      "robotName": "E2E-008 Notifications Page And API Load",
-      "retryObservations": [],
-      "expected": "หน้าแจ้งเตือนเปิดได้และ API คืนรายการ"
-    },
-    {
-      "id": "E2E-009",
-      "name": "Discovery Loads With Or Without Candidates",
-      "thaiName": "หน้าสุ่มคุยและข้อมูลผู้แนะนำ",
-      "status": "PASS",
-      "sourceFile": "test\\e2e\\robot\\tests\\authenticated_regression.robot",
-      "start": "2026-10-10T18:24:42.435954",
-      "seconds": 2.126248,
-      "message": "",
-      "robotName": "E2E-009 Discovery Loads With Or Without Candidates",
-      "retryObservations": [
-        "'กำลังค้นหาเพื่อน...' does not match '^(พบบัญชีจริง|ไม่มีบัญชีที่ตรงกับตัวกรอง)'"
-      ],
-      "expected": "API discover คืนรายการและสถานะสิ้นสุดการโหลดสำเร็จ"
-    },
-    {
-      "id": "E2E-010",
-      "name": "Settings Opens Own Editable Profile",
-      "thaiName": "เปิดหน้าแก้ไขโปรไฟล์",
-      "status": "PASS",
-      "sourceFile": "test\\e2e\\robot\\tests\\authenticated_regression.robot",
-      "start": "2026-10-10T18:24:44.573417",
-      "seconds": 2.269743,
-      "message": "",
-      "robotName": "E2E-010 Settings Opens Own Editable Profile",
-      "retryObservations": [],
-      "expected": "เปิดตัวแก้ไขโปรไฟล์พร้อมช่อง bio ความสนใจ และ gallery"
-    },
-    {
-      "id": "E2E-011",
-      "name": "Bio Persists After Reload",
-      "thaiName": "บันทึกเกี่ยวกับฉันและโหลดซ้ำ",
-      "status": "PASS",
-      "sourceFile": "test\\e2e\\robot\\tests\\authenticated_regression.robot",
-      "start": "2026-10-10T18:24:46.851200",
-      "seconds": 6.007028,
-      "message": "",
-      "robotName": "E2E-011 Bio Persists After Reload",
-      "retryObservations": [],
-      "expected": "bio ที่บันทึกยังอยู่หลัง reload และตรงกับ API"
-    },
-    {
-      "id": "E2E-012",
-      "name": "Interest Removal And Addition Persist",
-      "thaiName": "ลบและเพิ่มความสนใจ",
-      "status": "PASS",
-      "sourceFile": "test\\e2e\\robot\\tests\\authenticated_regression.robot",
-      "start": "2026-10-10T18:24:52.867119",
-      "seconds": 8.772077,
-      "message": "",
-      "robotName": "E2E-012 Interest Removal And Addition Persist",
-      "retryObservations": [],
-      "expected": "ลบและเพิ่ม Gaming แล้วสถานะตรงทั้งหลัง reload และ API"
-    },
-    {
-      "id": "E2E-013",
-      "name": "Mobile Home Has No Horizontal Page Overflow",
-      "thaiName": "หน้าจอมือถือไม่ล้นแนวนอน",
-      "status": "PASS",
-      "sourceFile": "test\\e2e\\robot\\tests\\authenticated_regression.robot",
-      "start": "2026-10-10T18:25:01.644666",
-      "seconds": 1.255164,
-      "message": "",
-      "robotName": "E2E-013 Mobile Home Has No Horizontal Page Overflow",
-      "retryObservations": [],
-      "expected": "หน้า home ขนาด 390×844 ไม่ล้นแนวนอน"
-    },
-    {
-      "id": "E2E-014",
-      "name": "Logout Invalidates Session",
-      "thaiName": "ออกจากระบบและยกเลิก session",
-      "status": "PASS",
-      "sourceFile": "test\\e2e\\robot\\tests\\authenticated_regression.robot",
-      "start": "2026-10-10T18:25:02.911125",
-      "seconds": 2.19177,
-      "message": "",
-      "robotName": "E2E-014 Logout Invalidates Session",
-      "retryObservations": [],
-      "expected": "logout กลับ login และ API users/me ตอบ 401"
-    },
-    {
-      "id": "E2E-015",
-      "name": "Lost Session Returns To Login On Unauthorized API",
-      "thaiName": "กลับหน้า login เมื่อ API ตอบ 401 หลังลบ cookie",
-      "status": "PASS",
-      "sourceFile": "test\\e2e\\robot\\tests\\authenticated_regression.robot",
-      "start": "2026-10-10T18:25:05.110627",
-      "seconds": 3.278196,
-      "message": "",
-      "robotName": "E2E-015 Lost Session Returns To Login On Unauthorized API",
-      "retryObservations": [
-        "URL 'https://cpfriendfinder-final-production.up.railway.app/home' (str) should be 'https://cpfriendfinder-final-production.up.railway.app/login' (str)"
-      ],
-      "expected": "หลังลบ cookie และ API 401 กลับ login พร้อมล้าง currentUser"
-    }
-  ],
   "evidence": [
     {
       "file": "C:\\Users\\User\\Desktop\\CPFriendFinder-RestoreTests\\target\\surefire-reports\\TEST-com.cp.friend.config.AuthSecurityWebMvcTest.xml",
@@ -2850,16 +2649,16 @@
     }
   ],
   "workbook": {
-    "path": "C:\\Users\\User\\Desktop\\CPFriendFinder-RestoreTests\\test\\test-cases\\CPFriendFinder_TestCases.xlsx",
-    "sha256": "1bb77bab58c3707d04b138e68519e763c64b47da1504d3350aa7cf4c6fb219d0",
+    "path": "test/test-cases/CPFriendFinder_TestCases.xlsx",
+    "sha256": "839043879e81abaa124241469145759c748cf6f814b10ce02c41e26563d319ea",
     "modified": true,
     "output": "test/test-cases/CPFriendFinder_TestCases.xlsx",
     "preservationChecks": {
-      "updates": 86,
+      "updates": 136,
       "newMasterRows": 0,
       "originalValuesOutsideEditScopePreserved": true,
       "originalCellStylesPreserved": true,
-      "otherZipPartsByteIdentical": 26,
+      "otherZipPartsByteIdentical": 27,
       "sheetOrderMergesFreezePanesPreserved": true,
       "sourceOriginalUnchanged": true
     }
@@ -3891,5 +3690,228 @@
     "sheetOrderMergesFreezePanesPreserved": true,
     "sourceOriginalUnchanged": true
   },
-  "outputWorkbook": "test/test-cases/CPFriendFinder_TestCases.xlsx"
+  "outputWorkbook": "test/test-cases/CPFriendFinder_TestCases.xlsx",
+  "e2eCases": [
+    {
+      "id": "E2E-001",
+      "name": "Login Page Loads",
+      "thaiName": "หน้าเข้าสู่ระบบโหลดได้",
+      "status": "PASS",
+      "sourceFile": "test\\e2e\\robot\\tests\\login_smoke.robot",
+      "start": "2026-10-10T18:25:09.754857",
+      "seconds": 1.064919,
+      "message": "",
+      "robotName": "E2E-001 Login Page Loads",
+      "retryObservations": [],
+      "expected": "แสดงหน้า login และช่องกรอกครบ"
+    },
+    {
+      "id": "E2E-002",
+      "name": "Password Can Be Shown And Hidden",
+      "thaiName": "แสดงและซ่อนรหัสผ่าน",
+      "status": "PASS",
+      "sourceFile": "test\\e2e\\robot\\tests\\login_smoke.robot",
+      "start": "2026-10-10T18:25:10.825038",
+      "seconds": 0.783837,
+      "message": "",
+      "robotName": "E2E-002 Password Can Be Shown And Hidden",
+      "retryObservations": [],
+      "expected": "เปลี่ยนชนิดช่องรหัสผ่านเมื่อกด Show/Hide"
+    },
+    {
+      "id": "E2E-003",
+      "name": "Register Link Opens Register Page",
+      "thaiName": "ลิงก์สมัครสมาชิก",
+      "status": "PASS",
+      "sourceFile": "test\\e2e\\robot\\tests\\login_smoke.robot",
+      "start": "2026-10-10T18:25:11.615507",
+      "seconds": 1.078888,
+      "message": "",
+      "robotName": "E2E-003 Register Link Opens Register Page",
+      "retryObservations": [],
+      "expected": "เปิดหน้า register จากลิงก์ได้"
+    },
+    {
+      "id": "E2E-004",
+      "name": "Register And Login Successfully",
+      "thaiName": "สมัครสมาชิก กรอกข้อมูลให้อัตโนมัติ และเข้าสู่ระบบ",
+      "status": "PASS",
+      "sourceFile": "test\\e2e\\robot\\tests\\auth_flow.robot",
+      "start": "2026-10-10T18:24:29.604027",
+      "seconds": 3.420732,
+      "message": "",
+      "robotName": "E2E-004 Register And Login Successfully",
+      "retryObservations": [],
+      "expected": "สมัครสำเร็จ กลับ login พร้อมกรอกข้อมูล และเข้าสู่ home ได้"
+    },
+    {
+      "id": "E2E-005",
+      "name": "Selected Interest Is Saved After Registration",
+      "thaiName": "บันทึกความสนใจหลังสมัคร",
+      "status": "PASS",
+      "sourceFile": "test\\e2e\\robot\\tests\\register_interest.robot",
+      "start": "2026-10-10T18:25:13.778211",
+      "seconds": 3.209394,
+      "message": "",
+      "robotName": "E2E-005 Selected Interest Is Saved After Registration",
+      "retryObservations": [],
+      "expected": "API คืนความสนใจ Gaming ที่เลือกตอนสมัคร"
+    },
+    {
+      "id": "E2E-006",
+      "name": "Home Loads Real Rooms And Search Controls",
+      "thaiName": "หน้าหลักและข้อมูลห้องจริง",
+      "status": "PASS",
+      "sourceFile": "test\\e2e\\robot\\tests\\authenticated_regression.robot",
+      "start": "2026-10-10T18:24:37.762055",
+      "seconds": 1.419008,
+      "message": "",
+      "robotName": "E2E-006 Home Loads Real Rooms And Search Controls",
+      "retryObservations": [],
+      "expected": "แสดงตัวกรองห้องและ API discover คืนรายการ"
+    },
+    {
+      "id": "E2E-007",
+      "name": "Friends Page Handles Account Without Friends",
+      "thaiName": "หน้าเพื่อนเมื่อยังไม่มีเพื่อน",
+      "status": "PASS",
+      "sourceFile": "test\\e2e\\robot\\tests\\authenticated_regression.robot",
+      "start": "2026-10-10T18:24:39.187067",
+      "seconds": 1.496242,
+      "message": "",
+      "robotName": "E2E-007 Friends Page Handles Account Without Friends",
+      "retryObservations": [],
+      "expected": "หน้าเพื่อนแสดงได้และ API คืนรายการว่างสำหรับบัญชีใหม่"
+    },
+    {
+      "id": "E2E-008",
+      "name": "Notifications Page And API Load",
+      "thaiName": "หน้าการแจ้งเตือน",
+      "status": "PASS",
+      "sourceFile": "test\\e2e\\robot\\tests\\authenticated_regression.robot",
+      "start": "2026-10-10T18:24:40.689871",
+      "seconds": 1.738393,
+      "message": "",
+      "robotName": "E2E-008 Notifications Page And API Load",
+      "retryObservations": [],
+      "expected": "หน้าแจ้งเตือนเปิดได้และ API คืนรายการ"
+    },
+    {
+      "id": "E2E-009",
+      "name": "Discovery Loads With Or Without Candidates",
+      "thaiName": "หน้าสุ่มคุยและข้อมูลผู้แนะนำ",
+      "status": "PASS",
+      "sourceFile": "test\\e2e\\robot\\tests\\authenticated_regression.robot",
+      "start": "2026-10-10T18:24:42.435954",
+      "seconds": 2.126248,
+      "message": "",
+      "robotName": "E2E-009 Discovery Loads With Or Without Candidates",
+      "retryObservations": [
+        "'กำลังค้นหาเพื่อน...' does not match '^(พบบัญชีจริง|ไม่มีบัญชีที่ตรงกับตัวกรอง)'"
+      ],
+      "expected": "API discover คืนรายการและสถานะสิ้นสุดการโหลดสำเร็จ"
+    },
+    {
+      "id": "E2E-010",
+      "name": "Settings Opens Own Editable Profile",
+      "thaiName": "เปิดหน้าแก้ไขโปรไฟล์",
+      "status": "PASS",
+      "sourceFile": "test\\e2e\\robot\\tests\\authenticated_regression.robot",
+      "start": "2026-10-10T18:24:44.573417",
+      "seconds": 2.269743,
+      "message": "",
+      "robotName": "E2E-010 Settings Opens Own Editable Profile",
+      "retryObservations": [],
+      "expected": "เปิดตัวแก้ไขโปรไฟล์พร้อมช่อง bio ความสนใจ และ gallery"
+    },
+    {
+      "id": "E2E-011",
+      "name": "Bio Persists After Reload",
+      "thaiName": "บันทึกเกี่ยวกับฉันและโหลดซ้ำ",
+      "status": "PASS",
+      "sourceFile": "test\\e2e\\robot\\tests\\authenticated_regression.robot",
+      "start": "2026-10-10T18:24:46.851200",
+      "seconds": 6.007028,
+      "message": "",
+      "robotName": "E2E-011 Bio Persists After Reload",
+      "retryObservations": [],
+      "expected": "bio ที่บันทึกยังอยู่หลัง reload และตรงกับ API"
+    },
+    {
+      "id": "E2E-012",
+      "name": "Interest Removal And Addition Persist",
+      "thaiName": "ลบและเพิ่มความสนใจ",
+      "status": "PASS",
+      "sourceFile": "test\\e2e\\robot\\tests\\authenticated_regression.robot",
+      "start": "2026-10-10T18:24:52.867119",
+      "seconds": 8.772077,
+      "message": "",
+      "robotName": "E2E-012 Interest Removal And Addition Persist",
+      "retryObservations": [],
+      "expected": "ลบและเพิ่ม Gaming แล้วสถานะตรงทั้งหลัง reload และ API"
+    },
+    {
+      "id": "E2E-013",
+      "name": "Mobile Home Has No Horizontal Page Overflow",
+      "thaiName": "หน้าจอมือถือไม่ล้นแนวนอน",
+      "status": "PASS",
+      "sourceFile": "test\\e2e\\robot\\tests\\authenticated_regression.robot",
+      "start": "2026-10-10T18:25:01.644666",
+      "seconds": 1.255164,
+      "message": "",
+      "robotName": "E2E-013 Mobile Home Has No Horizontal Page Overflow",
+      "retryObservations": [],
+      "expected": "หน้า home ขนาด 390×844 ไม่ล้นแนวนอน"
+    },
+    {
+      "id": "E2E-014",
+      "name": "Logout Invalidates Session",
+      "thaiName": "ออกจากระบบและยกเลิก session",
+      "status": "PASS",
+      "sourceFile": "test\\e2e\\robot\\tests\\authenticated_regression.robot",
+      "start": "2026-10-10T18:25:02.911125",
+      "seconds": 2.19177,
+      "message": "",
+      "robotName": "E2E-014 Logout Invalidates Session",
+      "retryObservations": [],
+      "expected": "logout กลับ login และ API users/me ตอบ 401"
+    },
+    {
+      "id": "E2E-015",
+      "name": "Lost Session Returns To Login On Unauthorized API",
+      "thaiName": "กลับหน้า login เมื่อ API ตอบ 401 หลังลบ cookie",
+      "status": "PASS",
+      "sourceFile": "test\\e2e\\robot\\tests\\authenticated_regression.robot",
+      "start": "2026-10-10T18:25:05.110627",
+      "seconds": 3.278196,
+      "message": "",
+      "robotName": "E2E-015 Lost Session Returns To Login On Unauthorized API",
+      "retryObservations": [
+        "URL 'https://cpfriendfinder-final-production.up.railway.app/home' (str) should be 'https://cpfriendfinder-final-production.up.railway.app/login' (str)"
+      ],
+      "expected": "หลังลบ cookie และ API 401 กลับ login พร้อมล้าง currentUser"
+    }
+  ],
+  "summary": {
+    "junit": {
+      "total": 240,
+      "pass": 240
+    },
+    "robot": {
+      "total": 15,
+      "pass": 15
+    },
+    "manual": {
+      "total": 19,
+      "pass": 19,
+      "source": "ผู้ทดสอบรายงาน"
+    },
+    "totalResults": 274,
+    "totalPass": 274,
+    "staticResources": {
+      "total": 52,
+      "pass": 52,
+      "countedIn274": false
+    }
+  }
 }

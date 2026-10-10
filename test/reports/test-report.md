@@ -1,5 +1,7 @@
 # รายงานทดสอบ CPFriendFinder
 
+[หน้ารวมงานทดสอบ](../README.md) · [แผนทดสอบ](../test-plan/test-plan.md) · [Excel รายเคสและประวัติ](../test-cases/CPFriendFinder_TestCases.xlsx) · [รายงาน HTML](test-report.html) · [ข้อมูลผล JSON](test-results.json)
+
 วันที่สรุป: 10 ตุลาคม 2026 (Asia/Bangkok)
 เว็บที่ทดสอบ: https://cpfriendfinder-final-production.up.railway.app
 ผู้ทดสอบ manual: จิรัชญา เป้าจันทึก
