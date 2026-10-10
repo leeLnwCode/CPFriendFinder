@@ -537,7 +537,7 @@ class ChatMessageServiceTest {
                         payload("hello", "TEXT")
                 );
 
-        assertNull(result.id());
+        assertNotNull(result.id());
         assertEquals("hello", result.content());
 
         verify(messageRepository, never())

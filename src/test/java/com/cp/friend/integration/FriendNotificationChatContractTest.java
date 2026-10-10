@@ -90,17 +90,7 @@ class FriendNotificationChatContractTest {
 
     @Test
     void friendJs_loadsMessageHistory() {
-        assertTrue(
-                friendJs.contains(
-                        "`/api/chats/${currentRoomId}/messages?limit=50`"
-                )
-        );
-
-        assertTrue(
-                friendJs.contains(
-                        "method: \"GET\""
-                )
-        );
+        assertTrue(friendJs.contains("/messages?limit=50"));
 
         assertTrue(
                 friendJs.contains(

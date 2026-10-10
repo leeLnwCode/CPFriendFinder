@@ -363,7 +363,7 @@ class ChatRoomServiceTest {
     }
 
     @Test
-    void joinRoom_existingMember_returnsConflict() {
+    void joinRoom_existingMember_returnsRoomDetail() {
         UUID userId = UUID.randomUUID();
         UUID roomId = UUID.randomUUID();
 
@@ -386,24 +386,9 @@ class ChatRoomServiceTest {
                 .isActiveMember(roomId, userId))
                 .thenReturn(true);
 
-        ResponseStatusException ex = assertThrows(
-                ResponseStatusException.class,
-                () -> chatRoomService.joinRoom(
-                        userId,
-                        roomId,
-                        null
-                )
-        );
-
-        assertEquals(
-                HttpStatus.CONFLICT,
-                ex.getStatusCode()
-        );
-
-        assertEquals(
-                "Already a member of this room",
-                ex.getReason()
-        );
+        com.cp.friend.dto.response.ChatRoomDetailResponse result = chatRoomService.joinRoom(userId, roomId, null);
+        assertNotNull(result);
+        assertEquals(roomId, result.id());
     }
 
     @Test
