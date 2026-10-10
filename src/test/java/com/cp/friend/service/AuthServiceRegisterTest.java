@@ -36,7 +36,7 @@ class AuthServiceRegisterTest {
     private AuthService authService;
 
     @Mock
-    private UserInterestService userInterestService;
+    private UserInterests userInterestService;
 
     @BeforeEach
     void setUp() {

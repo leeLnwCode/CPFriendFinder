@@ -30,7 +30,7 @@ class AuthServiceLoginTest {
     private StoragePort storagePort;
 
     @Mock
-    private UserInterestService userInterestService;
+    private UserInterests userInterestService;
 
     private AuthService authService;
 

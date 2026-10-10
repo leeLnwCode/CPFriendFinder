@@ -35,8 +35,7 @@ class ChatRoomControllerMvcTest {
 
         ChatRoomController controller =
                 new ChatRoomController(
-                        chatRoomService,
-                        realtime
+                        chatRoomService, realtime
                 );
 
         mockMvc = MockMvcBuilders
@@ -98,6 +97,8 @@ class ChatRoomControllerMvcTest {
                         roomId,
                         null
                 );
+        verify(realtime).roomsChanged();
+        verify(realtime).membersChanged(roomId);
 
         mockMvc.perform(
                         post(
@@ -115,6 +116,8 @@ class ChatRoomControllerMvcTest {
                         userId,
                         roomId
                 );
+        verify(realtime).removeMember(roomId, userId);
+        verify(realtime, times(2)).membersChanged(roomId);
 
         mockMvc.perform(
                         post(

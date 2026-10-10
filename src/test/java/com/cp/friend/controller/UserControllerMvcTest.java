@@ -56,6 +56,7 @@ class UserControllerMvcTest {
 
         MockHttpSession session = new MockHttpSession();
         session.setAttribute("userId", userId);
+        session.setMaxInactiveInterval(75);
 
         when(userService.getProfile(userId))
                 .thenReturn(user());
@@ -63,6 +64,7 @@ class UserControllerMvcTest {
         mockMvc.perform(get("/api/users/me")
                         .session(session))
                 .andExpect(status().isOk())
+                .andExpect(header().string("X-Session-Timeout-Seconds", "75"))
                 .andExpect(jsonPath("$.email")
                         .value("test@kku.ac.th"))
                 .andExpect(jsonPath("$.firstname")

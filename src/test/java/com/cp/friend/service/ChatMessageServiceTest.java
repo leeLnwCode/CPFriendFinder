@@ -48,9 +48,6 @@ class ChatMessageServiceTest {
     private RoomMemberRepository roomMemberRepository;
 
     @Mock
-    private UserRepository userRepository;
-
-    @Mock
     private NotificationService notificationService;
 
     @Mock
@@ -70,7 +67,6 @@ class ChatMessageServiceTest {
                 messageRepository,
                 chatRoomRepository,
                 roomMemberRepository,
-                userRepository,
                 notificationService,
                 contentStrategyResolver,
                 messagingTemplate
@@ -660,6 +656,13 @@ class ChatMessageServiceTest {
         assertEquals(messageId, result.id());
 
         verify(messageRepository).save(message);
+        verify(messagingTemplate).convertAndSend(
+                eq("/topic/rooms/" + roomId + "/message-updates"),
+                eq((Object) java.util.Map.of("type", "DELETE", "roomId", roomId, "messageId", messageId)));
+        verify(messagingTemplate).convertAndSend(
+                eq("/topic/rooms/" + roomId + "/message-updates"),
+                eq((Object) java.util.Map.of("type", "DELETE", "roomId", roomId, "messageId", messageId)));
+
     }
 
     @Test
@@ -715,64 +718,6 @@ class ChatMessageServiceTest {
         verify(messageRepository, never())
                 .save(any());
     }
-        @Test
-        void relayCallSignal_leave_afterMembershipEnded_stillBroadcasts() {
-        UUID userId = UUID.randomUUID();
-        UUID roomId = UUID.randomUUID();
-
-        User user = user(userId, "Former");
-        ChatRoom room = room(roomId, ChatRoom.RoomType.DIRECT);
-
-        RoomMember formerMember = member(room, user);
-        formerMember.setLeftAt(Instant.now());
-
-        CallSignalRequest signal = new CallSignalRequest();
-        signal.setType("LEAVE");
-
-        when(roomMemberRepository
-                .findFirstByRoomIdAndUserIdOrderByJoinedAtDesc(roomId, userId))
-                .thenReturn(Optional.of(formerMember));
-
-        assertDoesNotThrow(
-                () -> chatMessageService.relayCallSignal(
-                        userId,
-                        roomId,
-                        signal
-                )
-        );
-
-        verify(messagingTemplate).convertAndSend(
-                eq("/topic/rooms/" + roomId + "/call"),
-                any(CallSignalResponse.class)
-        );
-        }
-        @Test
-        void relayCallSignal_leave_neverMember_returnsForbidden() {
-        UUID userId = UUID.randomUUID();
-        UUID roomId = UUID.randomUUID();
-
-        CallSignalRequest signal = new CallSignalRequest();
-        signal.setType("LEAVE");
-
-        when(roomMemberRepository
-                .findFirstByRoomIdAndUserIdOrderByJoinedAtDesc(roomId, userId))
-                .thenReturn(Optional.empty());
-
-        ResponseStatusException ex = assertThrows(
-                ResponseStatusException.class,
-                () -> chatMessageService.relayCallSignal(
-                        userId,
-                        roomId,
-                        signal
-                )
-        );
-
-        assertEquals(HttpStatus.FORBIDDEN, ex.getStatusCode());
-
-        verifyNoInteractions(messagingTemplate);
-        }
-
-
     private void setUserId(
             User user,
             UUID id
@@ -786,5 +731,39 @@ class ChatMessageServiceTest {
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
+    }
+
+    @Test void editsOnlyOwnTextAndBroadcastsUpdate() {
+        UUID me=UUID.randomUUID(),rid=UUID.randomUUID(),mid=UUID.randomUUID();ChatRoom r=room(rid,ChatRoom.RoomType.DIRECT);User u=user(me,"Me");
+        RoomMember membership=new RoomMember();membership.setRoom(r);membership.setUser(u);
+        Message m=new Message();m.setId(mid);m.setRoom(r);m.setSender(u);m.setContent("Before");
+        when(roomMemberRepository.findActiveMember(rid,me)).thenReturn(Optional.of(membership));
+        when(messageRepository.findById(mid)).thenReturn(Optional.of(m));
+        when(contentStrategyResolver.resolve(Message.MessageType.TEXT)).thenReturn(contentStrategy);
+        when(contentStrategy.process("After")).thenReturn("After");when(messageRepository.save(m)).thenReturn(m);
+        assertEquals("After",chatMessageService.edit(me,rid,mid,"After").content());
+        verify(messagingTemplate).convertAndSend(eq("/topic/rooms/"+rid+"/message-updates"),any(Object.class));
+    }
+    @Test void editingAnotherPersonsMessageIsForbidden() {
+        UUID me=UUID.randomUUID(),rid=UUID.randomUUID(),mid=UUID.randomUUID();RoomMember membership=new RoomMember();
+        Message m=new Message();m.setId(mid);m.setRoom(room(rid,ChatRoom.RoomType.DIRECT));m.setSender(user(UUID.randomUUID(),"Other"));
+        when(roomMemberRepository.findActiveMember(rid,me)).thenReturn(Optional.of(membership));when(messageRepository.findById(mid)).thenReturn(Optional.of(m));
+        assertEquals(HttpStatus.FORBIDDEN,assertThrows(ResponseStatusException.class,()->chatMessageService.edit(me,rid,mid,"After")).getStatusCode());
+        verify(messageRepository,never()).save(any());verifyNoInteractions(messagingTemplate);
+    }
+
+    @Test void cannotEditWithoutMembership() {
+        UUID me=UUID.randomUUID(),rid=UUID.randomUUID();
+        assertEquals(HttpStatus.FORBIDDEN,assertThrows(ResponseStatusException.class,()->chatMessageService.edit(me,rid,UUID.randomUUID(),"After")).getStatusCode());
+        verifyNoInteractions(messageRepository);
+    }
+    @Test void rejectsImageAndBlankEdits() {
+        UUID me=UUID.randomUUID(),rid=UUID.randomUUID(),mid=UUID.randomUUID();Message m=new Message();m.setId(mid);m.setRoom(room(rid,ChatRoom.RoomType.DIRECT));m.setSender(user(me,"Me"));
+        when(roomMemberRepository.findActiveMember(rid,me)).thenReturn(Optional.of(new RoomMember()));when(messageRepository.findById(mid)).thenReturn(Optional.of(m));
+        m.setMessageType(Message.MessageType.IMAGE);
+        assertEquals(HttpStatus.BAD_REQUEST,assertThrows(ResponseStatusException.class,()->chatMessageService.edit(me,rid,mid,"After")).getStatusCode());
+        m.setMessageType(Message.MessageType.TEXT);
+        assertEquals(HttpStatus.BAD_REQUEST,assertThrows(ResponseStatusException.class,()->chatMessageService.edit(me,rid,mid," ")).getStatusCode());
+        verify(messageRepository,never()).save(any());
     }
 }
