@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+  <head>
+<script th:src="@{/js/auth-session.js(v=1)}"></script>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title>การตั้งค่า - CP Friend Finder</title>
+    <link rel="stylesheet" th:href="@{/css/global-call.css}" />
+
+    <link rel="stylesheet" th:href="@{/css/theme.css}" />
+    <link rel="stylesheet" th:href="@{/css/sidebar.css}" />
+    <link rel="stylesheet" th:href="@{/css/layout.css}" />
+    <link rel="stylesheet" th:href="@{/css/setting.css}" />
+    <link rel="stylesheet" th:href="@{/css/profile-popup.css(v=11)}" />
+  <link rel="stylesheet" th:href="@{/css/ui-refresh.css}"/>
+<link rel="stylesheet" th:href="@{/css/call-ui.css(v=2)}"/>
+<link rel="stylesheet" href="/css/message-actions.css?v=1" />
+</head>
+
+  <body>
+    <div class="page-layout">
+      <!-- ================= SIDEBAR ================= -->
+
+      <aside th:replace="~{fragments/sidebar :: sidebar('setting')}"></aside>
+
+      <div th:replace="~{fragments/profile-editor :: profileEditor}"></div>
+
+      <!-- ================= MAIN CONTENT ================= -->
+
+      <main class="page-content settings-main">
+        <section class="settings-container">
+          <!-- Header -->
+          <div class="settings-header">
+            <div class="settings-header-icon">⚙</div>
+
+            <div>
+              <h1>ตั้งค่า</h1>
+              <p>ปรับแต่งประสบการณ์การใช้งานของคุณ</p>
+            </div>
+          </div>
+
+          <!-- ================= SETTINGS CARDS ================= -->
+
+          <div class="settings-list">
+            <!-- Account -->
+            <button
+              type="button"
+              class="settings-card"
+              data-modal="accountModal"
+            >
+              <div>
+                <h2>บัญชี</h2>
+                <p>จัดการข้อมูลบัญชี</p>
+              </div>
+            </button>
+
+            <!-- Appearance -->
+            <button
+              type="button"
+              class="settings-card"
+              data-modal="appearanceModal"
+            >
+              <div>
+                <h2>รูปลักษณ์</h2>
+                <p>ธีม</p>
+              </div>
+            </button>
+
+            <!-- Privacy -->
+            <button
+              type="button"
+              class="settings-card"
+              data-modal="privacyModal"
+            >
+              <div>
+                <h2>ความเป็นส่วนตัวและความปลอดภัย</h2>
+                <p>นโยบายความเป็นส่วนตัว</p>
+              </div>
+            </button>
+
+            <!-- Community -->
+            <button
+              type="button"
+              class="settings-card"
+              data-modal="communityModal"
+            >
+              <div>
+                <h2>ชุมชน</h2>
+                <p>ข้อกำหนด / แนวทางการใช้งานชุมชน</p>
+              </div>
+            </button>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <!-- ================================================= -->
+    <!-- ================= ACCOUNT MODAL ================= -->
+    <!-- ================================================= -->
+
+    <div id="accountModal" class="modal">
+      <div class="modal-box">
+        <button type="button" class="modal-close">×</button>
+
+        <div class="modal-title">
+          <span class="modal-title-icon">👤</span>
+          <h2>ข้อมูลบัญชี</h2>
+        </div>
+
+        <button type="button" id="settingsEditProfile" class="room-edit-button">แก้ไขโปรไฟล์และความสนใจ</button><p class="account-note">ข้อมูลบัญชีจากระบบ การเปลี่ยนอีเมลและรหัสผ่านยังไม่เปิดให้ใช้งาน</p><div class="account-list">
+          <!-- Email -->
+          <div class="account-row">
+            <div class="account-icon">✉</div>
+
+            <div class="account-info">
+              <span>อีเมล</span>
+              <strong id="accountEmail">กำลังโหลด...</strong>
+            </div>
+
+            
+          </div>
+
+          <!-- Username -->
+          <div class="account-row">
+            <div class="account-icon">👤</div>
+
+            <div class="account-info">
+              <span>ชื่อที่แสดง</span>
+              <strong id="accountUsername">กำลังโหลด...</strong>
+            </div>
+
+            
+          </div>
+
+          <!-- Password -->
+          <div class="account-row">
+            <div class="account-icon">🔒</div>
+
+            <div class="account-info">
+              <span>รหัสผ่าน</span>
+
+              <strong id="accountPassword"> • • • • • • • • </strong>
+            </div>
+
+            
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================================================= -->
+    <!-- ================ APPEARANCE MODAL ============== -->
+    <!-- ================================================= -->
+
+    <div id="appearanceModal" class="modal">
+      <div class="modal-box appearance-box">
+        <button type="button" class="modal-close">×</button>
+
+        <div class="modal-title appearance-title">
+          <span class="modal-title-icon">🎨</span>
+          <h2>เปลี่ยนธีม</h2>
+        </div>
+
+        <div class="theme-list">
+          <!-- Light -->
+          <button
+            type="button"
+            class="theme-option selected"
+            data-theme="light"
+          >
+            <div class="theme-preview theme-light"></div>
+
+            <span>Light</span>
+
+            <span class="theme-check">✓</span>
+          </button>
+
+          <!-- Dark -->
+          <button type="button" class="theme-option" data-theme="dark">
+            <div class="theme-preview theme-dark"></div>
+
+            <span>Dark</span>
+
+            <span class="theme-check">✓</span>
+          </button>
+
+          <!-- Blue -->
+          <button type="button" class="theme-option" data-theme="blue">
+            <div class="theme-preview theme-blue"></div>
+
+            <span>Blue</span>
+
+            <span class="theme-check">✓</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================================================= -->
+    <!-- ================= PRIVACY MODAL ================= -->
+    <!-- ================================================= -->
+
+    <div id="privacyModal" class="modal">
+      <div class="modal-box content-modal">
+        <button type="button" class="modal-close">×</button>
+
+        <div class="modal-title">
+          <span class="modal-title-icon">🔒</span>
+          <h2>ความเป็นส่วนตัวและความปลอดภัย</h2>
+        </div>
+
+        <div class="modal-content">
+          <p>นโยบายความเป็นส่วนตัว</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- ================================================= -->
+    <!-- ================ COMMUNITY MODAL =============== -->
+    <!-- ================================================= -->
+
+    <div id="communityModal" class="modal">
+      <div class="modal-box content-modal">
+        <button type="button" class="modal-close">×</button>
+
+        <div class="modal-title">
+          <span class="modal-title-icon">📄</span>
+          <h2>นโยบาย</h2>
+        </div>
+
+        <div class="modal-content">
+          <p>ข้อกำหนด / แนวทางการใช้งานชุมชน</p>
+        </div>
+      </div>
+    </div>
+
+    <script th:src="@{/js/theme.js}"></script>
+    <script th:src="@{/js/setting.js}"></script>
+    <script th:src="@{/js/sidebar.js}"></script>
+    <script th:src="@{/js/profile-popup.js(v=11)}"></script>
+<div th:replace="~{fragments/global-call :: globalCall}"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7/bundles/stomp.umd.min.js"></script>
+<script th:src="@{/js/call.js(v=11)}"></script>
+<script th:src="@{/js/global-call.js}"></script>
+  </body>
+</html>

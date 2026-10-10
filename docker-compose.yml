@@ -1,0 +1,54 @@
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: cpfriendfinder-db
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: cpfriendfinder
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d cpfriendfinder"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - cpfriendfinder-net
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: cpfriendfinder-app
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/cpfriendfinder
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SERVER_PORT: 8080
+      # S3-compatible storage (เช่น MinIO) — override ผ่าน .env ตอน deploy จริง
+      AWS_ENDPOINT_URL_S3: ${AWS_ENDPOINT_URL_S3:-http://localhost:9000}
+      AWS_PUBLIC_URL_S3: ${AWS_PUBLIC_URL_S3:-http://localhost:9000}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID:-minioadmin}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY:-minioadmin}
+      AWS_REGION: ${AWS_REGION:-us-east-1}
+    ports:
+      - "8080:8080"
+    networks:
+      - cpfriendfinder-net
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  cpfriendfinder-net:
+    driver: bridge

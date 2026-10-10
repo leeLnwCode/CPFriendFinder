@@ -1,0 +1,30 @@
+.friend-chat-message { display:flex; margin:10px 0; }
+.friend-chat-message.sent { justify-content:flex-end; }
+.friend-chat-message-content { max-width:85%; padding:10px 14px; border-radius:16px; background:var(--hover-bg); color:var(--text-color); white-space:pre-wrap; overflow-wrap:anywhere; }
+.friend-chat-message.sent .friend-chat-message-content { background:var(--active-bg); }
+.friend-chat-message-content img { max-width:100%; max-height:320px; border-radius:10px; object-fit:contain; }
+.older-messages-button { margin:8px auto; padding:8px 16px; border:1px solid var(--border-color); background:var(--surface-color); color:var(--accent); border-radius:10px; }
+.room-call { margin:20px 0; padding:20px; border:1px solid var(--border-color); border-radius:18px; background:var(--surface-color); }
+.room-call-controls { display:flex; flex-wrap:wrap; gap:10px; margin:14px 0; }
+.room-call button { padding:10px 16px; min-height:44px; border-radius:12px; border:1px solid var(--border-color); background:var(--active-bg); color:var(--text-color); }
+.room-call-peers { display:grid; grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr)); gap:12px; }
+.room-call-peer,.room-call-local { padding:12px; border-radius:14px; background:var(--bg-color); overflow:hidden; }
+.room-call video { width:100%; aspect-ratio:4/3; object-fit:cover; border-radius:12px; }
+.room-call [hidden] { display:none!important; }
+.room-call-status { color:var(--secondary-text-color); }
+.matching-options { display:flex; flex-wrap:wrap; gap:16px; padding:16px; background:var(--surface-color); border:1px solid var(--border-color); border-radius:14px; margin:16px 0; }
+.matching-options input { margin-right:6px; }
+.match-reasons { color:var(--accent); padding:12px 0; }
+
+.room-call-stage { background:#0b1220; color:#fff; border-radius:18px; overflow:hidden; margin:16px 0; }
+.room-call-stage video { aspect-ratio:16/9; max-height:70vh; object-fit:contain; display:block; }
+.room-call-stage footer { display:flex; align-items:center; justify-content:space-between; padding:12px 16px; gap:12px; }
+.room-call-stage:fullscreen { display:flex; flex-direction:column; justify-content:center; border-radius:0; }
+.room-call-stage:fullscreen video { max-height:90vh; flex:1; }
+#roomStagePlaceholder { min-height:260px; display:grid; place-items:center; }
+.room-call-peers { grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr)); }
+.room-call-peer.selected { outline:3px solid var(--accent); }
+.room-call .room-peer-select { width:100%; padding:0; background:transparent; border:0; text-align:left; }
+.room-call-peer video { object-fit:contain; background:#0b1220; }
+.room-call-local { max-width:220px; margin-bottom:12px; }
+@media(max-width:700px){.room-call-stage video{max-height:55vh}.room-call-peers{grid-template-columns:repeat(2,minmax(0,1fr))}.room-call-peer{padding:8px}}

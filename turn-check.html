@@ -1,0 +1,33 @@
+<!doctype html><html lang="th"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ตรวจการเชื่อมต่อ TURN</title>
+<style>body{font:16px system-ui;background:#f5f7fb;color:#17243a;max-width:720px;margin:48px auto;padding:24px}main{background:white;border:1px solid #dce4ef;border-radius:20px;padding:28px}button,a{display:inline-block;padding:12px 18px;border-radius:12px;border:0;background:#245ac5;color:white;text-decoration:none}button:disabled{opacity:.5}pre{white-space:pre-wrap}p{line-height:1.7}</style>
+<main><h1>ตรวจการส่งข้อมูลผ่าน TURN</h1><p>เข้าสู่ระบบด้วยบัญชีของคุณก่อน แล้วกดทดสอบ ระบบจะส่งข้อมูลทดสอบผ่านเซิร์ฟเวอร์ตัวกลางโดยไม่เปิดไมค์หรือกล้อง</p><button id="test">เริ่มทดสอบ</button> <a href="/login">เข้าสู่ระบบ</a><p id="status" role="status">พร้อมตรวจ</p><pre id="result"></pre></main>
+<script>
+document.getElementById('test').onclick=async()=>{
+ const button=document.getElementById('test'),status=document.getElementById('status'),result=document.getElementById('result');button.disabled=true;result.textContent='';let a,b,timer;
+ try{
+  status.textContent='กำลังตรวจข้อมูลเซิร์ฟเวอร์...';const response=await fetch('/api/call/ice-config',{credentials:'include'});
+  if(response.status===401||response.status===403)throw new Error('กรุณาเข้าสู่ระบบผ่านลิงก์เดียวกันก่อน');
+  if(!response.ok)throw new Error('อ่านข้อมูล TURN ไม่สำเร็จ ตรวจไฟล์ตั้งค่าในเครื่อง');
+  const config=await response.json();if(!config.relayConfigured)throw new Error('ยังไม่ได้ใส่ข้อมูล TURN ในไฟล์ .turn-servers.json');
+  a=new RTCPeerConnection({iceServers:config.iceServers,iceTransportPolicy:'relay'});b=new RTCPeerConnection({iceServers:config.iceServers,iceTransportPolicy:'relay'});
+  const queues=new Map([[a,[]],[b,[]]]);const errors=[];
+  function deliver(target,candidate){if(!candidate)return;if(target.remoteDescription)target.addIceCandidate(candidate).catch(error=>errors.push(error.message));else queues.get(target).push(candidate);}
+  a.onicecandidate=e=>deliver(b,e.candidate);b.onicecandidate=e=>deliver(a,e.candidate);
+  const channel=a.createDataChannel('turn-check');b.ondatachannel=e=>{e.channel.onmessage=message=>e.channel.send(message.data);};
+  const token=crypto.randomUUID();const transfer=new Promise((resolve,reject)=>{timer=setTimeout(()=>reject(new Error('ยังส่งผ่าน TURN ไม่ได้ภายใน 25 วินาที ตรวจ credential หรือไฟร์วอลล์')),25000);channel.onopen=()=>channel.send(token);channel.onmessage=e=>e.data===token?resolve():reject(new Error('ข้อมูลตอบกลับไม่ตรงกัน'));});
+  status.textContent='กำลังทดสอบผ่าน TURN จริง...';await a.setLocalDescription(await a.createOffer());await b.setRemoteDescription(a.localDescription);
+  for(const candidate of queues.get(b).splice(0))await b.addIceCandidate(candidate);
+  await b.setLocalDescription(await b.createAnswer());await a.setRemoteDescription(b.localDescription);
+  for(const candidate of queues.get(a).splice(0))await a.addIceCandidate(candidate);
+  await transfer;
+  async function selectedLocalCandidate(peer){
+   const stats=await peer.getStats();const transport=[...stats.values()].find(s=>s.type==='transport'&&s.selectedCandidatePairId);
+   const pair=transport?stats.get(transport.selectedCandidatePairId):[...stats.values()].find(s=>s.type==='candidate-pair'&&s.state==='succeeded'&&s.nominated);
+   return pair&&stats.get(pair.localCandidateId);
+  }
+  const [localA,localB]=await Promise.all([selectedLocalCandidate(a),selectedLocalCandidate(b)]);
+  if(localA?.candidateType!=='relay'||localB?.candidateType!=='relay')throw new Error('ส่งข้อมูลได้แต่ยังไม่ยืนยันว่าผ่าน TURN ทั้งสองฝั่ง');
+  status.textContent='ผ่าน · ส่งข้อมูลผ่าน TURN และรับกลับได้จริง';result.textContent='การเชื่อมต่อทั้งสองฝั่งใช้ relay\nยังควรทดสอบคอลจริงระหว่าง Wi-Fi กับอินเทอร์เน็ตมือถืออีกครั้ง';
+ }catch(error){status.textContent=error.message;}finally{clearTimeout(timer);a?.close();b?.close();button.disabled=false;}
+};
+</script></html>

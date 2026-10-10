@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+
+<head>
+<script th:src="@{/js/auth-session.js(v=1)}"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Room - CP Friend Finder</title>
+  <link rel="stylesheet" th:href="@{/css/global-call.css}" />
+  <link rel="stylesheet" th:href="@{/css/room.css}" />
+  <link rel="stylesheet" th:href="@{/css/theme.css}" />
+  <link rel="stylesheet" th:href="@{/css/sidebar.css}" />
+  <link rel="stylesheet" th:href="@{/css/friend-profile-popup.css}" />
+  <link rel="stylesheet" th:href="@{/css/profile-popup.css(v=11)}" />
+<link rel="stylesheet" th:href="@{/css/ui-refresh.css}"/>
+<link rel="stylesheet" th:href="@{/css/call-ui.css(v=2)}"/>
+<link rel="stylesheet" th:href="@{/css/chat-room-ui.css}"/>
+<link rel="stylesheet" th:href="@{/css/room-modern.css(v=1)}"/>
+  <link rel="stylesheet" href="/css/message-actions.css?v=1" />
+</head>
+
+<body>
+
+  <!-- Friend Profile Popup -->
+  <div th:replace="~{fragments/friend-profile-popup :: friendProfilePopup}"></div>
+
+  <div class="room-page">
+
+    <!-- ================= SIDEBAR ================= -->
+
+    <aside th:replace="~{fragments/sidebar :: sidebar('room')}"></aside>
+
+    <div th:replace="~{fragments/profile-editor :: profileEditor}"></div>
+
+    <!-- ================= ROOM ================= -->
+
+    <main class="room-content">
+      <!-- Room Header -->
+
+      <header class="room-header">
+        <div>
+          <h1 id="roomTitle">ห้องพูดคุย</h1>
+
+          <div id="ownerRoomCode" class="owner-room-code">
+            <span>รหัสเข้าห้อง</span>
+            <strong id="roomCode">-</strong>
+          </div>
+
+          <p id="roomMembers">กำลังโหลดสมาชิก...</p>
+        </div>
+
+        <button type="button" class="leave-room-button" id="leaveRoomButton">
+          ออกจากห้อง
+        </button>
+      </header>
+
+      <section class="room-call" aria-label="คอลในห้อง">
+        <div class="room-call-heading"><h2>ห้องสนทนา</h2></div>
+        <p id="roomCallStatus" class="room-call-status" role="status">เข้าร่วมเพื่อคุยกับสมาชิก · เปิดกล้องหรือแชร์จอได้เมื่อพร้อม</p>
+        <div id="roomCallLocal" hidden><video id="videoCallLocalVideo" autoplay muted playsinline></video></div>
+        <div id="roomCallStage" class="room-call-stage" hidden><video id="roomStageVideo" autoplay muted playsinline></video><div id="roomStagePlaceholder" hidden></div><footer><strong id="roomStageName"></strong><div class="room-stage-actions"><button type="button" id="roomStageGrid">ดูทุกคน</button><button type="button" id="roomStageFullscreen">เต็มจอ</button></div></footer></div>
+        <div id="roomMediaEmpty" class="room-media-empty">พื้นที่สำหรับวิดีโอและหน้าจอที่แชร์<br/>เริ่มด้วยเสียง แล้วเปิดกล้องภายหลังได้</div>
+        <div id="roomCallPeers" class="room-call-peers"></div>
+        <div id="roomCallVoices" class="room-call-voices" aria-label="สมาชิกที่คุยเสียง"></div>
+        <div class="room-call-controls" aria-label="ควบคุมคอล">
+          <button type="button" id="roomJoinVoice">เข้าร่วมเสียง</button><button type="button" id="roomJoinVideo">เข้าร่วมวิดีโอ</button>
+          <button type="button" id="roomCallMic" hidden>ปิดไมค์</button><button type="button" id="roomCallCamera" hidden>เปิดกล้อง</button>
+          <button type="button" id="roomCallShare" hidden>แชร์หน้าจอ</button><button type="button" id="roomCallLeave" hidden>ออกจากคอล</button>
+        </div>
+      </section>
+
+      <!-- ================= ROOM MEMBERS ================= -->
+
+      <section class="members-section">
+        <h2>สมาชิกในห้อง</h2><div class="members-grid" id="membersGrid"></div>
+      </section>
+    </main>
+
+    <!-- ================= CHAT ================= -->
+
+    <aside class="chat-panel">
+      <div class="chat-header">
+        <h2>แชท</h2>
+
+        <span id="chatMembers">0 คน</span>
+      </div>
+
+      <!-- Messages -->
+
+      <div class="chat-messages" aria-label="ข้อความห้องกลุ่มแบบสด" id="chatMessages"></div>
+
+      <!-- Chat Input -->
+
+      <span class="room-live-note">ข้อความห้องนี้เป็นแบบสด ไม่เก็บประวัติหลังออกจากหน้า</span>
+      <div class="chat-input-area">
+        <input type="text" id="chatInput" placeholder="พิมพ์ข้อความ..." />
+
+        <button type="button" class="chat-more" id="imageButton" title="ส่งรูป" aria-label="ส่งรูป"><img src="/images/image.png" alt="" class="theme-icon" width="24" height="24" /></button>
+
+        <input type="file" id="imageInput" accept="image/*" hidden />
+
+        <button type="button" class="chat-send" id="sendMessageButton">
+          ส่ง
+        </button>
+      </div>
+    </aside>
+  </div>
+
+
+  <script th:src="@{/js/friend-profile-popup.js(v=20)}"></script>
+  <script th:src="@{/js/theme.js}"></script>
+  <script src="/js/chat-images.js?v=1"></script>
+<script src="/js/room-controls.js?v=1"></script>
+<script src="/js/room.js?v=23"></script>
+  <script th:src="@{/js/sidebar.js}"></script>
+  <script th:src="@{/js/profile-popup.js(v=11)}"></script>
+<div th:replace="~{fragments/global-call :: globalCall}"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7/bundles/stomp.umd.min.js"></script>
+<script th:src="@{/js/call.js(v=11)}"></script>
+<script th:src="@{/js/global-call.js}"></script>
+<script th:src="@{/js/room-call.js(v=9)}"></script>
+<script th:src="@{/js/room-live.js(v=1)}"></script>
+</body>
+
+</html>

@@ -1,102 +1,90 @@
-<!DOCTYPE html>
-<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<!doctype html>
+<html lang="th" xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <link rel="stylesheet" th:href="@{/css/theme.css}" />
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>เข้าสู่ระบบ - CP Friend Finder</title>
 
-    <title>Login - CP Friend Finder</title>
+    <link rel="stylesheet" th:href="@{/css/login.css}" />
+    <link rel="stylesheet" th:href="@{/css/ui-refresh.css}" />
+  </head>
 
-    <link rel="stylesheet" th:href="@{/css/login.css}">
-</head>
-
-<body class="login-body">
-
+  <body class="login-body">
     <div class="login-page">
+      <!-- Left Section -->
+      <div class="login-section">
+        <!-- Logo -->
+        <img
+          th:src="@{/images/Full_logo.png}"
+          alt="CP Friend Finder"
+          class="login-logo"
+        />
 
-        <!-- Left Section -->
-        <div class="login-section">
+        <h1>ยินดีต้อนรับกลับมา!</h1>
 
-            <!-- Logo -->
-            <img th:src="@{/images/Full_logo.png}" alt="CP Friend Finder" class="login-logo">
+        <p class="login-subtitle">ล็อกอินเพื่อเริ่มหาเพื่อนใหม่ ๆ</p>
 
-            <h1>Welcome Back!</h1>
+        <!-- Login Form -->
+        <form id="loginForm" class="login-form">
+          <!-- Email -->
+          <label for="email"> อีเมล </label>
 
-            <p class="login-subtitle">
-                Login to find your friends
-            </p>
+          <div class="input-wrapper">
+            <img th:src="@{/images/email.png}" alt="Email" class="input-icon" />
+            <input
+              id="email"
+              type="email"
+              placeholder="ใส่อีเมลของคุณ"
+              required
+            />
+          </div>
 
+          <!-- Password -->
+          <label for="password"> รหัสผ่าน </label>
 
-            <!-- Login Form -->
-            <form class="login-form">
+          <div class="input-wrapper">
+            <img
+              th:src="@{/images/padlock.png}"
+              alt="Password"
+              class="input-icon"
+            />
+            <input
+              id="password"
+              type="password"
+              placeholder="ใส่รหัสผ่านของคุณ"
+              required
+            />
 
-                <!-- Email -->
-                <label for="email">
-                    Email address
-                </label>
+            <button type="button" id="showPassword" class="show-password">
+              แสดง
+            </button>
+          </div>
 
-                <div class="input-wrapper">
+          <!-- Login Button -->
+          <button type="submit" class="login-button">เข้าสู่ระบบ →</button>
+        </form>
 
-                    <img th:src="@{/images/email.png}" alt="Email" class="input-icon">
-                    <input id="email" type="email" placeholder="Enter your email" required>
-
-                </div>
-
-
-                <!-- Password -->
-                <label for="password">
-                    Password
-                </label>
-
-                <div class="input-wrapper">
-
-                    <img th:src="@{/images/padlock.png}" alt="Password" class="input-icon">
-                    <input id="password" type="password" placeholder="Enter your password" required>
-
-                    <button type="button" id="showPassword" class="show-password">
-                        Show
-                    </button>
-
-                </div>
-
-
-                <!-- Login Button -->
-                <button type="submit" class="login-button">
-                    Login now →
-                </button>
-
-            </form>
-
-
-            <!-- OR -->
-            <div class="or-divider">
-                <span>OR</span>
-            </div>
-
-
-            <!-- Register -->
-            <div class="signup-link">
-                <span>Don't have an account?</span>
-
-                <a th:href="@{/register}">
-                    Signup now
-                </a>
-            </div>
+        <!-- OR -->
+        <div class="or-divider">
+          <span>หรือ</span>
         </div>
 
+        <!-- Register -->
+        <div class="signup-link">
+          <span>ยังไม่มีบัญชี?</span>
 
-        <!-- Right Section -->
-        <div class="login-image-section">
-
-            <img th:src="@{/images/login.jpg}" alt="Friend Finder">
-
+          <a th:href="@{/register}"> สมัครเลย </a>
         </div>
+      </div>
 
+      <!-- Right Section -->
+      <div class="login-image-section">
+        <img th:src="@{/images/login.jpg}" alt="Friend Finder" />
+      </div>
     </div>
 
-
-    <script th:src="@{/js/login.js}"></script>
-
-</body>
-
+    <script th:src="@{/js/login.js(v=8)}"></script>
+  </body>
 </html>

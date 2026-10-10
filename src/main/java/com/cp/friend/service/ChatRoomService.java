@@ -1,0 +1,471 @@
+package com.cp.friend.service;
+
+import java.time.Instant;
+import java.util.LinkedHashSet;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
+
+import com.cp.friend.dto.request.CreateChatRoomRequest;
+import com.cp.friend.dto.request.UpdateChatRoomRequest;
+import com.cp.friend.dto.response.ChatRoomDetailResponse;
+import com.cp.friend.dto.response.ChatRoomSummaryResponse;
+import com.cp.friend.model.ChatRoom;
+import com.cp.friend.model.Friendship;
+import com.cp.friend.model.Interest;
+import com.cp.friend.model.RoomInterest;
+import com.cp.friend.model.RoomMember;
+import com.cp.friend.model.User;
+import com.cp.friend.repository.ChatRoomRepository;
+import com.cp.friend.repository.FriendshipRepository;
+import com.cp.friend.repository.InterestRepository;
+import com.cp.friend.repository.MessageRepository;
+import com.cp.friend.repository.RoomInterestRepository;
+import com.cp.friend.repository.RoomMemberRepository;
+import com.cp.friend.repository.UserRepository;
+
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+public class ChatRoomService {
+
+    private final ChatRoomRepository chatRoomRepository;
+    private final RoomMemberRepository roomMemberRepository;
+    private final RoomInterestRepository roomInterestRepository;
+    private final InterestRepository interestRepository;
+    private final MessageRepository messageRepository;
+    private final FriendshipRepository friendshipRepository;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+
+    // =========================================================
+    // สร้างห้อง GROUP
+    // =========================================================
+
+    @Transactional
+    public ChatRoomSummaryResponse createGroupRoom(UUID userId, CreateChatRoomRequest request) {
+        if (request.isPrivate() && (request.getPassword() == null || request.getPassword().isBlank())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Password is required for private rooms");
+        }
+
+        User creator = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        ChatRoom room = new ChatRoom();
+        room.setRoomName(request.getRoomName().trim());
+        room.setDescription(request.getDescription() == null ? null : request.getDescription().trim());
+        room.setTargetYear(request.getTargetYear());
+        room.setRoomType(ChatRoom.RoomType.GROUP);
+        room.setCreatedBy(creator);
+        room.setMaxMembers(request.getMaxMembers() == null ? (short) 10 : request.getMaxMembers());
+        room.setPrivate(request.isPrivate());
+        if (request.isPrivate()) {
+            room.setPasswordHash(passwordEncoder.encode(request.getPassword()));
+        }
+        room = chatRoomRepository.save(room);
+
+        addOwner(room, creator);
+        saveRoomInterests(room.getId(), request.getInterestIds());
+
+        return toSummary(room, 1);
+    }
+
+    // =========================================================
+    // ห้องที่ตัวเองเป็นสมาชิกอยู่
+    // =========================================================
+
+    @Transactional(readOnly = true)
+    public List<ChatRoomSummaryResponse> myRooms(UUID userId) {
+        List<ChatRoom> rooms = chatRoomRepository.findJoinedRooms(userId);
+        return rooms.stream()
+                .map(room -> toSummary(
+                        room,
+                        roomMemberRepository.countActiveMembers(room.getId()),
+                        countUnread(userId, room)))
+                .toList();
+    }
+
+    // =========================================================
+    // รายการห้อง GROUP สาธารณะ (หน้า Home) + filter
+    // =========================================================
+
+    @Transactional(readOnly = true)
+    public List<ChatRoomSummaryResponse> discoverRooms(String search, Set<UUID> interestIds, int page, int size, int year) {
+        return discoverRooms(search, interestIds, page, size, year, "newest");
+    }
+
+    @Transactional(readOnly = true)
+    public List<ChatRoomSummaryResponse> discoverRooms(String search, Set<UUID> interestIds, int page, int size, int year, String sort) {
+        if (!Set.of("newest", "oldest", "name").contains(sort))
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "sort must be newest, oldest or name");
+        if (year < 0 || year > 6) throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "year must be between 0 and 6");
+        boolean hasSearch = search != null && !search.isBlank();
+        boolean hasInterests = interestIds != null && !interestIds.isEmpty();
+        List<ChatRoom> rooms;
+        if (hasSearch && hasInterests) {
+            Set<UUID> matched = chatRoomRepository.searchGroupRoomsByName(search.trim()).stream().map(ChatRoom::getId).collect(Collectors.toSet());
+            rooms = chatRoomRepository.findGroupRoomsByInterestIds(interestIds).stream().filter(r -> matched.contains(r.getId())).toList();
+        } else if (hasSearch) rooms = chatRoomRepository.searchGroupRoomsByName(search.trim());
+        else if (hasInterests) rooms = chatRoomRepository.findGroupRoomsByInterestIds(interestIds);
+        else rooms = chatRoomRepository.findByRoomType(ChatRoom.RoomType.GROUP, Pageable.unpaged()).getContent();
+        java.util.Comparator<ChatRoom> order = switch(sort) {
+            case "name" -> java.util.Comparator.comparing(ChatRoom::getRoomName, String.CASE_INSENSITIVE_ORDER);
+            case "oldest" -> java.util.Comparator.comparing(ChatRoom::getCreatedAt);
+            default -> java.util.Comparator.comparing(ChatRoom::getCreatedAt).reversed();
+        };
+        int limit = Math.min(Math.max(size, 1), 50);
+        return toSummaries(rooms.stream().filter(r -> r.getDeletedAt() == null)
+            .filter(r -> year == 0 || (r.getTargetYear() != null && r.getTargetYear() == year))
+            .filter(r -> roomMemberRepository.countActiveMembers(r.getId()) > 0)
+            .sorted(order.thenComparing(ChatRoom::getId))
+            .skip((long)Math.max(page, 0) * limit).limit(limit).toList());
+    }
+
+    @Transactional(readOnly = true)
+    public ChatRoomDetailResponse getRoom(UUID roomId) {
+        ChatRoom room = chatRoomRepository.findById(roomId).filter(r -> r.getDeletedAt() == null)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Room not found"));
+
+        List<RoomMember> members = roomMemberRepository.findActiveMembers(roomId);
+        // Builder Pattern — ประกอบ response หลาย field แบบอ่านง่าย
+        return ChatRoomDetailResponse.builder()
+                .id(room.getId())
+                .roomName(room.getRoomName())
+                .description(room.getDescription())
+                .roomType(room.getRoomType())
+                .isPrivate(room.isPrivate())
+                .maxMembers(room.getMaxMembers())
+                .memberCount(members.size())
+                .interests(toInterestDtos(roomId))
+                .members(members.stream()
+                        .map(m -> new ChatRoomDetailResponse.MemberDto(
+                                m.getUser().getId(),
+                                m.getUser().getFirstname(),
+                                m.getUser().getLastname(),
+                                m.getUser().getImageUrl(),
+                                m.getRole()))
+                        .toList())
+                .createdAt(room.getCreatedAt())
+                .build();
+    }
+
+    // =========================================================
+    // เข้า / ออกห้อง
+    // =========================================================
+
+    @Transactional
+    public ChatRoomDetailResponse joinRoom(UUID userId, UUID roomId, String password) {
+        ChatRoom room = chatRoomRepository.findById(roomId).filter(r -> r.getDeletedAt() == null)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Room not found"));
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        if (roomMemberRepository.isActiveMember(roomId, userId)) {
+            // Membership survives page reloads and browser restarts. Rejoining must not add a row.
+            return getRoom(roomId);
+        }
+
+        if (room.isPrivate() && room.getPasswordHash() != null) {
+            if (password == null || !passwordEncoder.matches(password, room.getPasswordHash())) {
+                throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Invalid room password");
+            }
+        }
+
+        if (roomMemberRepository.countActiveMembers(roomId) >= room.getMaxMembers()) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Room is full");
+        }
+
+        // เคยเข้าห้องนี้แล้วออกไป → เปิดแถวเดิมกลับมา ไม่งั้นสร้างใหม่
+        roomMemberRepository.findFirstByRoomIdAndUserIdOrderByJoinedAtDesc(roomId, userId)
+                .ifPresentOrElse(
+                        member -> member.setLeftAt(null),
+                        () -> roomMemberRepository.save(newMember(room, user, RoomMember.Role.MEMBER)));
+
+        return getRoom(roomId);
+    }
+
+    @Transactional
+    public void leaveRoom(UUID userId, UUID roomId) {
+        RoomMember member = roomMemberRepository.findActiveMember(roomId, userId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "You are not a member of this room"));
+        member.setLeftAt(Instant.now());
+
+        roomMemberRepository.save(member);
+    }
+
+    // =========================================================
+    // แก้ไขห้อง (OWNER / MODERATOR)
+    // =========================================================
+
+    @Transactional
+    public ChatRoomDetailResponse updateRoom(UUID userId, UUID roomId, UpdateChatRoomRequest request) {
+        requireAnyRole(roomId, userId, RoomMember.Role.OWNER, RoomMember.Role.MODERATOR);
+
+        ChatRoom room = chatRoomRepository.findById(roomId).filter(r -> r.getDeletedAt() == null)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Room not found"));
+
+        if (request.getRoomName() != null && !request.getRoomName().isBlank()) {
+            room.setRoomName(request.getRoomName().trim());
+        }
+        if (request.getDescription() != null) {
+            room.setDescription(request.getDescription().trim().isEmpty() ? null : request.getDescription().trim());
+        }
+        if (request.getMaxMembers() != null) {
+            if (roomMemberRepository.countActiveMembers(roomId) > request.getMaxMembers()) {
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST, "maxMembers is lower than the current member count");
+            }
+            room.setMaxMembers(request.getMaxMembers());
+        }
+        if (request.getIsPrivate() != null) {
+            room.setPrivate(request.getIsPrivate());
+            if (!request.getIsPrivate()) {
+                room.setPasswordHash(null);
+            }
+        }
+        if (request.getPassword() != null && !request.getPassword().isBlank()) {
+            if (!room.isPrivate()) {
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST, "Password can only be set on private rooms");
+            }
+            room.setPasswordHash(passwordEncoder.encode(request.getPassword()));
+        }
+        if (request.getInterestIds() != null) {
+            roomInterestRepository.deleteAllByRoomId(roomId);
+            saveRoomInterests(roomId, request.getInterestIds());
+        }
+
+        chatRoomRepository.save(room);
+        return getRoom(roomId);
+    }
+
+    // =========================================================
+    // เปลี่ยน role ของสมาชิก (OWNER เท่านั้น)
+    // =========================================================
+
+    @Transactional
+    public ChatRoomDetailResponse updateMemberRole(
+            UUID userId, UUID roomId, UUID targetUserId, String role) {
+        requireAnyRole(roomId, userId, RoomMember.Role.OWNER);
+
+        if (targetUserId.equals(userId)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot change your own role");
+        }
+
+        RoomMember target = roomMemberRepository.findActiveMember(roomId, targetUserId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Member not found"));
+
+        target.setRole(parseAssignableRole(role));
+        roomMemberRepository.save(target);
+        return getRoom(roomId);
+    }
+
+    @Transactional
+    public void deleteRoom(UUID userId, UUID roomId) {
+        requireAnyRole(roomId, userId, RoomMember.Role.OWNER);
+        ChatRoom room = chatRoomRepository.findById(roomId).filter(r -> r.getDeletedAt() == null)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Room not found"));
+        if (room.getRoomType() != ChatRoom.RoomType.GROUP)
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Only group rooms can be deleted");
+        room.setDeletedAt(Instant.now());
+        for (RoomMember member : roomMemberRepository.findActiveMembers(roomId)) member.setLeftAt(room.getDeletedAt());
+        chatRoomRepository.save(room);
+    }
+
+    private void requireAnyRole(UUID roomId, UUID userId, RoomMember.Role... roles) {
+        if (!roomMemberRepository.hasAnyRole(roomId, userId, List.of(roles))) {
+            throw new ResponseStatusException(
+                    HttpStatus.FORBIDDEN, "You do not have permission to do this");
+        }
+    }
+
+    private RoomMember.Role parseAssignableRole(String raw) {
+        try {
+            RoomMember.Role role = RoomMember.Role.valueOf(raw.trim().toUpperCase(Locale.ROOT));
+            if (role == RoomMember.Role.OWNER) {
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST, "Use MODERATOR or MEMBER — owner transfer is not supported");
+            }
+            return role;
+        } catch (IllegalArgumentException ex) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Invalid role");
+        }
+    }
+
+    // =========================================================
+    // ห้อง DIRECT (แชทส่วนตัวกับเพื่อน) — หาถ้ามีอยู่แล้ว ไม่มีก็สร้างใหม่
+    // =========================================================
+
+    @Transactional
+    public ChatRoomSummaryResponse getOrCreateDirectRoom(UUID userId, UUID friendId) {
+        if (userId.equals(friendId)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Cannot create a direct chat with yourself");
+        }
+
+        ensureFriendship(userId, friendId);
+
+        // Both callers lock the same row until this transaction commits. Check only after
+        // acquiring the lock so simultaneous first opens cannot create different rooms.
+        UUID canonical = userId.compareTo(friendId) <= 0 ? userId : friendId;
+        userRepository.lockDirectChatParticipant(canonical)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"User not found"));
+        ChatRoom existing = chatRoomRepository.findActiveDirectRoomsBetween(userId, friendId, PageRequest.of(0,1))
+                .stream().findFirst().orElse(null);
+        if (existing != null) {
+            return toSummary(existing, roomMemberRepository.countActiveMembers(existing.getId()));
+        }
+
+        ChatRoom historical = chatRoomRepository.findHistoricalDirectRoomsBetween(userId, friendId, PageRequest.of(0, 1))
+                .stream().findFirst().orElse(null);
+        if (historical != null) {
+            for (UUID participantId : List.of(userId, friendId)) {
+                RoomMember member = roomMemberRepository.findFirstByRoomIdAndUserIdOrderByJoinedAtDesc(historical.getId(), participantId)
+                        .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Conversation member not found"));
+                member.setLeftAt(null);
+                roomMemberRepository.save(member);
+            }
+            return toSummary(historical, roomMemberRepository.countActiveMembers(historical.getId()));
+        }
+
+        User me = userRepository.findById(userId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+        User friend = userRepository.findById(friendId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "User not found"));
+
+        ChatRoom room = new ChatRoom();
+        room.setRoomName("DIRECT");
+        room.setRoomType(ChatRoom.RoomType.DIRECT);
+        room.setCreatedBy(me);
+        room.setMaxMembers((short) 2);
+        room.setPrivate(true);
+        room = chatRoomRepository.save(room);
+
+        roomMemberRepository.save(newMember(room, me, RoomMember.Role.MEMBER));
+        roomMemberRepository.save(newMember(room, friend, RoomMember.Role.MEMBER));
+
+        return toSummary(room, 2);
+    }
+
+    private void ensureFriendship(UUID userId, UUID friendId) {
+        Friendship friendship = friendshipRepository.findBetween(userId, friendId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "You can only chat directly with friends"));
+    }
+
+    // =========================================================
+    // helpers
+    // =========================================================
+
+    private void addOwner(ChatRoom room, User owner) {
+        roomMemberRepository.save(newMember(room, owner, RoomMember.Role.OWNER));
+    }
+
+    private RoomMember newMember(ChatRoom room, User user, RoomMember.Role role) {
+        RoomMember member = new RoomMember();
+        member.setRoom(room);
+        member.setUser(user);
+        member.setRole(role);
+        return member;
+    }
+
+    private void saveRoomInterests(UUID roomId, List<UUID> interestIds) {
+        if (interestIds == null || interestIds.isEmpty()) {
+            return;
+        }
+        Set<UUID> uniqueIds = new LinkedHashSet<>(interestIds);
+        List<Interest> interests = interestRepository.findByIdInAndIsActiveTrue(uniqueIds);
+        if (interests.size() != uniqueIds.size()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "One or more interests do not exist or are inactive");
+        }
+        for (Interest interest : interests) {
+            RoomInterest roomInterest = new RoomInterest();
+            roomInterest.setRoomId(roomId);
+            roomInterest.setInterestId(interest.getId());
+            // ตั้ง relations ให้ครบ — ถ้าปล่อย null Hibernate จะ hydrate ไม่ได้ตอน
+            // JOIN FETCH (FetchNotFoundException → 403) ตอนอ่าน summary กลับ
+            ChatRoom roomRef = chatRoomRepository.getReferenceById(roomId);
+            roomInterest.setRoom(roomRef);
+            roomInterest.setInterest(interest);
+            roomInterestRepository.save(roomInterest);
+        }
+    }
+
+    private List<ChatRoomSummaryResponse> toSummaries(List<ChatRoom> rooms) {
+        List<UUID> roomIds = rooms.stream().map(ChatRoom::getId).toList();
+        Map<UUID, List<RoomInterest>> interestsByRoom = roomInterestRepository.findByRoomIdInWithInterest(roomIds)
+                .stream()
+                .collect(Collectors.groupingBy(RoomInterest::getRoomId));
+
+        // ใช้ในหน้า discover — ห้องที่ยังไม่ได้เป็นสมาชิก ไม่มี unread
+        return rooms.stream()
+                .map(room -> toSummary(
+                        room,
+                        roomMemberRepository.countActiveMembers(room.getId()),
+                        0,
+                        interestsByRoom.getOrDefault(room.getId(), List.of())))
+                .toList();
+    }
+
+    private ChatRoomSummaryResponse toSummary(ChatRoom room, long memberCount) {
+        return toSummary(room, memberCount, 0);
+    }
+
+    private ChatRoomSummaryResponse toSummary(ChatRoom room, long memberCount, long unreadCount) {
+        return toSummary(room, memberCount, unreadCount,
+                roomInterestRepository.findByRoomIdWithInterest(room.getId()));
+    }
+
+    private ChatRoomSummaryResponse toSummary(ChatRoom room, long memberCount, long unreadCount,
+            List<RoomInterest> roomInterests) {
+        return new ChatRoomSummaryResponse(
+                room.getId(),
+                room.getRoomName(),
+                room.getRoomType(),
+                room.isPrivate(),
+                room.getMaxMembers(),
+                memberCount,
+                unreadCount,
+                roomInterests.stream()
+                        .map(ri -> new ChatRoomSummaryResponse.InterestDto(
+                                ri.getInterest().getId(),
+                                ri.getInterest().getName()))
+                        .toList(),
+                room.getCreatedAt());
+    }
+
+    private long countUnread(UUID userId, ChatRoom room) {
+        return roomMemberRepository.findActiveMember(room.getId(), userId)
+                .map(member -> {
+                    if (member.getLastReadAt() == null) {
+                        return messageRepository.countByRoomIdAndDeletedAtIsNullAndSenderIdNot(
+                                room.getId(), userId);
+                    }
+                    return messageRepository.countByRoomIdAndDeletedAtIsNullAndSenderIdNotAndCreatedAtAfter(
+                            room.getId(), userId, member.getLastReadAt());
+                })
+                .orElse(0L);
+    }
+
+    private List<ChatRoomSummaryResponse.InterestDto> toInterestDtos(UUID roomId) {
+        return roomInterestRepository.findByRoomIdWithInterest(roomId).stream()
+                .map(ri -> new ChatRoomSummaryResponse.InterestDto(
+                        ri.getInterest().getId(),
+                        ri.getInterest().getName()))
+                .toList();
+    }
+}

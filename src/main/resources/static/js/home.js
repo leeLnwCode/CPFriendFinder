@@ -1,568 +1,835 @@
 document.addEventListener("DOMContentLoaded", function () {
-  // =========================
-  // Filter
-  // =========================
+  const $ = (id) => document.getElementById(id);
 
-  const searchInput = document.getElementById("roomSearch");
-  const yearFilter = document.getElementById("yearFilter");
-  const interestFilter = document.getElementById("interestFilter");
+  const roomGrid = $("roomGrid");
 
-  function filterRooms() {
-    const search = searchInput.value.toLowerCase().trim();
-    const year = yearFilter.value;
-    const interest = interestFilter.value;
-
-    const rooms = document.querySelectorAll(".room-card");
-
-    rooms.forEach(function (room) {
-      const text = room.innerText.toLowerCase();
-
-      const roomYears = (room.dataset.year || "")
-        .split(",")
-        .map(function (item) {
-          return item.trim();
-        });
-
-      const roomInterests = (room.dataset.interest || "")
-        .split(",")
-        .map(function (item) {
-          return item.trim();
-        });
-
-      const matchSearch = text.includes(search);
-
-      const matchYear =
-        year === "" ||
-        roomYears.includes(year) ||
-        roomYears.includes("all");
-
-      const matchInterest =
-        interest === "" || roomInterests.includes(interest);
-
-      if (matchSearch && matchYear && matchInterest) {
-        room.style.display = "flex";
-      } else {
-        room.style.display = "none";
-      }
-    });
+  if (!roomGrid) {
+    return;
   }
 
-  searchInput.addEventListener("input", filterRooms);
 
-  yearFilter.addEventListener("change", filterRooms);
+  // =====================================================
+  // HELPERS
+  // =====================================================
 
-  interestFilter.addEventListener("change", filterRooms);
+  function escapeHtml(text) {
+    const div = document.createElement("div");
+    div.textContent = text ?? "";
+    return div.innerHTML;
+  }
 
+  function yearLabel(value) {
+    if (value === "all") {
+      return "ทุกชั้นปี";
+    }
 
-  // =========================
-  // Create Room Popup
-  // =========================
+    if (value === "5") {
+      return "ปีลึก";
+    }
 
-  const createRoomButton =
-    document.getElementById("createRoomButton");
+    return "ปี " + value;
+  }
 
-  const createRoomModal =
-    document.getElementById("createRoomModal");
+  function checkedValues(checkboxes) {
+    return Array.from(checkboxes)
+      .filter((item) => item.checked)
+      .map((item) => item.value);
+  }
 
-  const cancelCreateRoom =
-    document.getElementById("cancelCreateRoom");
+  function splitData(value) {
+    return (value || "")
+      .split(",")
+      .map((item) => item.trim())
+      .filter((item) => item !== "");
+  }
 
-  const confirmCreateRoom =
-    document.getElementById("confirmCreateRoom");
+  // =====================================================
+  // GO TO ROOM
+  // =====================================================
 
-  const roomGrid =
-    document.getElementById("roomGrid");
+  function goToRoom(roomId) {
+    if (!roomId) {
+      alert("ไม่พบรหัสห้อง");
+      return;
+    }
 
+    window.location.href = "/room?id=" + encodeURIComponent(roomId);
+  }
 
-  // =========================
-  // Form
-  // =========================
+  // =====================================================
+  // INTERESTS
+  // =====================================================
 
-  const roomName =
-    document.getElementById("roomName");
+  let interestList = [];
 
-  const roomDescription =
-    document.getElementById("roomDescription");
+  async function loadInterests() {
+    try {
+      const response = await fetch("/api/interests", {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+        },
+        credentials: "include",
+      });
 
+      if (!response.ok) {
+        throw new Error(`โหลดความสนใจไม่สำเร็จ (${response.status})`);
+      }
 
-  // =========================
-  // Interest Dropdown
-  // =========================
+      interestList = await response.json();
 
-  const roomInterest =
-    document.getElementById("roomInterest");
+      const options = roomInterest.querySelector(".multi-select-options");
+      options.replaceChildren();
+      interestFilter.replaceChildren(new Option("ทุกความสนใจ", ""));
+      interestList.filter((interest) => interest.isActive !== false).forEach((interest) => {
+        const label = document.createElement("label");
+        const checkbox = document.createElement("input");
+        checkbox.type = "checkbox"; checkbox.value = interest.id;
+        label.append(checkbox, document.createTextNode(" " + interest.name));
+        options.append(label);
+        interestFilter.add(new Option(interest.name, interest.id));
+      });
+      if (!options.children.length) options.textContent = "ยังไม่มีความสนใจให้เลือก";
+      confirmCreateRoom.disabled = !options.querySelector("input");
+    } catch (error) {
+      console.error("โหลดความสนใจล้มเหลว:", error);
+      roomInterest.querySelector(".multi-select-options").textContent = "โหลดความสนใจไม่สำเร็จ กรุณาโหลดหน้านี้ใหม่";
+      confirmCreateRoom.disabled = true;
+    }
+  }
 
-  const selectedInterestText =
-    document.getElementById("selectedInterestText");
+  // =====================================================
+  // LOAD ROOMS
+  // =====================================================
 
-  const interestCheckboxes =
-    roomInterest.querySelectorAll(
-      'input[type="checkbox"]'
-    );
+  let loadedPages = 0, loadGeneration = 0, loadingRooms = false, filterTimer;
+  const pageSize = 20;
+  const pagination = document.createElement('div'); pagination.className = 'room-pagination';
+  const moreRooms = document.createElement('button'); moreRooms.type = 'button'; moreRooms.textContent = 'โหลดห้องเพิ่มเติม'; moreRooms.hidden = true;
+  const roomStatus = document.createElement('span'); roomStatus.setAttribute('role','status');
+  pagination.append(roomStatus,moreRooms); roomGrid.after(pagination);
+  moreRooms.onclick = () => { if (!loadingRooms) loadRooms(false,true); };
+  async function loadRooms(quiet = false, append = false) {
+    if (quiet && loadingRooms) return;
+    const generation = ++loadGeneration;
+    const lastPage = append ? loadedPages : quiet ? Math.max(0,loadedPages-1) : 0;
+    loadingRooms = true; moreRooms.disabled = true;
+    if (!quiet) roomStatus.textContent = 'กำลังโหลดห้อง…';
+    try {
+      let fetched = [], lastBatch = [];
+      for (let page = append ? lastPage : 0; page <= lastPage; page++) {
+        const query = new URLSearchParams({page:String(page),size:String(pageSize),sort:$('roomSort')?.value || 'newest'});
+        if (searchInput?.value.trim()) query.set('search',searchInput.value.trim());
+        if (yearFilter?.value) query.set('year',yearFilter.value);
+        if (interestFilter?.value) query.set('interestId',interestFilter.value);
+        const response = await fetch('/api/chats/discover?'+query,{credentials:'include',headers:{Accept:'application/json'},cache:'no-store'});
+        if (!response.ok) throw Error('โหลดห้องไม่สำเร็จ');
+        lastBatch = await response.json(); fetched.push(...lastBatch);
+        if (generation !== loadGeneration) return;
+        if (lastBatch.length < pageSize) break;
+      }
+      if (!append) roomGrid.replaceChildren();
+      const existing = new Set([...roomGrid.querySelectorAll('[data-room-id]')].map(card=>card.dataset.roomId));
+      for (const room of fetched) if (!existing.has(String(room.id))) { createRoomCard(room); existing.add(String(room.id)); }
+      loadedPages = lastPage + 1;
+      moreRooms.hidden = lastBatch.length < pageSize;
+      roomStatus.textContent = existing.size ? `แสดง ${existing.size} ห้อง` : 'ไม่พบห้องที่ตรงกับการค้นหา';
+    } catch (_) {
+      if (generation === loadGeneration) roomStatus.textContent = 'โหลดห้องไม่สำเร็จ กรุณาลองค้นหาใหม่หรือโหลดหน้านี้อีกครั้ง';
+    } finally { if (generation === loadGeneration) { loadingRooms = false; moreRooms.disabled = false; } }
+  }
 
+  // =====================================================
+  // CREATE ROOM CARD
+  // =====================================================
 
-  // =========================
-  // Year Dropdown
-  // =========================
+  function createRoomCard(room) {
+    const card = document.createElement("article");
 
-  const roomYearSelect =
-    document.getElementById("roomYearSelect");
+    card.className = "room-card";
 
-  const selectedYearText =
-    document.getElementById("selectedYearText");
+    // UUID ของห้องจาก Backend
+    card.dataset.roomId = room.id || "";
 
-  const yearCheckboxes =
-    roomYearSelect.querySelectorAll(
-      'input[name="roomYear"]'
-    );
+    card.dataset.members = room.memberCount || 0;
 
+    card.dataset.max = room.maxMembers || 10;
 
-  // =========================
-  // Other Form
-  // =========================
+    card.dataset.private = room.isPrivate ? "true" : "false";
 
-  const roomMax =
-    document.getElementById("roomMax");
+    const interests = (room.interests || []).map(function (interest) {
+      return interest.name;
+    });
 
-  const roomType =
-    document.getElementById("roomType");
+    card.dataset.interest = interests.join(",");
 
+    card.innerHTML = `
+      <h3>
+        ${escapeHtml(room.roomName || "ห้องไม่มีชื่อ")}
+      </h3>
 
-  // =========================
-  // Close Dropdown
-  // =========================
+      <p class="room-description">
+        ${escapeHtml(String(room.memberCount || 0))}
+        /
+        ${escapeHtml(String(room.maxMembers || 10))}
+        สมาชิกในห้อง
+      </p>
+
+      <div class="room-tags">
+        ${interests
+          .map(function (interest) {
+            return `
+              <span>
+                ${escapeHtml(interest)}
+              </span>
+            `;
+          })
+          .join("")}
+      </div>
+
+      <div class="room-owner">
+        <div>
+          <strong>
+            ห้องพูดคุย
+          </strong>
+        </div>
+      </div>
+
+      <div class="room-bottom">
+        <span class="room-type">
+          ${room.isPrivate ? "Private" : "Public"}
+        </span>
+
+        <button
+          type="button"
+          class="join-button"
+        >
+          เข้าห้อง
+        </button>
+      </div>
+    `;
+
+    roomGrid.appendChild(card);
+  }
+
+  // =====================================================
+  // FILTER
+  // =====================================================
+
+  const searchInput = $("roomSearch");
+  const yearFilter = $("yearFilter");
+  const interestFilter = $("interestFilter");
+
+  function filterRooms() {
+    clearTimeout(filterTimer);
+    filterTimer = setTimeout(() => loadRooms(),200);
+  }
+  searchInput?.addEventListener('input',filterRooms);
+  yearFilter?.addEventListener('change',filterRooms);
+  interestFilter?.addEventListener('change',filterRooms);
+  $('roomSort')?.addEventListener('change',filterRooms);
+
+  // =====================================================
+  // CREATE ROOM MODAL ELEMENTS
+  // =====================================================
+
+  const createRoomButton = $("createRoomButton");
+
+  const createRoomModal = $("createRoomModal");
+
+  const cancelCreateRoom = $("cancelCreateRoom");
+
+  const confirmCreateRoom = $("confirmCreateRoom");
+
+  const roomName = $("roomName");
+
+  const roomDescription = $("roomDescription");
+
+  const roomMax = $("roomMax");
+
+  const roomType = $("roomType");
+
+  const roomInterest = $("roomInterest");
+
+  const selectedInterestText = $("selectedInterestText");
+
+  const roomYearSelect = $("roomYearSelect");
+
+  const selectedYearText = $("selectedYearText");
+
+  if (
+    !createRoomButton ||
+    !createRoomModal ||
+    !cancelCreateRoom ||
+    !confirmCreateRoom
+  ) {
+    return;
+  }
+
+  const interestCheckboxes = () => roomInterest.querySelectorAll('input[type="checkbox"]');
+  confirmCreateRoom.disabled = true;
+
+  const yearCheckboxes = roomYearSelect.querySelectorAll(
+    'input[name="roomYear"]',
+  );
+
+  // =====================================================
+  // DROPDOWN
+  // =====================================================
 
   document.addEventListener("click", function (event) {
-
-    // ปิดความสนใจ
-    if (!roomInterest.contains(event.target)) {
+    if (roomInterest && !roomInterest.contains(event.target)) {
       roomInterest.removeAttribute("open");
     }
 
-    // ปิดชั้นปี
-    if (!roomYearSelect.contains(event.target)) {
+    if (roomYearSelect && !roomYearSelect.contains(event.target)) {
       roomYearSelect.removeAttribute("open");
     }
-
   });
 
+  // =====================================================
+  // INTEREST DROPDOWN
+  // =====================================================
 
-  // =========================
-  // Open Popup
-  // =========================
+  const interestSummary = roomInterest.querySelector("summary");
+
+  if (interestSummary) {
+    interestSummary.addEventListener("click", function (event) {
+      event.preventDefault();
+
+      roomInterest.open = !roomInterest.open;
+    });
+  }
+
+  // =====================================================
+  // YEAR DROPDOWN
+  // =====================================================
+
+  const yearSummary = roomYearSelect.querySelector("summary");
+
+  if (yearSummary) {
+    yearSummary.addEventListener("click", function (event) {
+      event.preventDefault();
+
+      roomYearSelect.open = !roomYearSelect.open;
+    });
+  }
+
+  // =====================================================
+  // OPEN CREATE ROOM
+  // =====================================================
 
   createRoomButton.addEventListener("click", function () {
-
     createRoomModal.style.display = "flex";
-
   });
 
-
-  // =========================
-  // Close Popup
-  // =========================
+  // =====================================================
+  // CANCEL CREATE ROOM
+  // =====================================================
 
   cancelCreateRoom.addEventListener("click", function () {
-
     createRoomModal.style.display = "none";
 
+    roomInterest.removeAttribute("open");
+
+    roomYearSelect.removeAttribute("open");
   });
 
+  // =====================================================
+  // INTEREST CHECKBOX
+  // =====================================================
 
-  // =========================
-  // Interest Checkbox
-  // =========================
-
-  interestCheckboxes.forEach(function (checkbox) {
-
-    checkbox.addEventListener("change", function () {
-
-      const selected =
-        Array.from(interestCheckboxes)
-          .filter(function (item) {
-            return item.checked;
-          })
-          .map(function (item) {
-            return item.value;
-          });
-
-
-      if (selected.length === 0) {
-
-        selectedInterestText.textContent =
-          "เลือกความสนใจ";
-
-      } else {
-
-        selectedInterestText.textContent =
-          selected.join(", ");
-
-      }
-
-    });
-
+  roomInterest.addEventListener("change", () => {
+    const selected = Array.from(interestCheckboxes()).filter((item) => item.checked).map((item) => item.parentElement.textContent.trim());
+    selectedInterestText.textContent = selected.length ? selected.join(", ") : "เลือกความสนใจ";
   });
 
-
-  // =========================
-  // Year Checkbox (Multi-Select)
-  // =========================
+  // =====================================================
+  // YEAR CHECKBOX - เลือกได้แค่ 1 ชั้นปี
+  // =====================================================
 
   function updateSelectedYearText() {
+    const selected = Array.from(yearCheckboxes).find(function (item) {
+      return item.checked;
+    });
 
-    const selected =
-      Array.from(yearCheckboxes)
-        .filter(function (item) {
-          return item.checked;
-        })
-        .map(function (item) {
-          return item.parentElement.textContent.trim();
-        });
-
-    if (selected.length === 0) {
-
-      selectedYearText.textContent =
-        "เลือกชั้นปี";
-
-    } else {
-
-      selectedYearText.textContent =
-        selected.join(", ");
-
+    if (!selected) {
+      selectedYearText.textContent = "เลือกชั้นปี";
+      return;
     }
 
+    if (selected.value === "all") {
+      selectedYearText.textContent = "ทุกชั้นปี";
+    } else if (selected.value === "5") {
+      selectedYearText.textContent = "ปีลึก";
+    } else {
+      selectedYearText.textContent = "ปี " + selected.value;
+    }
   }
 
   yearCheckboxes.forEach(function (checkbox) {
-
     checkbox.addEventListener("change", function () {
-
-      // ถ้าเลือก "ทุกชั้นปี" ให้ยกเลิกตัวเลือกอื่นทั้งหมด
-      if (this.value === "all" && this.checked) {
-
-        yearCheckboxes.forEach(function (item) {
-
-          if (item.value !== "all") {
-            item.checked = false;
+      // ถ้าเลือกอันใหม่
+      if (this.checked) {
+        yearCheckboxes.forEach(function (otherCheckbox) {
+          if (otherCheckbox !== checkbox) {
+            otherCheckbox.checked = false;
           }
-
         });
-
       }
 
-      // ถ้าเลือกปีใดปีหนึ่ง ให้ยกเลิก "ทุกชั้นปี"
-      if (this.value !== "all" && this.checked) {
-
-        yearCheckboxes.forEach(function (item) {
-
-          if (item.value === "all") {
-            item.checked = false;
-          }
-
-        });
-
+      // ห้ามไม่มีอันไหนถูกเลือก
+      else {
+        this.checked = true;
       }
 
       updateSelectedYearText();
-
     });
-
   });
 
+  updateSelectedYearText();
 
-  // =========================
-  // Create Room
-  // =========================
+  // =====================================================
+  // CREATE ROOM - BACKEND
+  // =====================================================
 
-  confirmCreateRoom.addEventListener(
-    "click",
-    function () {
+  confirmCreateRoom.addEventListener("click", async function () {
+    const name = roomName.value.trim();
 
-      // -------------------------
-      // Get Form Data
-      // -------------------------
+    const description = roomDescription.value.trim();
 
-      const name =
-        roomName.value.trim();
+    const maxPeople = Number(roomMax.value || 10);
 
-      const description =
-        roomDescription.value.trim();
+    const type = roomType.value || "Public";
 
+    const selectedInterests = checkedValues(interestCheckboxes());
 
-      // ชั้นปีที่เลือก
-      const selectedYears =
-        Array.from(yearCheckboxes)
-          .filter(function (checkbox) {
-            return checkbox.checked;
-          })
-          .map(function (checkbox) {
-            return checkbox.value;
-          });
+    const selectedYears = Array.from(yearCheckboxes)
+      .filter(function (checkbox) {
+        return checkbox.checked;
+      })
+      .map(function (checkbox) {
+        return checkbox.value;
+      });
 
+    // -----------------------------------------------
+    // VALIDATION
+    // -----------------------------------------------
 
-      const maxPeople =
-        roomMax.value;
+    if (name === "" || name.length > 100 || description.length > 500) {
+      alert("กรอกชื่อห้อง 1–100 ตัวอักษร และคำอธิบายไม่เกิน 500 ตัวอักษร");
+      roomName.focus();
+      return;
+    }
 
-      const type =
-        roomType.value;
+    if (selectedInterests.length === 0) {
+      alert("กรุณาเลือกความสนใจอย่างน้อย 1 อย่าง");
+      return;
+    }
 
+    if (selectedYears.length === 0) {
+      alert("กรุณาเลือกชั้นปีอย่างน้อย 1 อย่าง");
+      return;
+    }
 
-      // -------------------------
-      // Selected Interests
-      // -------------------------
+    if (!Number.isInteger(maxPeople) || maxPeople < 2 || maxPeople > 100) {
+      alert("จำนวนสมาชิกต้องเป็นจำนวนเต็มระหว่าง 2–100 คน");
+      return;
+    }
 
-      const selectedInterests =
-        Array.from(interestCheckboxes)
-          .filter(function (checkbox) {
-            return checkbox.checked;
-          })
-          .map(function (checkbox) {
-            return checkbox.value;
-          });
+    // -----------------------------------------------
+    // GET INTEREST UUIDs
+    // -----------------------------------------------
 
+    const interestIds = Array.from(interestCheckboxes())
+      .filter(function (checkbox) {
+        return checkbox.checked;
+      })
+      .map(function (checkbox) {
+        return checkbox.value;
+      });
 
-      // -------------------------
-      // Validation
-      // -------------------------
+    if (interestIds.length !== selectedInterests.length) {
+      alert("ไม่สามารถจับคู่ความสนใจบางรายการได้");
+      return;
+    }
 
-      if (name === "") {
+    // -----------------------------------------------
+    // PRIVATE PASSWORD
+    // -----------------------------------------------
 
-        alert("กรุณาใส่ชื่อห้อง");
+    let password = null;
 
-        roomName.focus();
+    if (type === "Private") {
+      password = prompt("กรุณาตั้งรหัสเข้าห้อง");
+
+      if (password === null) {
+        return;
+      }
+
+      password = password.trim();
+
+      if (password.length < 4 || password.length > 100) {
+        alert("รหัสเข้าห้องต้องมี 4–100 ตัวอักษร");
+        return;
+      }
+    }
+
+    // -----------------------------------------------
+    // BACKEND REQUEST
+    // -----------------------------------------------
+
+    const requestBody = {
+      roomName: name,
+      description: description || null,
+      targetYear: selectedYears[0] === "all" ? null : Number(selectedYears[0]),
+      interestIds: interestIds,
+      maxMembers: maxPeople,
+      password: type === "Private" ? password : null,
+      private: type === "Private",
+    };
+
+    try {
+      confirmCreateRoom.disabled = true;
+
+      const response = await fetch("/api/chats", {
+        method: "POST",
+
+        headers: {
+          "Content-Type": "application/json",
+
+          Accept: "application/json",
+        },
+
+        credentials: "include",
+
+        body: JSON.stringify(requestBody),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+
+        console.error("CREATE ROOM STATUS:", response.status);
+        console.error("CREATE ROOM RESPONSE:", errorText);
+
+        alert(
+          "สร้างห้องไม่สำเร็จ\nStatus: " + response.status + "\n" + errorText,
+        );
 
         return;
-
       }
 
+      const createdRoom = await response.json();
 
-      if (selectedInterests.length === 0) {
+      // ---------------------------------------------
+      // CLOSE MODAL
+      // ---------------------------------------------
 
-        alert("กรุณาเลือกความสนใจอย่างน้อย 1 อย่าง");
+      createRoomModal.style.display = "none";
 
-        return;
+      roomInterest.removeAttribute("open");
 
-      }
+      roomYearSelect.removeAttribute("open");
 
-
-      if (selectedYears.length === 0) {
-
-        alert("กรุณาเลือกชั้นปีอย่างน้อย 1 อย่าง");
-
-        return;
-
-      }
-
-
-      // =========================
-      // Create Room Card
-      // =========================
-
-      const newRoom =
-        document.createElement("article");
-
-      newRoom.className =
-        "room-card";
-
-
-      // -------------------------
-      // Data สำหรับ Filter
-      // -------------------------
-
-      newRoom.dataset.year =
-        selectedYears.join(",");
-
-      newRoom.dataset.interest =
-        selectedInterests.join(",");
-
-
-      // -------------------------
-      // Interest Tags
-      // -------------------------
-
-      const interestTags =
-        selectedInterests
-          .map(function (interest) {
-
-            return `
-              <span>${interest}</span>
-            `;
-
-          })
-          .join("");
-
-
-      // -------------------------
-      // Year Display Text
-      // -------------------------
-
-      function yearLabel(value) {
-        if (value === "all") return "ทุกชั้นปี";
-        if (value === "other") return "ปีลึก";
-        return "ปี " + value;
-      }
-
-      const yearTags =
-        selectedYears
-          .map(function (value) {
-
-            return `
-              <span>${yearLabel(value)}</span>
-            `;
-
-          })
-          .join("");
-
-      const yearText =
-        selectedYears
-          .map(yearLabel)
-          .join(", ");
-
-      // =========================
-      // Room HTML
-      // =========================
-
-      newRoom.innerHTML = `
-
-        <h3>
-          ${name}
-        </h3>
-
-        <p class="room-description">
-
-          1/${maxPeople} คนกำลังคุย
-
-          &nbsp;&nbsp;
-
-          ${description || "ยังไม่มีคำอธิบาย"}
-
-        </p>
-
-
-        <div class="room-tags">
-
-          ${interestTags}
-
-          ${yearTags}
-
-        </div>
-
-
-        <div class="room-owner">
-
-          <img
-            src="/images/man.jpg"
-            alt="Owner"
-          >
-
-          <div>
-
-            <strong>
-              Singha Waraha
-            </strong>
-
-            <small>
-              ${yearText}
-            </small>
-
-          </div>
-
-        </div>
-
-
-        <div class="room-bottom">
-
-          <span class="room-type">
-            ${type}
-          </span>
-
-          <button
-            type="button"
-            class="join-button"
-          >
-            เข้าห้อง
-          </button>
-
-        </div>
-
-      `;
-
-
-      // =========================
-      // Add Room
-      // =========================
-
-      roomGrid.prepend(newRoom);
-
-
-      // =========================
-      // Close Popup
-      // =========================
-
-      createRoomModal.style.display =
-        "none";
-
-
-      // =========================
-      // Reset Form
-      // =========================
+      // ---------------------------------------------
+      // RESET FORM
+      // ---------------------------------------------
 
       roomName.value = "";
 
       roomDescription.value = "";
 
+      roomMax.value = "10";
 
-      // Reset Year
-      yearCheckboxes.forEach(function (checkbox) {
+      roomType.value = "Public";
 
-        checkbox.checked =
-          checkbox.value === "1";
-
+      interestCheckboxes().forEach(function (checkbox) {
+        checkbox.checked = false;
       });
 
-      selectedYearText.textContent =
-        "ปี 1";
+      selectedInterestText.textContent = "เลือกความสนใจ";
 
-      roomYearSelect.removeAttribute("open");
+      yearCheckboxes.forEach(function (checkbox) {
+        checkbox.checked = checkbox.value === "1";
+      });
 
+      selectedYearText.textContent = "ปี 1";
 
-      // Reset Max People
-      roomMax.value =
-        "10";
+      // ---------------------------------------------
+      // เข้า Room ที่เพิ่งสร้าง
+      // ---------------------------------------------
 
+      if (createdRoom.id) {
+        goToRoom(createdRoom.id);
+      } else {
+        alert("สร้างห้องสำเร็จ แต่ไม่พบรหัสห้อง");
 
-      // Reset Room Type
-      roomType.value =
-        "Public";
+        await loadRooms();
+      }
+    } catch (error) {
+      console.error("สร้างห้องล้มเหลว:", error);
 
-
-      // Reset Interest
-      interestCheckboxes.forEach(
-        function (checkbox) {
-
-          checkbox.checked =
-            false;
-
-        }
-      );
-
-
-      selectedInterestText.textContent =
-        "เลือกความสนใจ";
-
-
-      roomInterest.removeAttribute(
-        "open"
-      );
-
-
-      // =========================
-      // Update Filter
-      // =========================
-
-      filterRooms();
-
+      alert(error.message || "ไม่สามารถสร้างห้องได้");
+    } finally {
+      confirmCreateRoom.disabled = false;
     }
-  );
+  });
 
+  // =====================================================
+  // PRIVATE ROOM MODAL
+  // =====================================================
+
+  const privateRoomModal = $("privateRoomModal");
+
+  const privateRoomName = $("privateRoomName");
+
+  const privateRoomCode = $("privateRoomCode");
+
+  const privateRoomError = $("privateRoomError");
+
+  const cancelPrivateRoom = $("cancelPrivateRoom");
+
+  const confirmPrivateRoom = $("confirmPrivateRoom");
+
+  let pendingRoomId = null;
+
+  // =====================================================
+  // OPEN PRIVATE ROOM
+  // =====================================================
+
+  function openPrivateRoom(roomId) {
+    pendingRoomId = roomId;
+
+    privateRoomName.textContent = "กรุณากรอกรหัสเพื่อเข้าห้อง";
+
+    privateRoomCode.value = "";
+
+    privateRoomError.textContent = "";
+
+    privateRoomModal.style.display = "flex";
+
+    privateRoomCode.focus();
+  }
+
+  // =====================================================
+  // CLOSE PRIVATE ROOM
+  // =====================================================
+
+  function closePrivateRoom() {
+    pendingRoomId = null;
+
+    privateRoomModal.style.display = "none";
+
+    privateRoomCode.value = "";
+
+    privateRoomError.textContent = "";
+  }
+
+  // =====================================================
+  // PRIVATE ERROR
+  // =====================================================
+
+  function showPrivateError(message) {
+    privateRoomError.textContent = message;
+
+    privateRoomError.style.color = "#d93025";
+  }
+
+  // =====================================================
+  // JOIN ROOM BACKEND
+  // =====================================================
+
+  async function joinRoom(roomId, password = null) {
+    const body = password
+      ? {
+          password: password,
+        }
+      : {};
+
+    const response = await fetch(`/api/chats/${roomId}/join`, {
+      method: "POST",
+
+      headers: {
+        "Content-Type": "application/json",
+
+        Accept: "application/json",
+      },
+
+      credentials: "include",
+
+      body: JSON.stringify(body),
+    });
+
+    if (!response.ok) {
+      let message = "ไม่สามารถเข้าห้องได้";
+
+      try {
+        const errorData = await response.json();
+
+        if (errorData.message) {
+          message = errorData.message;
+        }
+      } catch (error) {
+        // ใช้ข้อความเดิม
+      }
+
+      const error = new Error(message);
+      error.status = response.status;
+      throw error;
+    }
+
+    goToRoom(roomId);
+  }
+
+  // =====================================================
+  // SUBMIT PRIVATE ROOM
+  // =====================================================
+
+  async function submitPrivateRoom() {
+    if (!pendingRoomId) {
+      return;
+    }
+
+    const code = privateRoomCode.value.trim();
+
+    if (code === "") {
+      showPrivateError("กรุณากรอกรหัสเข้าห้อง");
+
+      return;
+    }
+
+    try {
+      confirmPrivateRoom.disabled = true;
+
+      await joinRoom(pendingRoomId, code);
+    } catch (error) {
+      console.error("เข้าห้อง Private ล้มเหลว:", error);
+
+      showPrivateError(error.message || "รหัสไม่ถูกต้อง");
+    } finally {
+      confirmPrivateRoom.disabled = false;
+    }
+  }
+
+  // =====================================================
+  // PRIVATE BUTTONS
+  // =====================================================
+
+  if (cancelPrivateRoom) {
+    cancelPrivateRoom.addEventListener("click", closePrivateRoom);
+  }
+
+  if (confirmPrivateRoom) {
+    confirmPrivateRoom.addEventListener("click", submitPrivateRoom);
+  }
+
+  if (privateRoomCode) {
+    privateRoomCode.addEventListener("keydown", function (event) {
+      if (event.key === "Enter") {
+        submitPrivateRoom();
+      }
+    });
+  }
+
+  // =====================================================
+  // CLICK OUTSIDE PRIVATE MODAL
+  // =====================================================
+
+  if (privateRoomModal) {
+    privateRoomModal.addEventListener("click", function (event) {
+      if (event.target === privateRoomModal) {
+        closePrivateRoom();
+      }
+    });
+  }
+
+  // =====================================================
+  // CLICK OUTSIDE CREATE MODAL
+  // =====================================================
+
+  createRoomModal.addEventListener("click", function (event) {
+    if (event.target === createRoomModal) {
+      createRoomModal.style.display = "none";
+    }
+  });
+
+  // =====================================================
+  // ESC
+  // =====================================================
+
+  document.addEventListener("keydown", function (event) {
+    if (event.key === "Escape") {
+      closePrivateRoom();
+
+      createRoomModal.style.display = "none";
+    }
+  });
+
+  // =====================================================
+  // JOIN ROOM
+  // =====================================================
+
+  roomGrid.addEventListener("click", async function (event) {
+    const button = event.target.closest(".join-button");
+
+    if (!button) {
+      return;
+    }
+
+    const roomCard = button.closest(".room-card");
+
+    if (!roomCard) {
+      return;
+    }
+
+    const roomId = roomCard.dataset.roomId;
+
+    if (!roomId) {
+      alert("ไม่พบรหัสห้อง");
+
+      return;
+    }
+
+    const isPrivate = roomCard.dataset.private === "true";
+
+    // ---------------------------------------------
+    // PRIVATE
+    // ---------------------------------------------
+
+    if (isPrivate) {
+      // Existing members can resume without entering the room password again.
+      button.disabled = true;
+      try {
+        await joinRoom(roomId);
+      } catch (error) {
+        if (error.status === 403) openPrivateRoom(roomId);
+        else alert(error.message || "ไม่สามารถเข้าห้องได้");
+      } finally {
+        button.disabled = false;
+      }
+      return;
+    }
+
+    // ---------------------------------------------
+    // PUBLIC
+    // ---------------------------------------------
+
+    button.disabled = true;
+    try {
+      await joinRoom(roomId);
+    } catch (error) {
+      console.error("เข้าห้องล้มเหลว:", error);
+
+      alert(error.message || "ไม่สามารถเข้าห้องได้");
+    } finally { button.disabled = false; }
+  });
+
+  // =====================================================
+  // INITIAL LOAD
+  // =====================================================
+
+  document.querySelector(".random-button")?.addEventListener("click", () => { window.location.href = "/random"; });
+  loadInterests();
+  window.addEventListener("cp-rooms-refresh", () => loadRooms(true));
+  loadRooms();
 });
