@@ -363,32 +363,53 @@ class ChatRoomServiceTest {
     }
 
     @Test
-    void joinRoom_existingMember_returnsRoomDetail() {
+    void joinRoom_existingMember_resumesWithoutDuplicatingMembership() {
         UUID userId = UUID.randomUUID();
         UUID roomId = UUID.randomUUID();
-
-        ChatRoom room =
-                room(
-                        roomId,
-                        "Room",
-                        ChatRoom.RoomType.GROUP
-                );
-
+        ChatRoom room = room(roomId, "Room", ChatRoom.RoomType.GROUP);
         User user = user(userId, "Member");
+        RoomMember member = new RoomMember();
+        member.setRoom(room);
+        member.setUser(user);
+        when(chatRoomRepository.findById(roomId)).thenReturn(Optional.of(room));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(roomMemberRepository.isActiveMember(roomId, userId)).thenReturn(true);
+        when(roomMemberRepository.findActiveMembers(roomId)).thenReturn(List.of(member));
 
-        when(chatRoomRepository.findById(roomId))
-                .thenReturn(Optional.of(room));
+        for (int retry = 0; retry < 2; retry++) {
+            var result = chatRoomService.joinRoom(userId, roomId, null);
+            assertEquals(roomId, result.id());
+            assertEquals(1, result.memberCount());
+            assertEquals(userId, result.members().get(0).userId());
+        }
+        verify(roomMemberRepository, never()).save(any());
+        verify(roomMemberRepository, never()).countActiveMembers(any());
+    }
 
-        when(userRepository.findById(userId))
-                .thenReturn(Optional.of(user));
+    @Test
+    void joinRoom_existingMember_resumesPrivateFullRoomWithoutPassword() {
+        UUID userId = UUID.randomUUID();
+        UUID roomId = UUID.randomUUID();
+        ChatRoom room = room(roomId, "Private", ChatRoom.RoomType.GROUP);
+        room.setPrivate(true);
+        room.setPasswordHash("encoded-password");
+        room.setMaxMembers((short) 1);
+        User user = user(userId, "Owner");
+        RoomMember member = new RoomMember();
+        member.setRoom(room);
+        member.setUser(user);
+        member.setRole(RoomMember.Role.OWNER);
+        when(chatRoomRepository.findById(roomId)).thenReturn(Optional.of(room));
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        when(roomMemberRepository.isActiveMember(roomId, userId)).thenReturn(true);
+        when(roomMemberRepository.findActiveMembers(roomId)).thenReturn(List.of(member));
 
-        when(roomMemberRepository
-                .isActiveMember(roomId, userId))
-                .thenReturn(true);
-
-        com.cp.friend.dto.response.ChatRoomDetailResponse result = chatRoomService.joinRoom(userId, roomId, null);
-        assertNotNull(result);
-        assertEquals(roomId, result.id());
+        var result = chatRoomService.joinRoom(userId, roomId, null);
+        assertEquals(1, result.memberCount());
+        assertEquals(RoomMember.Role.OWNER, result.members().get(0).role());
+        verifyNoInteractions(passwordEncoder);
+        verify(roomMemberRepository, never()).countActiveMembers(any());
+        verify(roomMemberRepository, never()).save(any());
     }
 
     @Test
@@ -601,6 +622,42 @@ class ChatRoomServiceTest {
     }
 
     @Test
+    void directRoom_reopensHistoricalConversationWithoutCreatingRoom() {
+        UUID userId = UUID.randomUUID(), friendId = UUID.randomUUID(), roomId = UUID.randomUUID();
+        ChatRoom historical = room(roomId, "DIRECT", ChatRoom.RoomType.DIRECT);
+        RoomMember me = new RoomMember(), friend = new RoomMember();
+        me.setLeftAt(java.time.Instant.now()); friend.setLeftAt(java.time.Instant.now());
+        when(userRepository.lockDirectChatParticipant(any())).thenAnswer(invocation->Optional.of(invocation.getArgument(0)));
+        when(friendshipRepository.findBetween(userId, friendId)).thenReturn(Optional.of(new Friendship()));
+        when(chatRoomRepository.findHistoricalDirectRoomsBetween(eq(userId), eq(friendId), any()))
+                .thenReturn(List.of(historical));
+        when(roomMemberRepository.findFirstByRoomIdAndUserIdOrderByJoinedAtDesc(roomId, userId)).thenReturn(Optional.of(me));
+        when(roomMemberRepository.findFirstByRoomIdAndUserIdOrderByJoinedAtDesc(roomId, friendId)).thenReturn(Optional.of(friend));
+        when(roomMemberRepository.countActiveMembers(roomId)).thenReturn(2L);
+        var result = chatRoomService.getOrCreateDirectRoom(userId, friendId);
+        assertEquals(roomId, result.id());
+        assertNull(me.getLeftAt()); assertNull(friend.getLeftAt());
+        verify(chatRoomRepository, never()).save(any());
+        verify(roomMemberRepository).save(me); verify(roomMemberRepository).save(friend);
+    }
+
+    @Test
+    void directRoom_keepsExistingConversationId() {
+        UUID userId = UUID.randomUUID(), friendId = UUID.randomUUID(), roomId = UUID.randomUUID();
+        when(userRepository.lockDirectChatParticipant(any())).thenAnswer(invocation->Optional.of(invocation.getArgument(0)));
+        when(friendshipRepository.findBetween(userId, friendId)).thenReturn(Optional.of(new Friendship()));
+        when(chatRoomRepository.findActiveDirectRoomsBetween(eq(userId), eq(friendId), any())).thenReturn(List.of(room(roomId, "DIRECT", ChatRoom.RoomType.DIRECT)));
+        when(roomMemberRepository.countActiveMembers(roomId)).thenReturn(2L);
+        assertEquals(roomId, chatRoomService.getOrCreateDirectRoom(userId, friendId).id());
+        var order=inOrder(userRepository,chatRoomRepository);
+        order.verify(userRepository).lockDirectChatParticipant(userId.compareTo(friendId)<=0?userId:friendId);
+        order.verify(chatRoomRepository).findActiveDirectRoomsBetween(eq(userId),eq(friendId),any());
+        verify(chatRoomRepository, never()).findHistoricalDirectRoomsBetween(any(), any(), any());
+        verify(chatRoomRepository, never()).save(any());
+        verify(roomMemberRepository, never()).save(any());
+    }
+
+    @Test
     void directRoom_selfOrNonFriend_isRejected() {
         UUID userId = UUID.randomUUID();
 
@@ -659,5 +716,44 @@ class ChatRoomServiceTest {
         } catch (Exception ex) {
             throw new RuntimeException(ex);
         }
+    }
+
+    @Test void discoverSecondPageDoesNotSkipTwice() {
+        var rooms = java.util.stream.IntStream.range(0,4).mapToObj(i -> {
+            ChatRoom r=room(UUID.randomUUID(),"Room "+i,ChatRoom.RoomType.GROUP);
+            r.setCreatedAt(java.time.Instant.parse("2026-01-01T00:00:00Z").plusSeconds(i)); return r;
+        }).toList();
+        when(chatRoomRepository.findByRoomType(eq(ChatRoom.RoomType.GROUP), any())).thenReturn(new org.springframework.data.domain.PageImpl<>(rooms));
+        when(roomMemberRepository.countActiveMembers(any())).thenReturn(1L);
+        when(roomInterestRepository.findByRoomIdInWithInterest(any())).thenReturn(List.of());
+        var result=chatRoomService.discoverRooms(null,null,1,2,0,"newest");
+        assertEquals(List.of(rooms.get(1).getId(),rooms.get(0).getId()),result.stream().map(ChatRoomSummaryResponse::id).toList());
+    }
+    @Test void discoveryFiltersYearAndSortsName() {
+        ChatRoom one=room(UUID.randomUUID(),"Zebra",ChatRoom.RoomType.GROUP);one.setTargetYear((short)1);
+        ChatRoom two=room(UUID.randomUUID(),"Alpha",ChatRoom.RoomType.GROUP);two.setTargetYear((short)2);
+        ChatRoom three=room(UUID.randomUUID(),"Beta",ChatRoom.RoomType.GROUP);three.setTargetYear((short)1);
+        when(chatRoomRepository.findByRoomType(eq(ChatRoom.RoomType.GROUP),any())).thenReturn(new org.springframework.data.domain.PageImpl<>(List.of(one,two,three)));
+        when(roomMemberRepository.countActiveMembers(any())).thenReturn(1L);
+        when(roomInterestRepository.findByRoomIdInWithInterest(any())).thenReturn(List.of());
+        assertEquals(List.of(three.getId(),one.getId()),chatRoomService.discoverRooms(null,null,0,20,1,"name").stream().map(ChatRoomSummaryResponse::id).toList());
+    }
+    @Test void rejectsUnknownSortWithoutQuerying() {
+        assertEquals(HttpStatus.BAD_REQUEST,assertThrows(ResponseStatusException.class,()->chatRoomService.discoverRooms(null,null,0,20,0,"passwordHash")).getStatusCode());
+        verifyNoInteractions(chatRoomRepository);
+    }
+    @Test void onlyOwnerCanDeleteRoom() {
+        UUID me=UUID.randomUUID(),id=UUID.randomUUID();
+        assertEquals(HttpStatus.FORBIDDEN,assertThrows(ResponseStatusException.class,()->chatRoomService.deleteRoom(me,id)).getStatusCode());
+        verify(chatRoomRepository,never()).save(any());
+    }
+    @Test void deletingRoomClosesMembershipWithoutErasingRecords() {
+        UUID me=UUID.randomUUID(),id=UUID.randomUUID();ChatRoom r=room(id,"Room",ChatRoom.RoomType.GROUP);
+        RoomMember m=new RoomMember();m.setRoom(r);m.setUser(user(me,"Owner"));
+        when(roomMemberRepository.hasAnyRole(eq(id),eq(me),any())).thenReturn(true);
+        when(chatRoomRepository.findById(id)).thenReturn(Optional.of(r));
+        when(roomMemberRepository.findActiveMembers(id)).thenReturn(List.of(m));
+        chatRoomService.deleteRoom(me,id);
+        assertNotNull(r.getDeletedAt());assertEquals(r.getDeletedAt(),m.getLeftAt());verify(chatRoomRepository,never()).delete(any());
     }
 }

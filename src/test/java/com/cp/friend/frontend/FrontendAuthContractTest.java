@@ -56,10 +56,9 @@ class FrontendAuthContractTest {
                 "sessionStorage.setItem(\"currentUser\""
         ));
 
-        assertTrue(
-                js.contains("window.location.href = \"/home\"")
-                        || js.contains("window.location.assign(\"/home\")")
-        );
+        assertTrue(js.contains(
+                "window.location.assign(\"/home\")"
+        ));
     }
 
     @Test
@@ -114,6 +113,8 @@ class FrontendAuthContractTest {
         assertTrue(js.contains("password.length < 8"));
         assertTrue(js.contains("password !== confirmPassword"));
 
-        assertTrue(js.contains("window.location.href = \"/login\"") || js.contains("window.location.assign("));
+        assertTrue(js.contains(
+                "\"/login?registered=1&email=\" + encodeURIComponent(email)"
+        ));
     }
 }

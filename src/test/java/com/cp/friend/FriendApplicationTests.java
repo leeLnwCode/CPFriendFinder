@@ -9,12 +9,13 @@ import org.springframework.boot.test.context.SpringBootTest;
         "AWS_SECRET_ACCESS_KEY=test-secret-key",
         "AWS_REGION=us-east-1",
 
-        "spring.datasource.url=jdbc:h2:mem:cpfriendfinder;MODE=PostgreSQL;DB_CLOSE_DELAY=-1",
+        "spring.datasource.url=jdbc:h2:mem:cpfriendfinder;MODE=PostgreSQL;NON_KEYWORDS=YEAR;DB_CLOSE_DELAY=-1",
         "spring.datasource.driver-class-name=org.h2.Driver",
         "spring.datasource.username=sa",
         "spring.datasource.password=",
 
-        "spring.jpa.hibernate.ddl-auto=none"
+        "spring.jpa.hibernate.ddl-auto=create-drop",
+        "spring.sql.init.mode=never"
 })
 class FriendApplicationTests {
 
