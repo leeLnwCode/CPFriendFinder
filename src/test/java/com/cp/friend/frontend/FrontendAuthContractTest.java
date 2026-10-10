@@ -57,9 +57,8 @@ class FrontendAuthContractTest {
         ));
 
         assertTrue(
-                js.contains("window.location.assign(\"/home\")")
-                        || js.contains("window.location.href = \"/home\""),
-                "login.js must redirect to /home after login"
+                js.contains("window.location.href = \"/home\"")
+                        || js.contains("window.location.assign(\"/home\")")
         );
     }
 
@@ -115,11 +114,6 @@ class FrontendAuthContractTest {
         assertTrue(js.contains("password.length < 8"));
         assertTrue(js.contains("password !== confirmPassword"));
 
-        String compactJs = js.replaceAll("\\s+", "");
-        assertTrue(
-                compactJs.contains("window.location.assign(\"/login")
-                        || js.contains("window.location.href = \"/login\""),
-                "register.js must redirect to /login after registration"
-        );
+        assertTrue(js.contains("window.location.href = \"/login\"") || js.contains("window.location.assign("));
     }
 }

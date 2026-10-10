@@ -21,27 +21,27 @@ function nextStep(step) {
       : "";
 
     if (email === "") {
-      showRegisterError("กรุณากรอก Email");
+      alert("กรุณากรอก Email");
       return;
     }
 
     if (password === "") {
-      showRegisterError("กรุณากรอก Password");
+      alert("กรุณากรอก Password");
       return;
     }
 
     if (password.length < 8) {
-      showRegisterError("รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร");
+      alert("รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร");
       return;
     }
 
     if (confirmPassword === "") {
-      showRegisterError("กรุณายืนยันรหัสผ่าน");
+      alert("กรุณายืนยันรหัสผ่าน");
       return;
     }
 
     if (password !== confirmPassword) {
-      showRegisterError("รหัสผ่านไม่ตรงกัน");
+      alert("รหัสผ่านไม่ตรงกัน");
       return;
     }
   }
@@ -60,9 +60,8 @@ function nextStep(step) {
     targetStep.classList.add("active-step");
   }
 
-  document.querySelectorAll(".step").forEach(function (indicator, index) {
+  document.querySelectorAll(".step").forEach(function (indicator) {
     indicator.classList.remove("active");
-    indicator.classList.toggle("done", index + 1 < step);
   });
 
   for (let i = 1; i <= step; i++) {
@@ -189,7 +188,7 @@ async function createAccount() {
 
   // ตรวจสอบรหัสผ่านอย่างน้อย 8 ตัว
   if (password.length < 8) {
-    showRegisterError("รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร");
+    alert("รหัสผ่านต้องมีอย่างน้อย 8 ตัวอักษร");
     return;
   }
 
@@ -198,42 +197,42 @@ async function createAccount() {
   ========================= */
 
   if (email === "") {
-    showRegisterError("กรุณากรอก Email");
+    alert("กรุณากรอก Email");
     return;
   }
 
   if (password === "") {
-    showRegisterError("กรุณากรอก Password");
+    alert("กรุณากรอก Password");
     return;
   }
 
   if (password !== confirmPassword) {
-    showRegisterError("รหัสผ่านไม่ตรงกัน");
+    alert("รหัสผ่านไม่ตรงกัน");
     return;
   }
 
   if (firstname === "") {
-    showRegisterError("กรุณากรอกชื่อ");
+    alert("กรุณากรอกชื่อ");
     return;
   }
 
   if (lastname === "") {
-    showRegisterError("กรุณากรอกนามสกุล");
+    alert("กรุณากรอกนามสกุล");
     return;
   }
 
   if (dateOfBirth === "") {
-    showRegisterError("กรุณาเลือกวันเกิด");
+    alert("กรุณาเลือกวันเกิด");
     return;
   }
 
   if (!year) {
-    showRegisterError("กรุณาเลือกชั้นปี");
+    alert("กรุณาเลือกชั้นปี");
     return;
   }
 
   if (department === "") {
-    showRegisterError("กรุณาเลือกสาขา");
+    alert("กรุณาเลือกสาขา");
     return;
   }
 
@@ -249,7 +248,7 @@ async function createAccount() {
     } catch (error) {
       console.error("Image error:", error);
 
-      showRegisterError("ไม่สามารถอ่านรูปโปรไฟล์ได้");
+      alert("ไม่สามารถอ่านรูปโปรไฟล์ได้");
 
       return;
     }
@@ -295,7 +294,7 @@ async function createAccount() {
       body: JSON.stringify(requestData),
     });
   } catch (_) {
-    showRegisterError(
+    alert(
       "การเชื่อมต่อขัดข้อง หากสร้างบัญชีแล้ว ให้ลองเข้าสู่ระบบก่อนสมัครซ้ำ",
     );
   }
@@ -323,15 +322,15 @@ async function createAccount() {
     } catch (_) {}
     const message = String(data.message || "");
     if (/email.*exists/i.test(message))
-      showRegisterError("อีเมลนี้มีบัญชีแล้ว กรุณาเข้าสู่ระบบ");
+      alert("อีเมลนี้มีบัญชีแล้ว กรุณาเข้าสู่ระบบ");
     else if (response.status === 400)
-      showRegisterError(
+      alert(
         "สมัครไม่สำเร็จ: " +
           (data.errors?.map((e) => e.message).join(" · ") ||
             message ||
             "ตรวจสอบข้อมูลที่กรอก"),
       );
-    else showRegisterError("ระบบสมัครสมาชิกขัดข้อง กรุณาลองใหม่ภายหลัง");
+    else alert("ระบบสมัครสมาชิกขัดข้อง กรุณาลองใหม่ภายหลัง");
   }
   window.registrationSubmitting = false;
   if (submit) {
@@ -370,29 +369,4 @@ function addCustomInterest() {
   interestList.appendChild(button);
 
   input.value = "";
-}
-
-/* =========================
-   INLINE ERROR (แทน alert)
-========================= */
-
-function showRegisterError(text) {
-  let box = document.getElementById("registerError");
-
-  if (!box) {
-    box = document.createElement("div");
-    box.id = "registerError";
-    box.className = "register-error";
-    box.setAttribute("role", "alert");
-    const card = document.querySelector(".register-card");
-    (card || document.body).appendChild(box);
-  }
-
-  box.textContent = text;
-  box.hidden = false;
-
-  clearTimeout(showRegisterError._timer);
-  showRegisterError._timer = setTimeout(function () {
-    box.hidden = true;
-  }, 4000);
 }

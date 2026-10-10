@@ -31,7 +31,7 @@ class UserServiceTest {
     private StoragePort storagePort;
 
     @Mock
-    private UserInterests userInterests;
+    private com.cp.friend.service.UserInterests userInterests;
 
     private UserService userService;
 

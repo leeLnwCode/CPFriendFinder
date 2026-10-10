@@ -153,10 +153,10 @@ document.addEventListener("DOMContentLoaded", function () {
     showPasswordButton.addEventListener("click", function () {
       if (passwordInput.type === "password") {
         passwordInput.type = "text";
-        showPasswordButton.textContent = "ซ่อน";
+        showPasswordButton.textContent = "Hide";
       } else {
         passwordInput.type = "password";
-        showPasswordButton.textContent = "แสดง";
+        showPasswordButton.textContent = "Show";
       }
     });
   }

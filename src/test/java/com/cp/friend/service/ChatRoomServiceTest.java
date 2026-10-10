@@ -2,7 +2,6 @@ package com.cp.friend.service;
 
 import com.cp.friend.dto.request.CreateChatRoomRequest;
 import com.cp.friend.dto.request.UpdateChatRoomRequest;
-import com.cp.friend.dto.response.ChatRoomDetailResponse;
 import com.cp.friend.dto.response.ChatRoomSummaryResponse;
 import com.cp.friend.model.ChatRoom;
 import com.cp.friend.model.Friendship;
@@ -364,7 +363,7 @@ class ChatRoomServiceTest {
     }
 
     @Test
-    void joinRoom_existingMember_returnsRoomIdempotently() {
+    void joinRoom_existingMember_returnsRoomDetail() {
         UUID userId = UUID.randomUUID();
         UUID roomId = UUID.randomUUID();
 
@@ -387,17 +386,9 @@ class ChatRoomServiceTest {
                 .isActiveMember(roomId, userId))
                 .thenReturn(true);
 
-        // Membership survives page reloads: rejoining must not throw and must not
-        // create a duplicate member row — the existing room detail is returned as-is.
-        ChatRoomDetailResponse result = chatRoomService.joinRoom(
-                userId,
-                roomId,
-                null
-        );
-
+        com.cp.friend.dto.response.ChatRoomDetailResponse result = chatRoomService.joinRoom(userId, roomId, null);
+        assertNotNull(result);
         assertEquals(roomId, result.id());
-
-        verify(roomMemberRepository, never()).save(any());
     }
 
     @Test

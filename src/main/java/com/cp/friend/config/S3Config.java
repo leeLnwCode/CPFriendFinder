@@ -13,20 +13,19 @@ import java.net.URI;
 @Configuration
 public class S3Config {
 
-    // ให้ค่า default สำหรับ local/dev — deploy จริง override ด้วย environment variables
-    @Value("${AWS_ENDPOINT_URL_S3:http://localhost:9000}")
+    @Value("${AWS_ENDPOINT_URL_S3}")
     private String endpoint;
 
-    @Value("${AWS_ACCESS_KEY_ID:minioadmin}")
+    @Value("${AWS_ACCESS_KEY_ID}")
     private String accessKey;
 
-    @Value("${AWS_SECRET_ACCESS_KEY:minioadmin}")
+    @Value("${AWS_SECRET_ACCESS_KEY}")
     private String secretKey;
 
-    @Value("${AWS_REGION:us-east-1}")
+    @Value("${AWS_REGION}")
     private String region;
 
-    @Value("${AWS_PUBLIC_URL_S3:${AWS_ENDPOINT_URL_S3:http://localhost:9000}}")
+    @Value("${AWS_PUBLIC_URL_S3:${AWS_ENDPOINT_URL_S3}}")
     private String publicEndpoint;
 
     public String getPublicEndpoint() { return publicEndpoint == null ? endpoint : publicEndpoint; }

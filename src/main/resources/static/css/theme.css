@@ -2,17 +2,15 @@
    THEME VARIABLES
    ========================= */
 
-@import url("https://fonts.googleapis.com/css2?family=Sarabun:wght@400;500;600;700&display=swap");
-
 * {
-  font-family: "Sarabun", "Noto Sans Thai", Tahoma, sans-serif !important;
+  font-family: Tahoma, sans-serif !important;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
 body {
-  font-family: "Sarabun", "Noto Sans Thai", Tahoma, sans-serif;
+  font-family: Tahoma, sans-serif;
 }
 button,
 input,

@@ -1,0 +1,3917 @@
+{
+  "generatedAt": "2026-10-10T19:10:07.816185+07:00",
+  "referenceBranch": "develop",
+  "referenceCommit": "108d3d0ea2db424b7b78bca83335810491901f3c",
+  "provenanceNote": "Reference commit was inspected on GitHub. JUnit evidence is the existing run on the user machine; no Git operation was used to prove checkout/deployment identity.",
+  "junit": {
+    "total": 240,
+    "counts": {
+      "PASS": 240
+    },
+    "suiteCount": 37,
+    "suites": [
+      {
+        "name": "com.cp.friend.config.AuthSecurityWebMvcTest",
+        "timestamp": null,
+        "tests": "10",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      {
+        "name": "com.cp.friend.config.SessionHandshakeInterceptorTest",
+        "timestamp": null,
+        "tests": "2",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      {
+        "name": "com.cp.friend.config.WebSocketAuthChannelInterceptorTest",
+        "timestamp": null,
+        "tests": "10",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      {
+        "name": "com.cp.friend.controller.AuthControllerMvcTest",
+        "timestamp": null,
+        "tests": "10",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      {
+        "name": "com.cp.friend.controller.ChatMessageControllerMvcTest",
+        "timestamp": null,
+        "tests": "2",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      {
+        "name": "com.cp.friend.controller.ChatRoomControllerMvcTest",
+        "timestamp": null,
+        "tests": "1",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      {
+        "name": "com.cp.friend.controller.FriendRequestControllerMvcTest",
+        "timestamp": null,
+        "tests": "2",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      {
+        "name": "com.cp.friend.controller.FriendshipControllerMvcTest",
+        "timestamp": null,
+        "tests": "2",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      {
+        "name": "com.cp.friend.controller.InterestControllerMvcTest",
+        "timestamp": null,
+        "tests": "8",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      {
+        "name": "com.cp.friend.controller.NotificationControllerMvcTest",
+        "timestamp": null,
+        "tests": "1",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      {
+        "name": "com.cp.friend.controller.PageControllerMvcTest",
+        "timestamp": null,
+        "tests": "3",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      {
+        "name": "com.cp.friend.controller.ProfileSummaryControllerTest",
+        "timestamp": null,
+        "tests": "6",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      {
+        "name": "com.cp.friend.controller.UserControllerMvcTest",
+        "timestamp": null,
+        "tests": "5",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      {
+        "name": "com.cp.friend.controller.UserDiscoveryControllerMvcTest",
+        "timestamp": null,
+        "tests": "1",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      {
+        "name": "com.cp.friend.controller.UserInterestControllerMvcTest",
+        "timestamp": null,
+        "tests": "8",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      {
+        "name": "com.cp.friend.FriendApplicationTests",
+        "timestamp": null,
+        "tests": "1",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      {
+        "name": "com.cp.friend.frontend.CallFrontendContractTest",
+        "timestamp": null,
+        "tests": "10",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      {
+        "name": "com.cp.friend.frontend.FrontendAuthContractTest",
+        "timestamp": null,
+        "tests": "6",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      {
+        "name": "com.cp.friend.integration.FriendNotificationChatContractTest",
+        "timestamp": null,
+        "tests": "8",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      {
+        "name": "com.cp.friend.schema.ProfilePersistenceTest",
+        "timestamp": null,
+        "tests": "1",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      {
+        "name": "com.cp.friend.schema.SchemaExportTest",
+        "timestamp": null,
+        "tests": "1",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      {
+        "name": "com.cp.friend.service.AuthServiceLoginTest",
+        "timestamp": null,
+        "tests": "11",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      {
+        "name": "com.cp.friend.service.AuthServiceRegisterTest",
+        "timestamp": null,
+        "tests": "15",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      {
+        "name": "com.cp.friend.service.ChatMessageServiceTest",
+        "timestamp": null,
+        "tests": "19",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      {
+        "name": "com.cp.friend.service.ChatRoomServiceTest",
+        "timestamp": null,
+        "tests": "19",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      {
+        "name": "com.cp.friend.service.FriendRequestServiceTest",
+        "timestamp": null,
+        "tests": "13",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      {
+        "name": "com.cp.friend.service.FriendshipServiceTest",
+        "timestamp": null,
+        "tests": "4",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      {
+        "name": "com.cp.friend.service.ImageContentStrategyTest",
+        "timestamp": null,
+        "tests": "3",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      {
+        "name": "com.cp.friend.service.InterestServiceTest",
+        "timestamp": null,
+        "tests": "5",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      {
+        "name": "com.cp.friend.service.MatchingServiceTest",
+        "timestamp": null,
+        "tests": "4",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      {
+        "name": "com.cp.friend.service.NotificationServiceTest",
+        "timestamp": null,
+        "tests": "9",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      {
+        "name": "com.cp.friend.service.ProfileGalleryTest",
+        "timestamp": null,
+        "tests": "9",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      {
+        "name": "com.cp.friend.service.RoomRealtimeServiceTest",
+        "timestamp": null,
+        "tests": "6",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      {
+        "name": "com.cp.friend.service.UserDiscoveryServiceTest",
+        "timestamp": null,
+        "tests": "5",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      {
+        "name": "com.cp.friend.service.UserInterestServiceTest",
+        "timestamp": null,
+        "tests": "7",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      {
+        "name": "com.cp.friend.service.UserServiceTest",
+        "timestamp": null,
+        "tests": "7",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      },
+      {
+        "name": "com.cp.friend.strategy.InterestMatchingStrategyTest",
+        "timestamp": null,
+        "tests": "6",
+        "failures": "0",
+        "errors": "0",
+        "skipped": "0"
+      }
+    ],
+    "cases": [
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.config.AuthSecurityWebMvcTest",
+        "name": "publicPages_areNotBlockedBySecurity",
+        "status": "PASS",
+        "seconds": "0.192",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.config.AuthSecurityWebMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.config.AuthSecurityWebMvcTest",
+        "name": "apiLogin_withoutAuthentication_reachesControllerLayer",
+        "status": "PASS",
+        "seconds": "0.381",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.config.AuthSecurityWebMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.config.AuthSecurityWebMvcTest",
+        "name": "websocketRoutes_areNotBlockedBySecurity",
+        "status": "PASS",
+        "seconds": "0.021",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.config.AuthSecurityWebMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.config.AuthSecurityWebMvcTest",
+        "name": "unmatchedRoute_requiresAuthentication",
+        "status": "PASS",
+        "seconds": "0.017",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.config.AuthSecurityWebMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.config.AuthSecurityWebMvcTest",
+        "name": "swaggerRoutes_areNotBlockedBySecurity",
+        "status": "PASS",
+        "seconds": "0.021",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.config.AuthSecurityWebMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.config.AuthSecurityWebMvcTest",
+        "name": "staticResources_areNotBlockedBySecurity",
+        "status": "PASS",
+        "seconds": "0.023",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.config.AuthSecurityWebMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.config.AuthSecurityWebMvcTest",
+        "name": "passwordEncoder_usesSecureHashing",
+        "status": "PASS",
+        "seconds": "0.216",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.config.AuthSecurityWebMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.config.AuthSecurityWebMvcTest",
+        "name": "apiPost_doesNotRequireCsrfToken",
+        "status": "PASS",
+        "seconds": "0.015",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.config.AuthSecurityWebMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.config.AuthSecurityWebMvcTest",
+        "name": "csrfFilter_isDisabled",
+        "status": "PASS",
+        "seconds": "0.009",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.config.AuthSecurityWebMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.config.AuthSecurityWebMvcTest",
+        "name": "formLoginAndHttpBasic_areDisabled",
+        "status": "PASS",
+        "seconds": "0.014",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.config.AuthSecurityWebMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.config.SessionHandshakeInterceptorTest",
+        "name": "anonymousHandshakeIsRejectedBeforeSocketUpgrade",
+        "status": "PASS",
+        "seconds": "0.16",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.config.SessionHandshakeInterceptorTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.config.SessionHandshakeInterceptorTest",
+        "name": "authenticatedHttpSessionCanUpgrade",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.config.SessionHandshakeInterceptorTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.config.WebSocketAuthChannelInterceptorTest",
+        "name": "connect_withAuthenticatedPrincipal_preservesPrincipal",
+        "status": "PASS",
+        "seconds": "0.102",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.config.WebSocketAuthChannelInterceptorTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.config.WebSocketAuthChannelInterceptorTest",
+        "name": "subscribeRoomDiscoveryUpdates_isAllowed",
+        "status": "PASS",
+        "seconds": "0.003",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.config.WebSocketAuthChannelInterceptorTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.config.WebSocketAuthChannelInterceptorTest",
+        "name": "sendToApplicationDestination_isAllowed",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.config.WebSocketAuthChannelInterceptorTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.config.WebSocketAuthChannelInterceptorTest",
+        "name": "subscribeOtherUsersPrivateTopics_isDenied",
+        "status": "PASS",
+        "seconds": "0.004",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.config.WebSocketAuthChannelInterceptorTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.config.WebSocketAuthChannelInterceptorTest",
+        "name": "subscribeOwnNotificationsAndCall_isAllowed",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.config.WebSocketAuthChannelInterceptorTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.config.WebSocketAuthChannelInterceptorTest",
+        "name": "connect_withoutAuthenticatedPrincipal_mustNotTrustLoginHeader",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.config.WebSocketAuthChannelInterceptorTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.config.WebSocketAuthChannelInterceptorTest",
+        "name": "subscribeRoomTopics_requiresMembershipForEachTopic",
+        "status": "PASS",
+        "seconds": "0.031",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.config.WebSocketAuthChannelInterceptorTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.config.WebSocketAuthChannelInterceptorTest",
+        "name": "subscribeRoomWithoutMembership_isDenied",
+        "status": "PASS",
+        "seconds": "0.006",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.config.WebSocketAuthChannelInterceptorTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.config.WebSocketAuthChannelInterceptorTest",
+        "name": "sendDirectlyToBrokerTopic_isDenied",
+        "status": "PASS",
+        "seconds": "0.001",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.config.WebSocketAuthChannelInterceptorTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.config.WebSocketAuthChannelInterceptorTest",
+        "name": "disconnectWithoutPrincipal_isAllowedForCleanup",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.config.WebSocketAuthChannelInterceptorTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.controller.AuthControllerMvcTest",
+        "name": "register_futureDateOfBirth_returnsValidationError",
+        "status": "PASS",
+        "seconds": "0.17",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.controller.AuthControllerMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.controller.AuthControllerMvcTest",
+        "name": "register_duplicateEmail_returnsBadRequestResponse",
+        "status": "PASS",
+        "seconds": "0.029",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.controller.AuthControllerMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.controller.AuthControllerMvcTest",
+        "name": "login_blankPassword_returnsValidationError",
+        "status": "PASS",
+        "seconds": "0.021",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.controller.AuthControllerMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.controller.AuthControllerMvcTest",
+        "name": "logout_invalidatesSessionAndReturnsNoContent",
+        "status": "PASS",
+        "seconds": "0.018",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.controller.AuthControllerMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.controller.AuthControllerMvcTest",
+        "name": "register_shortPassword_returnsValidationError",
+        "status": "PASS",
+        "seconds": "0.027",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.controller.AuthControllerMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.controller.AuthControllerMvcTest",
+        "name": "malformedJson_returnsBadRequest",
+        "status": "PASS",
+        "seconds": "0.014",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.controller.AuthControllerMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.controller.AuthControllerMvcTest",
+        "name": "login_serviceRejectsCredentials_returnsBadRequestResponse",
+        "status": "PASS",
+        "seconds": "0.02",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.controller.AuthControllerMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.controller.AuthControllerMvcTest",
+        "name": "login_invalidEmail_returnsValidationError",
+        "status": "PASS",
+        "seconds": "0.022",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.controller.AuthControllerMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.controller.AuthControllerMvcTest",
+        "name": "login_validRequest_returnsOkAndStoresSession",
+        "status": "PASS",
+        "seconds": "0.054",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.controller.AuthControllerMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.controller.AuthControllerMvcTest",
+        "name": "register_validRequest_returnsCreated",
+        "status": "PASS",
+        "seconds": "0.038",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.controller.AuthControllerMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.controller.ChatMessageControllerMvcTest",
+        "name": "sendMessage_validationAndSession_contract",
+        "status": "PASS",
+        "seconds": "0.159",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.controller.ChatMessageControllerMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.controller.ChatMessageControllerMvcTest",
+        "name": "getMessages_invalidBefore_returnsBadRequest",
+        "status": "PASS",
+        "seconds": "0.03",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.controller.ChatMessageControllerMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.controller.ChatRoomControllerMvcTest",
+        "name": "roomEndpoints_statusAndSession_contract",
+        "status": "PASS",
+        "seconds": "0.273",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.controller.ChatRoomControllerMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.controller.FriendRequestControllerMvcTest",
+        "name": "send_validRequest_returnsCreated",
+        "status": "PASS",
+        "seconds": "0.138",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.controller.FriendRequestControllerMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.controller.FriendRequestControllerMvcTest",
+        "name": "send_invalidInputOrSession_isRejected",
+        "status": "PASS",
+        "seconds": "0.024",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.controller.FriendRequestControllerMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.controller.FriendshipControllerMvcTest",
+        "name": "unfriend_validRequest_returnsNoContent",
+        "status": "PASS",
+        "seconds": "0.068",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.controller.FriendshipControllerMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.controller.FriendshipControllerMvcTest",
+        "name": "listFriends_withSession_returnsOk",
+        "status": "PASS",
+        "seconds": "0.022",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.controller.FriendshipControllerMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.controller.InterestControllerMvcTest",
+        "name": "createInterest_validRequest_returnsCreated",
+        "status": "PASS",
+        "seconds": "0.084",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.controller.InterestControllerMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.controller.InterestControllerMvcTest",
+        "name": "createInterest_nameOver100Characters_returnsValidationError",
+        "status": "PASS",
+        "seconds": "0.021",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.controller.InterestControllerMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.controller.InterestControllerMvcTest",
+        "name": "listInterests_withoutSearch_returnsAll",
+        "status": "PASS",
+        "seconds": "0.019",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.controller.InterestControllerMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.controller.InterestControllerMvcTest",
+        "name": "createInterest_duplicate_returnsConflict",
+        "status": "PASS",
+        "seconds": "0.024",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.controller.InterestControllerMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.controller.InterestControllerMvcTest",
+        "name": "createInterest_blankName_returnsValidationError",
+        "status": "PASS",
+        "seconds": "0.034",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.controller.InterestControllerMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.controller.InterestControllerMvcTest",
+        "name": "createInterest_withoutSession_returnsUnauthorized",
+        "status": "PASS",
+        "seconds": "0.02",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.controller.InterestControllerMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.controller.InterestControllerMvcTest",
+        "name": "listInterests_blankSearch_returnsAll",
+        "status": "PASS",
+        "seconds": "0.044",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.controller.InterestControllerMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.controller.InterestControllerMvcTest",
+        "name": "listInterests_withSearch_returnsMatches",
+        "status": "PASS",
+        "seconds": "0.018",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.controller.InterestControllerMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.controller.NotificationControllerMvcTest",
+        "name": "notificationEndpoints_enforceStatusAndSession",
+        "status": "PASS",
+        "seconds": "0.125",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.controller.NotificationControllerMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.controller.PageControllerMvcTest",
+        "name": "loginPage_mapsToLoginView",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.controller.PageControllerMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.controller.PageControllerMvcTest",
+        "name": "registerPage_mapsToRegisterView",
+        "status": "PASS",
+        "seconds": "0.001",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.controller.PageControllerMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.controller.PageControllerMvcTest",
+        "name": "entry_redirectsToLogin",
+        "status": "PASS",
+        "seconds": "0.001",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.controller.PageControllerMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.controller.ProfileSummaryControllerTest",
+        "name": "incomingReturnsActualRequestId",
+        "status": "PASS",
+        "seconds": "0.009",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.controller.ProfileSummaryControllerTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.controller.ProfileSummaryControllerTest",
+        "name": "outgoingReturnsPending",
+        "status": "PASS",
+        "seconds": "0.001",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.controller.ProfileSummaryControllerTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.controller.ProfileSummaryControllerTest",
+        "name": "requiresSession",
+        "status": "PASS",
+        "seconds": "0.001",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.controller.ProfileSummaryControllerTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.controller.ProfileSummaryControllerTest",
+        "name": "loadsInterestsAndSelf",
+        "status": "PASS",
+        "seconds": "0.001",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.controller.ProfileSummaryControllerTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.controller.ProfileSummaryControllerTest",
+        "name": "inactiveProfileHidden",
+        "status": "PASS",
+        "seconds": "0.001",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.controller.ProfileSummaryControllerTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.controller.ProfileSummaryControllerTest",
+        "name": "existingFriendTakesPriority",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.controller.ProfileSummaryControllerTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.controller.UserControllerMvcTest",
+        "name": "updateMe_futureDate_returnsValidationError",
+        "status": "PASS",
+        "seconds": "0.041",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.controller.UserControllerMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.controller.UserControllerMvcTest",
+        "name": "updateMe_validRequest_returnsUpdatedProfile",
+        "status": "PASS",
+        "seconds": "0.023",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.controller.UserControllerMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.controller.UserControllerMvcTest",
+        "name": "getMe_withSession_returnsProfile",
+        "status": "PASS",
+        "seconds": "0.021",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.controller.UserControllerMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.controller.UserControllerMvcTest",
+        "name": "getMe_withoutSession_returnsUnauthorized",
+        "status": "PASS",
+        "seconds": "0.011",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.controller.UserControllerMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.controller.UserControllerMvcTest",
+        "name": "updateMe_invalidImageBase64_returnsValidationError",
+        "status": "PASS",
+        "seconds": "0.024",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.controller.UserControllerMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.controller.UserDiscoveryControllerMvcTest",
+        "name": "discover_filtersAndSession_areHandled",
+        "status": "PASS",
+        "seconds": "0.079",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.controller.UserDiscoveryControllerMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.controller.UserInterestControllerMvcTest",
+        "name": "replaceInterests_withoutSession_returnsUnauthorized",
+        "status": "PASS",
+        "seconds": "0.032",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.controller.UserInterestControllerMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.controller.UserInterestControllerMvcTest",
+        "name": "getInterests_withSession_returnsInterestDtos",
+        "status": "PASS",
+        "seconds": "0.016",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.controller.UserInterestControllerMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.controller.UserInterestControllerMvcTest",
+        "name": "replaceInterests_validIds_returnsUpdatedList",
+        "status": "PASS",
+        "seconds": "0.02",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.controller.UserInterestControllerMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.controller.UserInterestControllerMvcTest",
+        "name": "replaceInterests_emptyList_returnsEmptyList",
+        "status": "PASS",
+        "seconds": "0.022",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.controller.UserInterestControllerMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.controller.UserInterestControllerMvcTest",
+        "name": "replaceInterests_nullItem_returnsValidationError",
+        "status": "PASS",
+        "seconds": "0.021",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.controller.UserInterestControllerMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.controller.UserInterestControllerMvcTest",
+        "name": "replaceInterests_nullInterestIds_returnsValidationError",
+        "status": "PASS",
+        "seconds": "0.024",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.controller.UserInterestControllerMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.controller.UserInterestControllerMvcTest",
+        "name": "getInterests_withoutSession_returnsUnauthorized",
+        "status": "PASS",
+        "seconds": "0.018",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.controller.UserInterestControllerMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.controller.UserInterestControllerMvcTest",
+        "name": "replaceInterests_invalidInterest_returnsBadRequest",
+        "status": "PASS",
+        "seconds": "0.023",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.controller.UserInterestControllerMvcTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.FriendApplicationTests",
+        "name": "contextLoads",
+        "status": "PASS",
+        "seconds": "0.008",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.FriendApplicationTests.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.frontend.CallFrontendContractTest",
+        "name": "callJs_leaveSignal_notifiesUiThatCallEnded",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.frontend.CallFrontendContractTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.frontend.CallFrontendContractTest",
+        "name": "callJs_handlesIncomingMediaSignal",
+        "status": "PASS",
+        "seconds": "0.001",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.frontend.CallFrontendContractTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.frontend.CallFrontendContractTest",
+        "name": "voiceCallEnd_cancelsPendingOutgoingCall",
+        "status": "PASS",
+        "seconds": "0.001",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.frontend.CallFrontendContractTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.frontend.CallFrontendContractTest",
+        "name": "friendJs_handlesRemoteCallEndedEvent",
+        "status": "PASS",
+        "seconds": "0.0",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.frontend.CallFrontendContractTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.frontend.CallFrontendContractTest",
+        "name": "videoCallEnd_cancelsPendingOutgoingCall",
+        "status": "PASS",
+        "seconds": "0.0",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.frontend.CallFrontendContractTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.frontend.CallFrontendContractTest",
+        "name": "cameraToggle_publishesMediaState",
+        "status": "PASS",
+        "seconds": "0.001",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.frontend.CallFrontendContractTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.frontend.CallFrontendContractTest",
+        "name": "globalCall_acceptRedirectsToFriendWithPendingCall",
+        "status": "PASS",
+        "seconds": "0.003",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.frontend.CallFrontendContractTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.frontend.CallFrontendContractTest",
+        "name": "authenticatedPages_loadGlobalIncomingCallSupport",
+        "status": "PASS",
+        "seconds": "0.001",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.frontend.CallFrontendContractTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.frontend.CallFrontendContractTest",
+        "name": "callJs_doesNotContainHardcodedTurnCredentials",
+        "status": "PASS",
+        "seconds": "0.003",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.frontend.CallFrontendContractTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.frontend.CallFrontendContractTest",
+        "name": "friendPage_resumesPendingIncomingCall",
+        "status": "PASS",
+        "seconds": "0.001",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.frontend.CallFrontendContractTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.frontend.FrontendAuthContractTest",
+        "name": "loginJavascript_storesUserAndRedirectsHome",
+        "status": "PASS",
+        "seconds": "0.262",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.frontend.FrontendAuthContractTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.frontend.FrontendAuthContractTest",
+        "name": "registerJavascript_callsCorrectBackendEndpoint",
+        "status": "PASS",
+        "seconds": "0.276",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.frontend.FrontendAuthContractTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.frontend.FrontendAuthContractTest",
+        "name": "registerJavascript_validatesPasswordAndRedirectsLogin",
+        "status": "PASS",
+        "seconds": "0.001",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.frontend.FrontendAuthContractTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.frontend.FrontendAuthContractTest",
+        "name": "registerTemplate_containsInputsUsedByJavascript",
+        "status": "PASS",
+        "seconds": "0.145",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.frontend.FrontendAuthContractTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.frontend.FrontendAuthContractTest",
+        "name": "loginTemplate_containsInputsUsedByJavascript",
+        "status": "PASS",
+        "seconds": "0.005",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.frontend.FrontendAuthContractTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.frontend.FrontendAuthContractTest",
+        "name": "loginJavascript_callsCorrectBackendEndpoint",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.frontend.FrontendAuthContractTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.integration.FriendNotificationChatContractTest",
+        "name": "friendJs_loadsCurrentUserFromUsersMe",
+        "status": "PASS",
+        "seconds": "0.001",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.integration.FriendNotificationChatContractTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.integration.FriendNotificationChatContractTest",
+        "name": "friendJs_opensDirectRoom",
+        "status": "PASS",
+        "seconds": "0.0",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.integration.FriendNotificationChatContractTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.integration.FriendNotificationChatContractTest",
+        "name": "friendJs_sendsTextMessage",
+        "status": "PASS",
+        "seconds": "0.0",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.integration.FriendNotificationChatContractTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.integration.FriendNotificationChatContractTest",
+        "name": "notificationJs_loadsMessageNotifications",
+        "status": "PASS",
+        "seconds": "0.0",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.integration.FriendNotificationChatContractTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.integration.FriendNotificationChatContractTest",
+        "name": "notificationJs_acceptDecline_endpointsMatch",
+        "status": "PASS",
+        "seconds": "0.001",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.integration.FriendNotificationChatContractTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.integration.FriendNotificationChatContractTest",
+        "name": "notificationJs_loadsIncomingFriendRequests",
+        "status": "PASS",
+        "seconds": "0.001",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.integration.FriendNotificationChatContractTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.integration.FriendNotificationChatContractTest",
+        "name": "friendJs_callsFriendsApi",
+        "status": "PASS",
+        "seconds": "0.001",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.integration.FriendNotificationChatContractTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.integration.FriendNotificationChatContractTest",
+        "name": "friendJs_loadsMessageHistory",
+        "status": "PASS",
+        "seconds": "0.0",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.integration.FriendNotificationChatContractTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.schema.ProfilePersistenceTest",
+        "name": "biographyCascadesWithSharedUserIdAndSurvivesReload",
+        "status": "PASS",
+        "seconds": "0.268",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.schema.ProfilePersistenceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.schema.SchemaExportTest",
+        "name": "exportPostgresSchemaFromActualMappings",
+        "status": "PASS",
+        "seconds": "0.215",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.schema.SchemaExportTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.AuthServiceLoginTest",
+        "name": "login_blockedAccount_doesNotCheckPassword",
+        "status": "PASS",
+        "seconds": "0.168",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.AuthServiceLoginTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.AuthServiceLoginTest",
+        "name": "login_wrongPassword_rejected",
+        "status": "PASS",
+        "seconds": "0.003",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.AuthServiceLoginTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.AuthServiceLoginTest",
+        "name": "login_nullPassword_rejected",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.AuthServiceLoginTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.AuthServiceLoginTest",
+        "name": "login_blankPassword_rejected",
+        "status": "PASS",
+        "seconds": "0.001",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.AuthServiceLoginTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.AuthServiceLoginTest",
+        "name": "login_nullRequest_rejected",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.AuthServiceLoginTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.AuthServiceLoginTest",
+        "name": "login_unknownEmail_rejected",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.AuthServiceLoginTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.AuthServiceLoginTest",
+        "name": "login_validCredentials_returnsUser",
+        "status": "PASS",
+        "seconds": "0.003",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.AuthServiceLoginTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.AuthServiceLoginTest",
+        "name": "login_blockedAccount_rejected",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.AuthServiceLoginTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.AuthServiceLoginTest",
+        "name": "login_spacedUppercaseEmail_normalized",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.AuthServiceLoginTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.AuthServiceLoginTest",
+        "name": "login_nullEmail_rejected",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.AuthServiceLoginTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.AuthServiceLoginTest",
+        "name": "login_blankEmail_rejected",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.AuthServiceLoginTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.AuthServiceRegisterTest",
+        "name": "register_password_isEncodedBeforeSave",
+        "status": "PASS",
+        "seconds": "0.007",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.AuthServiceRegisterTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.AuthServiceRegisterTest",
+        "name": "register_withInterests_savesUserInterests",
+        "status": "PASS",
+        "seconds": "0.089",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.AuthServiceRegisterTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.AuthServiceRegisterTest",
+        "name": "register_withoutImage_doesNotCallStorage",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.AuthServiceRegisterTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.AuthServiceRegisterTest",
+        "name": "register_blankPassword_rejected",
+        "status": "PASS",
+        "seconds": "0.003",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.AuthServiceRegisterTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.AuthServiceRegisterTest",
+        "name": "register_withImage_uploadsAndStoresPublicUrl",
+        "status": "PASS",
+        "seconds": "0.003",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.AuthServiceRegisterTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.AuthServiceRegisterTest",
+        "name": "register_duplicateEmail_rejected",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.AuthServiceRegisterTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.AuthServiceRegisterTest",
+        "name": "register_nullRequest_rejected",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.AuthServiceRegisterTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.AuthServiceRegisterTest",
+        "name": "register_validRequest_savesActiveUser",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.AuthServiceRegisterTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.AuthServiceRegisterTest",
+        "name": "register_withoutInterests_doesNotSaveUserInterests",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.AuthServiceRegisterTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.AuthServiceRegisterTest",
+        "name": "register_profileFields_areCopied",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.AuthServiceRegisterTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.AuthServiceRegisterTest",
+        "name": "register_spacedUppercaseEmail_normalized",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.AuthServiceRegisterTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.AuthServiceRegisterTest",
+        "name": "register_nullEmail_rejected",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.AuthServiceRegisterTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.AuthServiceRegisterTest",
+        "name": "register_passwordBelowEightCharacters_rejected",
+        "status": "PASS",
+        "seconds": "0.001",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.AuthServiceRegisterTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.AuthServiceRegisterTest",
+        "name": "register_blankEmail_rejected",
+        "status": "PASS",
+        "seconds": "0.001",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.AuthServiceRegisterTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.AuthServiceRegisterTest",
+        "name": "register_nullPassword_rejected",
+        "status": "PASS",
+        "seconds": "0.001",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.AuthServiceRegisterTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.ChatMessageServiceTest",
+        "name": "getMessages_directRoom_reversesAndMarksRead",
+        "status": "PASS",
+        "seconds": "0.356",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.ChatMessageServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.ChatMessageServiceTest",
+        "name": "relayCallSignal_leave_neverMember_returnsForbidden",
+        "status": "PASS",
+        "seconds": "0.003",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.ChatMessageServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.ChatMessageServiceTest",
+        "name": "editingAnotherPersonsMessageIsForbidden",
+        "status": "PASS",
+        "seconds": "0.003",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.ChatMessageServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.ChatMessageServiceTest",
+        "name": "rejectsImageAndBlankEdits",
+        "status": "PASS",
+        "seconds": "0.004",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.ChatMessageServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.ChatMessageServiceTest",
+        "name": "send_direct_persistsBroadcastsAndNotifies",
+        "status": "PASS",
+        "seconds": "0.007",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.ChatMessageServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.ChatMessageServiceTest",
+        "name": "delete_otherUsersMessage_returnsForbidden",
+        "status": "PASS",
+        "seconds": "0.003",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.ChatMessageServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.ChatMessageServiceTest",
+        "name": "getMessages_nonMember_returnsForbidden",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.ChatMessageServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.ChatMessageServiceTest",
+        "name": "getMessages_limitAndBefore_areHandled",
+        "status": "PASS",
+        "seconds": "0.004",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.ChatMessageServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.ChatMessageServiceTest",
+        "name": "send_messageType_defaultAndInvalid_areHandled",
+        "status": "PASS",
+        "seconds": "0.003",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.ChatMessageServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.ChatMessageServiceTest",
+        "name": "delete_ownMessage_softDeletes",
+        "status": "PASS",
+        "seconds": "0.004",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.ChatMessageServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.ChatMessageServiceTest",
+        "name": "editsOnlyOwnTextAndBroadcastsUpdate",
+        "status": "PASS",
+        "seconds": "0.003",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.ChatMessageServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.ChatMessageServiceTest",
+        "name": "relayCallInvite_accept_preservesModeAndOldClientsDefaultToVoice",
+        "status": "PASS",
+        "seconds": "0.003",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.ChatMessageServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.ChatMessageServiceTest",
+        "name": "cannotEditWithoutMembership",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.ChatMessageServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.ChatMessageServiceTest",
+        "name": "unreadCount_usesCorrectRepositoryQuery",
+        "status": "PASS",
+        "seconds": "0.003",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.ChatMessageServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.ChatMessageServiceTest",
+        "name": "send_group_broadcastsWithoutPersistence",
+        "status": "PASS",
+        "seconds": "0.003",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.ChatMessageServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.ChatMessageServiceTest",
+        "name": "relayCallInvite_invalidMode_isRejected",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.ChatMessageServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.ChatMessageServiceTest",
+        "name": "getMessages_groupRoom_returnsEmpty",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.ChatMessageServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.ChatMessageServiceTest",
+        "name": "relayCallInvite_videoMode_reachesReceiver",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.ChatMessageServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.ChatMessageServiceTest",
+        "name": "relayCallSignal_leave_afterMembershipEnded_stillBroadcasts",
+        "status": "PASS",
+        "seconds": "0.005",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.ChatMessageServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.ChatRoomServiceTest",
+        "name": "createGroupRoom_private_encodesPassword",
+        "status": "PASS",
+        "seconds": "0.132",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.ChatRoomServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.ChatRoomServiceTest",
+        "name": "createGroupRoom_privateWithoutPassword_returnsBadRequest",
+        "status": "PASS",
+        "seconds": "0.003",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.ChatRoomServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.ChatRoomServiceTest",
+        "name": "directRoom_keepsExistingConversationId",
+        "status": "PASS",
+        "seconds": "0.008",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.ChatRoomServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.ChatRoomServiceTest",
+        "name": "updateRoom_permissionAndMemberLimit_areEnforced",
+        "status": "PASS",
+        "seconds": "0.004",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.ChatRoomServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.ChatRoomServiceTest",
+        "name": "discoverSecondPageDoesNotSkipTwice",
+        "status": "PASS",
+        "seconds": "0.008",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.ChatRoomServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.ChatRoomServiceTest",
+        "name": "createGroupRoom_publicRoom_appliesDefaultsAndOwner",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.ChatRoomServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.ChatRoomServiceTest",
+        "name": "leaveRoom_nonMember_returnsNotFound",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.ChatRoomServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.ChatRoomServiceTest",
+        "name": "discoveryFiltersYearAndSortsName",
+        "status": "PASS",
+        "seconds": "0.003",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.ChatRoomServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.ChatRoomServiceTest",
+        "name": "joinRoom_fullRoom_returnsConflict",
+        "status": "PASS",
+        "seconds": "0.003",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.ChatRoomServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.ChatRoomServiceTest",
+        "name": "joinRoom_existingMember_resumesWithoutDuplicatingMembership",
+        "status": "PASS",
+        "seconds": "0.004",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.ChatRoomServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.ChatRoomServiceTest",
+        "name": "discoverRooms_searchAndInterests_intersectsResults",
+        "status": "PASS",
+        "seconds": "0.003",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.ChatRoomServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.ChatRoomServiceTest",
+        "name": "onlyOwnerCanDeleteRoom",
+        "status": "PASS",
+        "seconds": "0.001",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.ChatRoomServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.ChatRoomServiceTest",
+        "name": "joinRoom_privateWrongPassword_returnsForbidden",
+        "status": "PASS",
+        "seconds": "0.003",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.ChatRoomServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.ChatRoomServiceTest",
+        "name": "directRoom_reopensHistoricalConversationWithoutCreatingRoom",
+        "status": "PASS",
+        "seconds": "0.003",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.ChatRoomServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.ChatRoomServiceTest",
+        "name": "rejectsUnknownSortWithoutQuerying",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.ChatRoomServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.ChatRoomServiceTest",
+        "name": "directRoom_selfOrNonFriend_isRejected",
+        "status": "PASS",
+        "seconds": "0.003",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.ChatRoomServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.ChatRoomServiceTest",
+        "name": "createGroupRoom_invalidInterest_returnsBadRequest",
+        "status": "PASS",
+        "seconds": "0.047",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.ChatRoomServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.ChatRoomServiceTest",
+        "name": "deletingRoomClosesMembershipWithoutErasingRecords",
+        "status": "PASS",
+        "seconds": "0.003",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.ChatRoomServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.ChatRoomServiceTest",
+        "name": "joinRoom_existingMember_resumesPrivateFullRoomWithoutPassword",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.ChatRoomServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.FriendRequestServiceTest",
+        "name": "accept_existingFriendship_doesNotDuplicate",
+        "status": "PASS",
+        "seconds": "0.117",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.FriendRequestServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.FriendRequestServiceTest",
+        "name": "accept_validReceiver_createsFriendshipAndPublishesEvent",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.FriendRequestServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.FriendRequestServiceTest",
+        "name": "incoming_returnsPendingRequests",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.FriendRequestServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.FriendRequestServiceTest",
+        "name": "accept_missingRequest_returnsNotFound",
+        "status": "PASS",
+        "seconds": "0.003",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.FriendRequestServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.FriendRequestServiceTest",
+        "name": "outgoing_returnsPendingRequests",
+        "status": "PASS",
+        "seconds": "0.003",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.FriendRequestServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.FriendRequestServiceTest",
+        "name": "accept_nonPending_returnsConflict",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.FriendRequestServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.FriendRequestServiceTest",
+        "name": "send_toSelf_returnsBadRequest",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.FriendRequestServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.FriendRequestServiceTest",
+        "name": "send_pendingRequest_returnsConflict",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.FriendRequestServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.FriendRequestServiceTest",
+        "name": "accept_nonReceiver_returnsForbidden",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.FriendRequestServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.FriendRequestServiceTest",
+        "name": "decline_validReceiver_marksDeclined",
+        "status": "PASS",
+        "seconds": "0.003",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.FriendRequestServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.FriendRequestServiceTest",
+        "name": "send_existingFriendship_returnsConflict",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.FriendRequestServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.FriendRequestServiceTest",
+        "name": "send_validUsers_savesPendingAndPublishesEvent",
+        "status": "PASS",
+        "seconds": "0.003",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.FriendRequestServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.FriendRequestServiceTest",
+        "name": "send_receiverUnavailable_returnsNotFound",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.FriendRequestServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.FriendshipServiceTest",
+        "name": "unfriend_existingFriendship_deletesRelation",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.FriendshipServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.FriendshipServiceTest",
+        "name": "listFriends_inactiveOrMissingUser_returnsNotFound",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.FriendshipServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.FriendshipServiceTest",
+        "name": "unfriend_missingFriendship_returnsNotFound",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.FriendshipServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.FriendshipServiceTest",
+        "name": "listFriends_returnsMappedFriends",
+        "status": "PASS",
+        "seconds": "0.003",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.FriendshipServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.ImageContentStrategyTest",
+        "name": "savesRealImageUrl",
+        "status": "PASS",
+        "seconds": "0.088",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.ImageContentStrategyTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.ImageContentStrategyTest",
+        "name": "refusesSvgBeforeStorage",
+        "status": "PASS",
+        "seconds": "0.001",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.ImageContentStrategyTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.ImageContentStrategyTest",
+        "name": "refusesNonImageBeforeStorage",
+        "status": "PASS",
+        "seconds": "0.003",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.ImageContentStrategyTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.InterestServiceTest",
+        "name": "createInterest_duplicateName_returnsConflict",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.InterestServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.InterestServiceTest",
+        "name": "createInterest_validName_trimsAndSaves",
+        "status": "PASS",
+        "seconds": "0.001",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.InterestServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.InterestServiceTest",
+        "name": "allInterests_returnsActiveInterestsOrderedByRepository",
+        "status": "PASS",
+        "seconds": "0.001",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.InterestServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.InterestServiceTest",
+        "name": "searchInterests_trimsSearchText",
+        "status": "PASS",
+        "seconds": "0.001",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.InterestServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.InterestServiceTest",
+        "name": "searchInterests_blankText_returnsBadRequest",
+        "status": "PASS",
+        "seconds": "0.001",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.InterestServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.MatchingServiceTest",
+        "name": "testUserNotFoundThrows",
+        "status": "PASS",
+        "seconds": "0.003",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.MatchingServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.MatchingServiceTest",
+        "name": "testCalculateCompatibility",
+        "status": "PASS",
+        "seconds": "0.004",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.MatchingServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.MatchingServiceTest",
+        "name": "testRecommendFriendsRanked",
+        "status": "PASS",
+        "seconds": "0.007",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.MatchingServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.MatchingServiceTest",
+        "name": "testExcludeExistingFriendsAndPending",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.MatchingServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.NotificationServiceTest",
+        "name": "list_outOfRangePagination_isClamped",
+        "status": "PASS",
+        "seconds": "0.138",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.NotificationServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.NotificationServiceTest",
+        "name": "onFriendRequestAccepted_savesAndPushesNotification",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.NotificationServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.NotificationServiceTest",
+        "name": "markAsRead_callsScopedUpdate",
+        "status": "PASS",
+        "seconds": "0.001",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.NotificationServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.NotificationServiceTest",
+        "name": "list_allNotifications_mapsResponses",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.NotificationServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.NotificationServiceTest",
+        "name": "onFriendRequestSent_savesAndPushesNotification",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.NotificationServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.NotificationServiceTest",
+        "name": "notifyNewMessage_reusesUnreadAndSkipsSender",
+        "status": "PASS",
+        "seconds": "0.003",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.NotificationServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.NotificationServiceTest",
+        "name": "list_unreadOnly_usesUnreadRepositoryQuery",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.NotificationServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.NotificationServiceTest",
+        "name": "unreadCount_returnsRepositoryCount",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.NotificationServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.NotificationServiceTest",
+        "name": "markAllAsRead_callsRepository",
+        "status": "PASS",
+        "seconds": "0.001",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.NotificationServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.ProfileGalleryTest",
+        "name": "retainedPhotosCanBeReordered",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.ProfileGalleryTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.ProfileGalleryTest",
+        "name": "emptyGalleryClearsAndAllowsAvatarFallback",
+        "status": "PASS",
+        "seconds": "0.001",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.ProfileGalleryTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.ProfileGalleryTest",
+        "name": "realImageIsUploadedAndIncludedInProfileResponse",
+        "status": "PASS",
+        "seconds": "0.007",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.ProfileGalleryTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.ProfileGalleryTest",
+        "name": "disguisedImageIsRejectedBeforeUpload",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.ProfileGalleryTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.ProfileGalleryTest",
+        "name": "moreThanFivePhotosIsRejected",
+        "status": "PASS",
+        "seconds": "0.001",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.ProfileGalleryTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.ProfileGalleryTest",
+        "name": "interestSelectionIsUpdatedWithProfile",
+        "status": "PASS",
+        "seconds": "0.001",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.ProfileGalleryTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.ProfileGalleryTest",
+        "name": "omittedGalleryPreservesExistingPhotos",
+        "status": "PASS",
+        "seconds": "0.001",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.ProfileGalleryTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.ProfileGalleryTest",
+        "name": "anotherUsersPhotoUrlIsRejected",
+        "status": "PASS",
+        "seconds": "0.001",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.ProfileGalleryTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.ProfileGalleryTest",
+        "name": "validAndEmptyPhotoSourcesCannotBeMixed",
+        "status": "PASS",
+        "seconds": "0.001",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.ProfileGalleryTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.RoomRealtimeServiceTest",
+        "name": "mediaAloneDoesNotCreateParticipant",
+        "status": "PASS",
+        "seconds": "0.001",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.RoomRealtimeServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.RoomRealtimeServiceTest",
+        "name": "membershipBroadcastsToRoomAndHome",
+        "status": "PASS",
+        "seconds": "0.001",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.RoomRealtimeServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.RoomRealtimeServiceTest",
+        "name": "lateObserverReceivesExistingParticipantsAndMedia",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.RoomRealtimeServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.RoomRealtimeServiceTest",
+        "name": "explicitLeaveRemovesParticipantAndAdvancesRevision",
+        "status": "PASS",
+        "seconds": "0.001",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.RoomRealtimeServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.RoomRealtimeServiceTest",
+        "name": "disconnectKeepsAnotherTabUntilLastSessionCloses",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.RoomRealtimeServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.RoomRealtimeServiceTest",
+        "name": "leavingMembershipRemovesAllCallSessions",
+        "status": "PASS",
+        "seconds": "0.001",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.RoomRealtimeServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.UserDiscoveryServiceTest",
+        "name": "discover_excludesSelfFriendsAndPending",
+        "status": "PASS",
+        "seconds": "0.004",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.UserDiscoveryServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.UserDiscoveryServiceTest",
+        "name": "discover_departmentFilter_isTrimmedAndCaseInsensitive",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.UserDiscoveryServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.UserDiscoveryServiceTest",
+        "name": "discover_excludesInactiveCandidates",
+        "status": "PASS",
+        "seconds": "0.001",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.UserDiscoveryServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.UserDiscoveryServiceTest",
+        "name": "discover_yearFilter_returnsMatchingYear",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.UserDiscoveryServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.UserDiscoveryServiceTest",
+        "name": "discover_noMatches_returnsEmpty",
+        "status": "PASS",
+        "seconds": "0.001",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.UserDiscoveryServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.UserInterestServiceTest",
+        "name": "replaceInterests_validIds_replacesAndReturnsSortedList",
+        "status": "PASS",
+        "seconds": "0.005",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.UserInterestServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.UserInterestServiceTest",
+        "name": "getInterests_missingUser_returnsNotFound",
+        "status": "PASS",
+        "seconds": "0.003",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.UserInterestServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.UserInterestServiceTest",
+        "name": "replaceInterests_emptyList_clearsAllInterests",
+        "status": "PASS",
+        "seconds": "0.003",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.UserInterestServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.UserInterestServiceTest",
+        "name": "replaceInterests_duplicateIds_savesOnlyOneRelation",
+        "status": "PASS",
+        "seconds": "0.003",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.UserInterestServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.UserInterestServiceTest",
+        "name": "getInterests_existingUser_returnsActiveInterestsSortedByName",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.UserInterestServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.UserInterestServiceTest",
+        "name": "replaceInterests_missingOrInactiveInterest_returnsBadRequest",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.UserInterestServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.UserInterestServiceTest",
+        "name": "getInterests_noAssignedInterests_returnsEmptyList",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.UserInterestServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.UserServiceTest",
+        "name": "updateProfile_updatesProvidedFields",
+        "status": "PASS",
+        "seconds": "0.014",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.UserServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.UserServiceTest",
+        "name": "updateProfile_withoutImage_doesNotCallStorage",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.UserServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.UserServiceTest",
+        "name": "updateProfile_omittedFields_keepOldValues",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.UserServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.UserServiceTest",
+        "name": "getProfile_missingUser_returnsNotFound",
+        "status": "PASS",
+        "seconds": "0.001",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.UserServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.UserServiceTest",
+        "name": "updateProfile_blankFirstname_clearsFirstname",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.UserServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.UserServiceTest",
+        "name": "updateProfile_withImage_uploadsAndStoresUrl",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.UserServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.service.UserServiceTest",
+        "name": "getProfile_existingUser_returnsUser",
+        "status": "PASS",
+        "seconds": "0.002",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.service.UserServiceTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.strategy.InterestMatchingStrategyTest",
+        "name": "testCaseInsensitiveMatching",
+        "status": "PASS",
+        "seconds": "0.0",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.strategy.InterestMatchingStrategyTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.strategy.InterestMatchingStrategyTest",
+        "name": "testFullMatch",
+        "status": "PASS",
+        "seconds": "0.001",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.strategy.InterestMatchingStrategyTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.strategy.InterestMatchingStrategyTest",
+        "name": "testStrategyName",
+        "status": "PASS",
+        "seconds": "0.001",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.strategy.InterestMatchingStrategyTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.strategy.InterestMatchingStrategyTest",
+        "name": "testEmptyAndNullScenarios",
+        "status": "PASS",
+        "seconds": "0.0",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.strategy.InterestMatchingStrategyTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.strategy.InterestMatchingStrategyTest",
+        "name": "testZeroMatch",
+        "status": "PASS",
+        "seconds": "0.0",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.strategy.InterestMatchingStrategyTest.xml"
+      },
+      {
+        "framework": "JUnit",
+        "suite": "com.cp.friend.strategy.InterestMatchingStrategyTest",
+        "name": "testPartialMatchFromRequirements",
+        "status": "PASS",
+        "seconds": "0.0",
+        "suiteTimestamp": null,
+        "sourceFile": "TEST-com.cp.friend.strategy.InterestMatchingStrategyTest.xml"
+      }
+    ]
+  },
+  "previousLoginSmoke": {
+    "total": 3,
+    "cases": [
+      {
+        "name": "E2E-001 Login Page Loads",
+        "status": "PASS",
+        "start": "2026-10-10T16:53:02.341193",
+        "elapsed": "1.054857"
+      },
+      {
+        "name": "E2E-002 Password Can Be Shown And Hidden",
+        "status": "PASS",
+        "start": "2026-10-10T16:53:03.403111",
+        "elapsed": "0.798013"
+      },
+      {
+        "name": "E2E-003 Register Link Opens Register Page",
+        "status": "PASS",
+        "start": "2026-10-10T16:53:04.208080",
+        "elapsed": "1.019429"
+      }
+    ],
+    "note": "Earlier real deployment smoke run; separate from the upcoming full E2E round."
+  },
+  "evidence": [
+    {
+      "file": "C:\\Users\\User\\Desktop\\CPFriendFinder-RestoreTests\\target\\surefire-reports\\TEST-com.cp.friend.config.AuthSecurityWebMvcTest.xml",
+      "sha256": "5751b0c7a50c6f77140b55dfb24bcb810a3001ffb801b54c5a368115bc79594d"
+    },
+    {
+      "file": "C:\\Users\\User\\Desktop\\CPFriendFinder-RestoreTests\\target\\surefire-reports\\TEST-com.cp.friend.config.SessionHandshakeInterceptorTest.xml",
+      "sha256": "b494cff01ecbbe5ddf2c1e760ae13baff48241fdc1c0ea062f4ea30b4e9ba2a4"
+    },
+    {
+      "file": "C:\\Users\\User\\Desktop\\CPFriendFinder-RestoreTests\\target\\surefire-reports\\TEST-com.cp.friend.config.WebSocketAuthChannelInterceptorTest.xml",
+      "sha256": "bee65a7a707f2e335eb70df66956b9b87f7c062400513f84463a1115caafa14c"
+    },
+    {
+      "file": "C:\\Users\\User\\Desktop\\CPFriendFinder-RestoreTests\\target\\surefire-reports\\TEST-com.cp.friend.controller.AuthControllerMvcTest.xml",
+      "sha256": "48a8dde6bca41484551b5c5cdc9c0822ffa87b9d64c4e2570a898bf7c9f45307"
+    },
+    {
+      "file": "C:\\Users\\User\\Desktop\\CPFriendFinder-RestoreTests\\target\\surefire-reports\\TEST-com.cp.friend.controller.ChatMessageControllerMvcTest.xml",
+      "sha256": "90412cf383fe40dcabeee722ac05a23801df3d09041819e78fc1ca2d3950dbc0"
+    },
+    {
+      "file": "C:\\Users\\User\\Desktop\\CPFriendFinder-RestoreTests\\target\\surefire-reports\\TEST-com.cp.friend.controller.ChatRoomControllerMvcTest.xml",
+      "sha256": "e2c89a648d978fa0be7e83996ccaf981272ba9cd44b5b470b579f33eecebb3cb"
+    },
+    {
+      "file": "C:\\Users\\User\\Desktop\\CPFriendFinder-RestoreTests\\target\\surefire-reports\\TEST-com.cp.friend.controller.FriendRequestControllerMvcTest.xml",
+      "sha256": "1fb8a43f2c95dd70e79acb3cb9a34160e771ba4c39bf466dce53a0b63a37f3bd"
+    },
+    {
+      "file": "C:\\Users\\User\\Desktop\\CPFriendFinder-RestoreTests\\target\\surefire-reports\\TEST-com.cp.friend.controller.FriendshipControllerMvcTest.xml",
+      "sha256": "acd7e6f659be1f57aab401e478c5c92612c9c3de38d7536afc7f8c895aad8f05"
+    },
+    {
+      "file": "C:\\Users\\User\\Desktop\\CPFriendFinder-RestoreTests\\target\\surefire-reports\\TEST-com.cp.friend.controller.InterestControllerMvcTest.xml",
+      "sha256": "9867d747babbc4f68fb188fa5787cd84249976075a60689a75d56c6b0d4fdf6f"
+    },
+    {
+      "file": "C:\\Users\\User\\Desktop\\CPFriendFinder-RestoreTests\\target\\surefire-reports\\TEST-com.cp.friend.controller.NotificationControllerMvcTest.xml",
+      "sha256": "48e98a298a6685f04e2d5d4fdaf103b0da0def64cc74c73dd2e2dda56922d8a5"
+    },
+    {
+      "file": "C:\\Users\\User\\Desktop\\CPFriendFinder-RestoreTests\\target\\surefire-reports\\TEST-com.cp.friend.controller.PageControllerMvcTest.xml",
+      "sha256": "5d7a9cf57c83f70e80beadea2996dcdb51ba58d0cff8f57288d6cb0a3c18c7c3"
+    },
+    {
+      "file": "C:\\Users\\User\\Desktop\\CPFriendFinder-RestoreTests\\target\\surefire-reports\\TEST-com.cp.friend.controller.ProfileSummaryControllerTest.xml",
+      "sha256": "25234f4d683b4aaeb73a4d33cdca777089430d8215b7ecd8c43fdd2f7adf709c"
+    },
+    {
+      "file": "C:\\Users\\User\\Desktop\\CPFriendFinder-RestoreTests\\target\\surefire-reports\\TEST-com.cp.friend.controller.UserControllerMvcTest.xml",
+      "sha256": "eeeaa5575aa6f8880cda953497f0a1466921e0ac20ec5d621c0d4807bac28ed9"
+    },
+    {
+      "file": "C:\\Users\\User\\Desktop\\CPFriendFinder-RestoreTests\\target\\surefire-reports\\TEST-com.cp.friend.controller.UserDiscoveryControllerMvcTest.xml",
+      "sha256": "394375302ee545faf06c515a71fcb8590f496e4384166a4f6d85ec37fb04c261"
+    },
+    {
+      "file": "C:\\Users\\User\\Desktop\\CPFriendFinder-RestoreTests\\target\\surefire-reports\\TEST-com.cp.friend.controller.UserInterestControllerMvcTest.xml",
+      "sha256": "4cb2b9edde1f9d9862d3e20100c6a94ed8fdcb639db8053a6cc3594161f4ff2b"
+    },
+    {
+      "file": "C:\\Users\\User\\Desktop\\CPFriendFinder-RestoreTests\\target\\surefire-reports\\TEST-com.cp.friend.FriendApplicationTests.xml",
+      "sha256": "2d924c3ec1995a6f71030c3d4228c335992e94efd6ea195ec435575a7b928c73"
+    },
+    {
+      "file": "C:\\Users\\User\\Desktop\\CPFriendFinder-RestoreTests\\target\\surefire-reports\\TEST-com.cp.friend.frontend.CallFrontendContractTest.xml",
+      "sha256": "8b83a32a783ad4afae143e74d8d6703952ab679f8e54b7dfae49d7fa563aa58f"
+    },
+    {
+      "file": "C:\\Users\\User\\Desktop\\CPFriendFinder-RestoreTests\\target\\surefire-reports\\TEST-com.cp.friend.frontend.FrontendAuthContractTest.xml",
+      "sha256": "509e119df9312e238312fd3d4d3717df52d643715d08872d01fcadaac731f7d4"
+    },
+    {
+      "file": "C:\\Users\\User\\Desktop\\CPFriendFinder-RestoreTests\\target\\surefire-reports\\TEST-com.cp.friend.integration.FriendNotificationChatContractTest.xml",
+      "sha256": "a1124e9643083762e3beba41cca484431e3a0c1c21d10ef10ca8b1a12b03663a"
+    },
+    {
+      "file": "C:\\Users\\User\\Desktop\\CPFriendFinder-RestoreTests\\target\\surefire-reports\\TEST-com.cp.friend.schema.ProfilePersistenceTest.xml",
+      "sha256": "850044e7d3339554dc8137ebc3c928e68be5f7bf93751ddb45080bff6995069c"
+    },
+    {
+      "file": "C:\\Users\\User\\Desktop\\CPFriendFinder-RestoreTests\\target\\surefire-reports\\TEST-com.cp.friend.schema.SchemaExportTest.xml",
+      "sha256": "95e02dc3d99155ab6720889fa83c4ac53313a4655e2f66baf8536b054f717c89"
+    },
+    {
+      "file": "C:\\Users\\User\\Desktop\\CPFriendFinder-RestoreTests\\target\\surefire-reports\\TEST-com.cp.friend.service.AuthServiceLoginTest.xml",
+      "sha256": "fc6ec3094bdc83b8b657b40f9cfc06506c60c7e228dbedaafe07b7f03bc77558"
+    },
+    {
+      "file": "C:\\Users\\User\\Desktop\\CPFriendFinder-RestoreTests\\target\\surefire-reports\\TEST-com.cp.friend.service.AuthServiceRegisterTest.xml",
+      "sha256": "e5d724b994851fb909c23de40abf1f21fbd9a3bfeeed863cb42ff21439e7c582"
+    },
+    {
+      "file": "C:\\Users\\User\\Desktop\\CPFriendFinder-RestoreTests\\target\\surefire-reports\\TEST-com.cp.friend.service.ChatMessageServiceTest.xml",
+      "sha256": "a37743630ce12ba1e2209192dc4ee58199d83e51e59411a0bd71319e9fb1f63c"
+    },
+    {
+      "file": "C:\\Users\\User\\Desktop\\CPFriendFinder-RestoreTests\\target\\surefire-reports\\TEST-com.cp.friend.service.ChatRoomServiceTest.xml",
+      "sha256": "50c59e964bd73d68542589ee94c52ac9ca7e2f43997feb6fcc2b06823d5b00f8"
+    },
+    {
+      "file": "C:\\Users\\User\\Desktop\\CPFriendFinder-RestoreTests\\target\\surefire-reports\\TEST-com.cp.friend.service.FriendRequestServiceTest.xml",
+      "sha256": "2e2f5f0a837c5d3f50fe42b4fe891add55b1aa1ef88d28dc51959b94042d1c27"
+    },
+    {
+      "file": "C:\\Users\\User\\Desktop\\CPFriendFinder-RestoreTests\\target\\surefire-reports\\TEST-com.cp.friend.service.FriendshipServiceTest.xml",
+      "sha256": "3adb35e0f5cbb69ce0104ed474377fe998a96fce3ddf7826013decc11765c00c"
+    },
+    {
+      "file": "C:\\Users\\User\\Desktop\\CPFriendFinder-RestoreTests\\target\\surefire-reports\\TEST-com.cp.friend.service.ImageContentStrategyTest.xml",
+      "sha256": "22941acbece5fb71737be09d34833e7eff7563890e737e2416af2e8bf20deabf"
+    },
+    {
+      "file": "C:\\Users\\User\\Desktop\\CPFriendFinder-RestoreTests\\target\\surefire-reports\\TEST-com.cp.friend.service.InterestServiceTest.xml",
+      "sha256": "9337854a9b94bc4f80500d946e1c3e93e36ba40e0efce2c0ba986fd46021ff3e"
+    },
+    {
+      "file": "C:\\Users\\User\\Desktop\\CPFriendFinder-RestoreTests\\target\\surefire-reports\\TEST-com.cp.friend.service.MatchingServiceTest.xml",
+      "sha256": "14133eee5d525548a647982d32a6f56960129c2e3e3c8deeb574f68338f7c91a"
+    },
+    {
+      "file": "C:\\Users\\User\\Desktop\\CPFriendFinder-RestoreTests\\target\\surefire-reports\\TEST-com.cp.friend.service.NotificationServiceTest.xml",
+      "sha256": "5f2314c6ef940d96e089c33ae4ace046e64bc24816ada05ee3ad74ff8ba28efd"
+    },
+    {
+      "file": "C:\\Users\\User\\Desktop\\CPFriendFinder-RestoreTests\\target\\surefire-reports\\TEST-com.cp.friend.service.ProfileGalleryTest.xml",
+      "sha256": "388aed7aeee3b0270c676ec176f048632642d7b04c257404679716224996739a"
+    },
+    {
+      "file": "C:\\Users\\User\\Desktop\\CPFriendFinder-RestoreTests\\target\\surefire-reports\\TEST-com.cp.friend.service.RoomRealtimeServiceTest.xml",
+      "sha256": "90f1aa1b7eb14def4d53684673cb160a40982300c6d1663202a7d471ef0339f5"
+    },
+    {
+      "file": "C:\\Users\\User\\Desktop\\CPFriendFinder-RestoreTests\\target\\surefire-reports\\TEST-com.cp.friend.service.UserDiscoveryServiceTest.xml",
+      "sha256": "5f12b91ca44ea0cd36545aa5b8e22ed62fde63c0900e9e15f1e0d19da973b9fe"
+    },
+    {
+      "file": "C:\\Users\\User\\Desktop\\CPFriendFinder-RestoreTests\\target\\surefire-reports\\TEST-com.cp.friend.service.UserInterestServiceTest.xml",
+      "sha256": "c61593717c3b39c31962cd06ebf282c78204f60c06eac02f7a570a7f3df85c0d"
+    },
+    {
+      "file": "C:\\Users\\User\\Desktop\\CPFriendFinder-RestoreTests\\target\\surefire-reports\\TEST-com.cp.friend.service.UserServiceTest.xml",
+      "sha256": "ca92e782ba08f0b58a56820a3c2af6019d35fb106e548b8d56d0a409269c406c"
+    },
+    {
+      "file": "C:\\Users\\User\\Desktop\\CPFriendFinder-RestoreTests\\target\\surefire-reports\\TEST-com.cp.friend.strategy.InterestMatchingStrategyTest.xml",
+      "sha256": "09f652dbc7c6daaacccc5018982b304a8b82eff4f24fdeaa6dbef7751ccf38f5"
+    },
+    {
+      "file": "C:\\Users\\User\\.codex\\.chatgpt-projects\\g-p-6ac7d530a9f88191af240fae53a291e7\\artifacts\\test-continuation\\live-smoke-results\\output.xml",
+      "sha256": "9d1daca4b4b693c0756f3c833c3885df1e420b5452b44fa116b812780eb26ab9"
+    }
+  ],
+  "workbook": {
+    "path": "test/test-cases/CPFriendFinder_TestCases.xlsx",
+    "sha256": "839043879e81abaa124241469145759c748cf6f814b10ce02c41e26563d319ea",
+    "modified": true,
+    "output": "test/test-cases/CPFriendFinder_TestCases.xlsx",
+    "preservationChecks": {
+      "updates": 136,
+      "newMasterRows": 0,
+      "originalValuesOutsideEditScopePreserved": true,
+      "originalCellStylesPreserved": true,
+      "otherZipPartsByteIdentical": 27,
+      "sheetOrderMergesFreezePanesPreserved": true,
+      "sourceOriginalUnchanged": true
+    }
+  },
+  "limits": [
+    "JUnit mocks/H2 do not establish deployment or TURN success.",
+    "Robot E2E-015 deletes cookies; this is not a real idle timeout test.",
+    "Browser fixture tests from call review are not included as production passes.",
+    "E2E-009 and E2E-015 passed after bounded retries; intermediate FAIL messages are not final test failures.",
+    "Manual 19/19 PASS is self-reported; no image evidence, deployment version, or environment was supplied.",
+    "MAN-013 relay candidate details and MAN-018 actual idle duration were not included in the supplied JSON."
+  ],
+  "fullE2E": {
+    "runId": "full-20261010-182412",
+    "tests": 15,
+    "pass": 15,
+    "fail": 0,
+    "skip": 0,
+    "started": "2026-10-10T18:24:14.517239",
+    "seconds": "62.749797",
+    "sourceZip": "CPFriendFinder-E2E-20261010-182412.zip",
+    "sha256": "2603676943912076311419275b7a3c0358322052abee8eaf0617ec0599e4e093",
+    "robotGenerator": "Robot 7.5 (Python 3.14.0 on win32)"
+  },
+  "web004": {
+    "id": "WEB-004",
+    "checkedAt": "2026-10-10T18:46:57.896586+07:00",
+    "baseUrl": "https://cpfriendfinder-final-production.up.railway.app",
+    "scope": "GET and content type for literal same-origin CSS/JS/image references in local frontend templates. Does not verify dynamic user uploads, authenticated page rendering, runtime imports, external resources, browser console, or equality of deployed source and local source.",
+    "status": "PASS",
+    "resources": [
+      {
+        "path": "/css/call-ui.css?v=2",
+        "referencedBy": [
+          "src/main/resources/templates/friend.html",
+          "src/main/resources/templates/home.html",
+          "src/main/resources/templates/notification.html",
+          "src/main/resources/templates/random.html",
+          "src/main/resources/templates/room.html",
+          "src/main/resources/templates/setting.html"
+        ],
+        "http": 200,
+        "contentType": "text/css",
+        "bytes": 4689,
+        "sha256": "95e8277cc82d16cd7b6dd3dd7f0527e7a61d28fd31a889f858894d99347c0118",
+        "status": "PASS"
+      },
+      {
+        "path": "/css/chat-room-ui.css",
+        "referencedBy": [
+          "src/main/resources/templates/friend.html",
+          "src/main/resources/templates/random.html",
+          "src/main/resources/templates/room.html"
+        ],
+        "http": 200,
+        "contentType": "text/css",
+        "bytes": 2875,
+        "sha256": "705ad34534b73474d1e23b93fc2835fbb7cbf2c53fcce50d49815bc0c3e5be13",
+        "status": "PASS"
+      },
+      {
+        "path": "/css/discovery-gallery.css?v=1",
+        "referencedBy": [
+          "src/main/resources/templates/random.html"
+        ],
+        "http": 200,
+        "contentType": "text/css",
+        "bytes": 2127,
+        "sha256": "57d293fd63d8937110a111d4bc27583d3237cd3ab62fa1d9eddd2837647d6954",
+        "status": "PASS"
+      },
+      {
+        "path": "/css/friend-profile-popup.css",
+        "referencedBy": [
+          "src/main/resources/templates/friend.html",
+          "src/main/resources/templates/home.html",
+          "src/main/resources/templates/notification.html",
+          "src/main/resources/templates/room.html"
+        ],
+        "http": 200,
+        "contentType": "text/css",
+        "bytes": 5341,
+        "sha256": "2cf7596f96e62d80f404e83321b257ddd0f3efd2a4e7650cbb911787fac5883d",
+        "status": "PASS"
+      },
+      {
+        "path": "/css/friend.css",
+        "referencedBy": [
+          "src/main/resources/templates/friend.html"
+        ],
+        "http": 200,
+        "contentType": "text/css",
+        "bytes": 15881,
+        "sha256": "b2d03dbd53f027cfaa3bbf11e442b789841f5d194b664a701b8180139a0329ee",
+        "status": "PASS"
+      },
+      {
+        "path": "/css/global-call.css",
+        "referencedBy": [
+          "src/main/resources/templates/home.html",
+          "src/main/resources/templates/notification.html",
+          "src/main/resources/templates/random.html",
+          "src/main/resources/templates/room.html",
+          "src/main/resources/templates/setting.html"
+        ],
+        "http": 200,
+        "contentType": "text/css",
+        "bytes": 1050,
+        "sha256": "c3c3bc2572dea2431f8a548df15346027d366c0a4db4a981934f974793f8bbe2",
+        "status": "PASS"
+      },
+      {
+        "path": "/css/home.css",
+        "referencedBy": [
+          "src/main/resources/templates/home.html"
+        ],
+        "http": 200,
+        "contentType": "text/css",
+        "bytes": 10444,
+        "sha256": "7accf8dc75d773773ce817668632be275a5405cb29f30a3e3ae7b2e0f3babb3b",
+        "status": "PASS"
+      },
+      {
+        "path": "/css/layout.css",
+        "referencedBy": [
+          "src/main/resources/templates/friend.html",
+          "src/main/resources/templates/home.html",
+          "src/main/resources/templates/notification.html",
+          "src/main/resources/templates/random.html",
+          "src/main/resources/templates/setting.html"
+        ],
+        "http": 200,
+        "contentType": "text/css",
+        "bytes": 973,
+        "sha256": "9f65f95ebdabb67d559f68127432cdd0b3574be1d2d25264faa0d6b24cf7032a",
+        "status": "PASS"
+      },
+      {
+        "path": "/css/login.css",
+        "referencedBy": [
+          "src/main/resources/templates/login.html"
+        ],
+        "http": 200,
+        "contentType": "text/css",
+        "bytes": 3131,
+        "sha256": "12c8af2f426d523bf447eecdce16433a74e488d6101cdb027b6a2485c25ca5f1",
+        "status": "PASS"
+      },
+      {
+        "path": "/css/message-actions.css?v=1",
+        "referencedBy": [
+          "src/main/resources/templates/friend.html",
+          "src/main/resources/templates/home.html",
+          "src/main/resources/templates/room.html",
+          "src/main/resources/templates/setting.html"
+        ],
+        "http": 200,
+        "contentType": "text/css",
+        "bytes": 2623,
+        "sha256": "f921c1ca91e7adff66537e949f7bf386ac8ae318a8bf1d9a57082190000b13fc",
+        "status": "PASS"
+      },
+      {
+        "path": "/css/notification.css",
+        "referencedBy": [
+          "src/main/resources/templates/notification.html"
+        ],
+        "http": 200,
+        "contentType": "text/css",
+        "bytes": 4289,
+        "sha256": "362bcb90acb46937077cf322c13300828edb0b9a70d7de007f0c3f10f0f76d9f",
+        "status": "PASS"
+      },
+      {
+        "path": "/css/profile-popup.css?v=11",
+        "referencedBy": [
+          "src/main/resources/templates/friend.html",
+          "src/main/resources/templates/home.html",
+          "src/main/resources/templates/notification.html",
+          "src/main/resources/templates/random.html",
+          "src/main/resources/templates/room.html",
+          "src/main/resources/templates/setting.html"
+        ],
+        "http": 200,
+        "contentType": "text/css",
+        "bytes": 6935,
+        "sha256": "1c9b769d6f4efdd7eeb2aabead7ec32b67c6b8a8e1c5a4db51db5d9c0f7bd620",
+        "status": "PASS"
+      },
+      {
+        "path": "/css/random.css",
+        "referencedBy": [
+          "src/main/resources/templates/random.html"
+        ],
+        "http": 200,
+        "contentType": "text/css",
+        "bytes": 8097,
+        "sha256": "141252cda0740e73e093dc7d01a9bc91ba2a247b8d349b449008bacf6fe45bac",
+        "status": "PASS"
+      },
+      {
+        "path": "/css/register.css",
+        "referencedBy": [
+          "src/main/resources/templates/register.html"
+        ],
+        "http": 200,
+        "contentType": "text/css",
+        "bytes": 5988,
+        "sha256": "39cf962587ef946cca8a4bac64ae84bf9161c531c560b0c9c2f2cfef3982ca1c",
+        "status": "PASS"
+      },
+      {
+        "path": "/css/room-modern.css?v=1",
+        "referencedBy": [
+          "src/main/resources/templates/room.html"
+        ],
+        "http": 200,
+        "contentType": "text/css",
+        "bytes": 5781,
+        "sha256": "efaabca674fdc0a04f2e8eb036351bed9c441e578c7cc08a8c2e3e5567c0d90a",
+        "status": "PASS"
+      },
+      {
+        "path": "/css/room.css",
+        "referencedBy": [
+          "src/main/resources/templates/room.html"
+        ],
+        "http": 200,
+        "contentType": "text/css",
+        "bytes": 4940,
+        "sha256": "4896e9dc8d5d03d767f1c64d1eb4c9cced9eac657065da11bc1815d79bb97d0b",
+        "status": "PASS"
+      },
+      {
+        "path": "/css/setting.css",
+        "referencedBy": [
+          "src/main/resources/templates/setting.html"
+        ],
+        "http": 200,
+        "contentType": "text/css",
+        "bytes": 6686,
+        "sha256": "f57dcc9d738b60e6419cf04cd1da0bade08c8b121236d5df857f7a2707763f91",
+        "status": "PASS"
+      },
+      {
+        "path": "/css/sidebar.css",
+        "referencedBy": [
+          "src/main/resources/templates/friend.html",
+          "src/main/resources/templates/home.html",
+          "src/main/resources/templates/notification.html",
+          "src/main/resources/templates/random.html",
+          "src/main/resources/templates/room.html",
+          "src/main/resources/templates/setting.html"
+        ],
+        "http": 200,
+        "contentType": "text/css",
+        "bytes": 5839,
+        "sha256": "ec23f598aef7bc01107859263336427daab3a17034b6c0f4cc5946841c8e9f90",
+        "status": "PASS"
+      },
+      {
+        "path": "/css/theme.css",
+        "referencedBy": [
+          "src/main/resources/templates/friend.html",
+          "src/main/resources/templates/home.html",
+          "src/main/resources/templates/login.html",
+          "src/main/resources/templates/notification.html",
+          "src/main/resources/templates/random.html",
+          "src/main/resources/templates/register.html",
+          "src/main/resources/templates/room.html",
+          "src/main/resources/templates/setting.html"
+        ],
+        "http": 200,
+        "contentType": "text/css",
+        "bytes": 1657,
+        "sha256": "657a0618f684d7cb7ae6c6b13f95bc599716fb92ef231fd9b6e125bf846ede8b",
+        "status": "PASS"
+      },
+      {
+        "path": "/css/ui-refresh.css",
+        "referencedBy": [
+          "src/main/resources/templates/friend.html",
+          "src/main/resources/templates/home.html",
+          "src/main/resources/templates/login.html",
+          "src/main/resources/templates/notification.html",
+          "src/main/resources/templates/random.html",
+          "src/main/resources/templates/register.html",
+          "src/main/resources/templates/room.html",
+          "src/main/resources/templates/setting.html"
+        ],
+        "http": 200,
+        "contentType": "text/css",
+        "bytes": 8264,
+        "sha256": "6b7e44ab1d6868c8f6fa83daf64aacf712ab574ca3ed616a912a897d5a685a6a",
+        "status": "PASS"
+      },
+      {
+        "path": "/css/video-call.css",
+        "referencedBy": [
+          "src/main/resources/templates/friend.html"
+        ],
+        "http": 200,
+        "contentType": "text/css",
+        "bytes": 5559,
+        "sha256": "773c18fa9c6113671d3794b766c5bf5dd0815df19085b096f6c952ee299102ab",
+        "status": "PASS"
+      },
+      {
+        "path": "/images/Full_logo.png",
+        "referencedBy": [
+          "src/main/resources/templates/fragments/sidebar.html",
+          "src/main/resources/templates/login.html"
+        ],
+        "http": 200,
+        "contentType": "image/png",
+        "bytes": 394641,
+        "sha256": "ce6b01952a0e6254162d92038fb5bd207f5b159a77588d788842d7c6b9e477cc",
+        "status": "PASS"
+      },
+      {
+        "path": "/images/avatar-placeholder.svg",
+        "referencedBy": [
+          "src/main/resources/templates/fragments/friend-profile-popup.html",
+          "src/main/resources/templates/fragments/global-call.html",
+          "src/main/resources/templates/fragments/profile-editor.html",
+          "src/main/resources/templates/fragments/sidebar.html",
+          "src/main/resources/templates/friend.html",
+          "src/main/resources/templates/notification.html",
+          "src/main/resources/templates/random.html"
+        ],
+        "http": 200,
+        "contentType": "image/svg+xml",
+        "bytes": 221,
+        "sha256": "9cb5cdcf515c0b3930c20eed558aa38362ab303281cc0de21ac5ad95de4722bf",
+        "status": "PASS"
+      },
+      {
+        "path": "/images/cam-recorder.png",
+        "referencedBy": [
+          "src/main/resources/templates/friend.html"
+        ],
+        "http": 200,
+        "contentType": "image/png",
+        "bytes": 5150,
+        "sha256": "bdb09cf2598c0a2644050e5650f3847747f876b531755e76fd109fbd51da87ec",
+        "status": "PASS"
+      },
+      {
+        "path": "/images/dots.png",
+        "referencedBy": [
+          "src/main/resources/templates/friend.html"
+        ],
+        "http": 200,
+        "contentType": "image/png",
+        "bytes": 5588,
+        "sha256": "51c8d982223424f21ced81313e5762ba68c05bbe5981d32ae59d3938a97b2d86",
+        "status": "PASS"
+      },
+      {
+        "path": "/images/email.png",
+        "referencedBy": [
+          "src/main/resources/templates/login.html"
+        ],
+        "http": 200,
+        "contentType": "image/png",
+        "bytes": 10763,
+        "sha256": "b2487ee74b76c9fb6c324e6ab29785024688b835ab5e8f447db3d81e90202639",
+        "status": "PASS"
+      },
+      {
+        "path": "/images/image.png",
+        "referencedBy": [
+          "src/main/resources/templates/friend.html",
+          "src/main/resources/templates/room.html"
+        ],
+        "http": 200,
+        "contentType": "image/png",
+        "bytes": 9792,
+        "sha256": "b4d8cec79914713173aef67d5d6fb9c171e227f66cea45e15db307119247ee11",
+        "status": "PASS"
+      },
+      {
+        "path": "/images/login.jpg",
+        "referencedBy": [
+          "src/main/resources/templates/login.html"
+        ],
+        "http": 200,
+        "contentType": "image/jpeg",
+        "bytes": 56309,
+        "sha256": "a9a0ce3fa5e77b9d19f65323001b3d3cc6d2b0805a93183b7903d37df5dfffe3",
+        "status": "PASS"
+      },
+      {
+        "path": "/images/microphone-black-shape.png",
+        "referencedBy": [
+          "src/main/resources/templates/friend.html"
+        ],
+        "http": 200,
+        "contentType": "image/png",
+        "bytes": 7056,
+        "sha256": "a83e67f839091fd850d6ac899a2e28ed74acc7dd7a24f26091a1f59b25da3860",
+        "status": "PASS"
+      },
+      {
+        "path": "/images/padlock.png",
+        "referencedBy": [
+          "src/main/resources/templates/login.html"
+        ],
+        "http": 200,
+        "contentType": "image/png",
+        "bytes": 8813,
+        "sha256": "2be24decda47bc0c1bff9c3508c60eb2f12a6c3562afb135fbe5fb71d1ffb965",
+        "status": "PASS"
+      },
+      {
+        "path": "/images/phone-call.png",
+        "referencedBy": [
+          "src/main/resources/templates/friend.html"
+        ],
+        "http": 200,
+        "contentType": "image/png",
+        "bytes": 11467,
+        "sha256": "d8482a29cd7feebeb6dda749c8b8a4b03d0abd0f04fa8637403500ce0d9725cc",
+        "status": "PASS"
+      },
+      {
+        "path": "/images/volume-up.png",
+        "referencedBy": [
+          "src/main/resources/templates/friend.html"
+        ],
+        "http": 200,
+        "contentType": "image/png",
+        "bytes": 10738,
+        "sha256": "067494cfa0bd867d67579ff3170f873f259078dee138c624b4e69ba393c8fca8",
+        "status": "PASS"
+      },
+      {
+        "path": "/js/auth-session.js?v=1",
+        "referencedBy": [
+          "src/main/resources/templates/friend.html",
+          "src/main/resources/templates/home.html",
+          "src/main/resources/templates/notification.html",
+          "src/main/resources/templates/random.html",
+          "src/main/resources/templates/room.html",
+          "src/main/resources/templates/setting.html"
+        ],
+        "http": 200,
+        "contentType": "text/javascript",
+        "bytes": 3472,
+        "sha256": "f644123346f06c10b1708d0aa244b691b1012745954946234b6204b53b378174",
+        "status": "PASS"
+      },
+      {
+        "path": "/js/call.js?v=11",
+        "referencedBy": [
+          "src/main/resources/templates/friend.html",
+          "src/main/resources/templates/home.html",
+          "src/main/resources/templates/notification.html",
+          "src/main/resources/templates/random.html",
+          "src/main/resources/templates/room.html",
+          "src/main/resources/templates/setting.html"
+        ],
+        "http": 200,
+        "contentType": "text/javascript",
+        "bytes": 46444,
+        "sha256": "7d2318a972aa1921398b68ef5002acb85558b0f609ba5d14cc8aac0234f18824",
+        "status": "PASS"
+      },
+      {
+        "path": "/js/chat-images.js?v=1",
+        "referencedBy": [
+          "src/main/resources/templates/friend.html",
+          "src/main/resources/templates/room.html"
+        ],
+        "http": 200,
+        "contentType": "text/javascript",
+        "bytes": 1933,
+        "sha256": "165c68fc2a70a731e66e56f4ab1b4247e2df2f2183d03681d88401cf30b2cb84",
+        "status": "PASS"
+      },
+      {
+        "path": "/js/friend-profile-popup.js?v=20",
+        "referencedBy": [
+          "src/main/resources/templates/friend.html",
+          "src/main/resources/templates/home.html",
+          "src/main/resources/templates/notification.html",
+          "src/main/resources/templates/room.html"
+        ],
+        "http": 200,
+        "contentType": "text/javascript",
+        "bytes": 5910,
+        "sha256": "f09bcd42982ec7b39d22f95239954956de40035d2d2a275f01b206f258078257",
+        "status": "PASS"
+      },
+      {
+        "path": "/js/friend.js?v=23",
+        "referencedBy": [
+          "src/main/resources/templates/friend.html"
+        ],
+        "http": 200,
+        "contentType": "text/javascript",
+        "bytes": 47153,
+        "sha256": "c8431dc3ce29d6b2f10cefa13e0c955d4ccc72df03f83a2ba98e3c1802d1e6fc",
+        "status": "PASS"
+      },
+      {
+        "path": "/js/global-call.js",
+        "referencedBy": [
+          "src/main/resources/templates/home.html",
+          "src/main/resources/templates/notification.html",
+          "src/main/resources/templates/random.html",
+          "src/main/resources/templates/room.html",
+          "src/main/resources/templates/setting.html"
+        ],
+        "http": 200,
+        "contentType": "text/javascript",
+        "bytes": 4537,
+        "sha256": "9f67b3161427f32072e94c47861cb0bab937905a4af0359043a9df51b98622ad",
+        "status": "PASS"
+      },
+      {
+        "path": "/js/home.js?v=9",
+        "referencedBy": [
+          "src/main/resources/templates/home.html"
+        ],
+        "http": 200,
+        "contentType": "text/javascript",
+        "bytes": 25438,
+        "sha256": "5285996a8c3d820a2209327627251148848b3e9f63418e62e2bf46a573603d7b",
+        "status": "PASS"
+      },
+      {
+        "path": "/js/login.js?v=7",
+        "referencedBy": [
+          "src/main/resources/templates/login.html"
+        ],
+        "http": 200,
+        "contentType": "text/javascript",
+        "bytes": 5847,
+        "sha256": "bc1d93a9a26c85df56dc61c6c706e4ada575113971bf034a01aa7a0733d1eb5c",
+        "status": "PASS"
+      },
+      {
+        "path": "/js/message-actions.js?v=1",
+        "referencedBy": [
+          "src/main/resources/templates/friend.html"
+        ],
+        "http": 200,
+        "contentType": "text/javascript",
+        "bytes": 6086,
+        "sha256": "1f4afd3a69062d0327b0dbff768c9b06eda6d240fb6a9dca2034fca301bd21a3",
+        "status": "PASS"
+      },
+      {
+        "path": "/js/notification.js",
+        "referencedBy": [
+          "src/main/resources/templates/notification.html"
+        ],
+        "http": 200,
+        "contentType": "text/javascript",
+        "bytes": 19138,
+        "sha256": "ed300372268bc27644d1cd46f069b7679b9d46ce10994c221c02ddc82c983725",
+        "status": "PASS"
+      },
+      {
+        "path": "/js/profile-popup.js?v=11",
+        "referencedBy": [
+          "src/main/resources/templates/friend.html",
+          "src/main/resources/templates/home.html",
+          "src/main/resources/templates/notification.html",
+          "src/main/resources/templates/random.html",
+          "src/main/resources/templates/room.html",
+          "src/main/resources/templates/setting.html"
+        ],
+        "http": 200,
+        "contentType": "text/javascript",
+        "bytes": 12452,
+        "sha256": "cfa5742dec841107b343e3379497a8263e15f359daa41673ee8f77a0f7c2031f",
+        "status": "PASS"
+      },
+      {
+        "path": "/js/random.js?v=10",
+        "referencedBy": [
+          "src/main/resources/templates/random.html"
+        ],
+        "http": 200,
+        "contentType": "text/javascript",
+        "bytes": 9120,
+        "sha256": "cf7e8b92439716e154bbf0aa1ceb23ebb48f682cdfa3024b6e50c51689496b68",
+        "status": "PASS"
+      },
+      {
+        "path": "/js/register.js?v=6",
+        "referencedBy": [
+          "src/main/resources/templates/register.html"
+        ],
+        "http": 200,
+        "contentType": "text/javascript",
+        "bytes": 9354,
+        "sha256": "4ccb670bfd5a34fb4176a89a4d92db59ed1f752bf3ddc9a6785a6b92238742d7",
+        "status": "PASS"
+      },
+      {
+        "path": "/js/room-call.js?v=9",
+        "referencedBy": [
+          "src/main/resources/templates/room.html"
+        ],
+        "http": 200,
+        "contentType": "text/javascript",
+        "bytes": 11048,
+        "sha256": "509ec626910d9003d6e10b7a0827abb2f30876f56a994e36c5896d93da7f8c6d",
+        "status": "PASS"
+      },
+      {
+        "path": "/js/room-controls.js?v=1",
+        "referencedBy": [
+          "src/main/resources/templates/room.html"
+        ],
+        "http": 200,
+        "contentType": "text/javascript",
+        "bytes": 6422,
+        "sha256": "b29fa7e6135413258613a10fceb6e02c7309565f6ef36247f3201a6b5b778b18",
+        "status": "PASS"
+      },
+      {
+        "path": "/js/room-live.js?v=1",
+        "referencedBy": [
+          "src/main/resources/templates/home.html",
+          "src/main/resources/templates/room.html"
+        ],
+        "http": 200,
+        "contentType": "text/javascript",
+        "bytes": 2467,
+        "sha256": "2291d60c7d6d7e538f5adbe0d7653c4be475767e003dfbf9fb1c5b388d606071",
+        "status": "PASS"
+      },
+      {
+        "path": "/js/room.js?v=23",
+        "referencedBy": [
+          "src/main/resources/templates/room.html"
+        ],
+        "http": 200,
+        "contentType": "text/javascript",
+        "bytes": 15833,
+        "sha256": "f8e94014f17ab2caec488daefaf7360c0baeda1520c8073c45e13259122f3646",
+        "status": "PASS"
+      },
+      {
+        "path": "/js/setting.js",
+        "referencedBy": [
+          "src/main/resources/templates/setting.html"
+        ],
+        "http": 200,
+        "contentType": "text/javascript",
+        "bytes": 2730,
+        "sha256": "34f7f1bffa21844718498a1a3f541ffbd64c70171ced231cd5d5842cdfd230dd",
+        "status": "PASS"
+      },
+      {
+        "path": "/js/sidebar.js",
+        "referencedBy": [
+          "src/main/resources/templates/friend.html",
+          "src/main/resources/templates/home.html",
+          "src/main/resources/templates/notification.html",
+          "src/main/resources/templates/random.html",
+          "src/main/resources/templates/room.html",
+          "src/main/resources/templates/setting.html"
+        ],
+        "http": 200,
+        "contentType": "text/javascript",
+        "bytes": 3542,
+        "sha256": "b3b64493b317d7da89fee6dcbd02e64dd90eb236b1cc9264e037bc0a57cc3551",
+        "status": "PASS"
+      },
+      {
+        "path": "/js/theme.js",
+        "referencedBy": [
+          "src/main/resources/templates/friend.html",
+          "src/main/resources/templates/home.html",
+          "src/main/resources/templates/notification.html",
+          "src/main/resources/templates/random.html",
+          "src/main/resources/templates/room.html",
+          "src/main/resources/templates/setting.html"
+        ],
+        "http": 200,
+        "contentType": "text/javascript",
+        "bytes": 559,
+        "sha256": "85af4bfafb2b5a5c5d4f926dc949419187c5e585e7ed2fde131cd6c501796ff0",
+        "status": "PASS"
+      }
+    ]
+  },
+  "ts006": {
+    "WEB-001": "PASS: E2E-001",
+    "WEB-002": "PASS: E2E-003",
+    "WEB-003": "PASS: E2E-004 and E2E-006",
+    "WEB-004": "PASS: 52 resource GETs and content types",
+    "WEB-005": "PASS: E2E-004,005,014,015; not real idle timeout"
+  },
+  "manualResults": {
+    "source": "CPFriendFinder-manual-2026-10-10T12-03-09.734Z.json",
+    "sha256": "c4cf17b38e71ff8b630159c4eee62c2224d2721aee46abe357531b4c32beb97d",
+    "tester": "จิรัชญา เป้าจันทึก",
+    "url": "https://cpfriendfinder-final-production.up.railway.app",
+    "version": null,
+    "environment": null,
+    "exportedAt": "2026-10-10T12:03:09.712Z",
+    "timezone": "Asia/Bangkok",
+    "counts": {
+      "PASS": 19
+    },
+    "cases": [
+      {
+        "id": "MAN-001",
+        "status": "PASS",
+        "time": "2026-10-10T18:58",
+        "actual": "เป็นไปตาม Expected result",
+        "evidence": ""
+      },
+      {
+        "id": "MAN-002",
+        "status": "PASS",
+        "time": "2026-10-10T18:59",
+        "actual": "เป็นไปตาม Expected result",
+        "evidence": ""
+      },
+      {
+        "id": "MAN-003",
+        "status": "PASS",
+        "time": "2026-10-10T19:00",
+        "actual": "เป็นไปตาม Expected result",
+        "evidence": ""
+      },
+      {
+        "id": "MAN-004",
+        "status": "PASS",
+        "time": "2026-10-10T19:00",
+        "actual": "เป็นไปตาม Expected result",
+        "evidence": ""
+      },
+      {
+        "id": "MAN-005",
+        "status": "PASS",
+        "time": "2026-10-10T19:00",
+        "actual": "เป็นไปตาม Expected result",
+        "evidence": ""
+      },
+      {
+        "id": "MAN-006",
+        "status": "PASS",
+        "time": "2026-10-10T19:00",
+        "actual": "เป็นไปตาม Expected result",
+        "evidence": ""
+      },
+      {
+        "id": "MAN-007",
+        "status": "PASS",
+        "time": "2026-10-10T19:00",
+        "actual": "เป็นไปตาม Expected result",
+        "evidence": ""
+      },
+      {
+        "id": "MAN-008",
+        "status": "PASS",
+        "time": "2026-10-10T19:00",
+        "actual": "เป็นไปตาม Expected result",
+        "evidence": ""
+      },
+      {
+        "id": "MAN-009",
+        "status": "PASS",
+        "time": "2026-10-10T19:00",
+        "actual": "เป็นไปตาม Expected result",
+        "evidence": ""
+      },
+      {
+        "id": "MAN-010",
+        "status": "PASS",
+        "time": "2026-10-10T19:01",
+        "actual": "เป็นไปตาม Expected result",
+        "evidence": ""
+      },
+      {
+        "id": "MAN-011",
+        "status": "PASS",
+        "time": "2026-10-10T19:01",
+        "actual": "เป็นไปตาม Expected result",
+        "evidence": ""
+      },
+      {
+        "id": "MAN-012",
+        "status": "PASS",
+        "time": "2026-10-10T19:01",
+        "actual": "เป็นไปตาม Expected result",
+        "evidence": ""
+      },
+      {
+        "id": "MAN-013",
+        "status": "PASS",
+        "time": "2026-10-10T19:01",
+        "actual": "เป็นไปตาม Expected result",
+        "evidence": ""
+      },
+      {
+        "id": "MAN-014",
+        "status": "PASS",
+        "time": "2026-10-10T19:01",
+        "actual": "เป็นไปตาม Expected result",
+        "evidence": ""
+      },
+      {
+        "id": "MAN-015",
+        "status": "PASS",
+        "time": "2026-10-10T19:01",
+        "actual": "เป็นไปตาม Expected result",
+        "evidence": ""
+      },
+      {
+        "id": "MAN-016",
+        "status": "PASS",
+        "time": "2026-10-10T19:02",
+        "actual": "เป็นไปตาม Expected result",
+        "evidence": ""
+      },
+      {
+        "id": "MAN-017",
+        "status": "PASS",
+        "time": "2026-10-10T19:02",
+        "actual": "เป็นไปตาม Expected result",
+        "evidence": ""
+      },
+      {
+        "id": "MAN-018",
+        "status": "PASS",
+        "time": "2026-10-10T19:02",
+        "actual": "เป็นไปตาม Expected result",
+        "evidence": ""
+      },
+      {
+        "id": "MAN-019",
+        "status": "PASS",
+        "time": "2026-10-10T19:02",
+        "actual": "เป็นไปตาม Expected result",
+        "evidence": ""
+      }
+    ],
+    "provenance": "ผลตามผู้ทดสอบรายงานใน JSON ไม่ใช่การรันทดสอบซ้ำโดยผู้จัดทำรายงาน",
+    "evidenceFilesAttached": false
+  },
+  "manualCases": [
+    {
+      "id": "MAN-001",
+      "steps": "A ส่งคำขอเพื่อนให้ B; B เปิดแจ้งเตือน",
+      "expected": "คำขอขึ้น realtime และรับได้; สถานะทั้งสองฝั่งตรงกัน",
+      "status": "PASS",
+      "time": "2026-10-10T18:58",
+      "actual": "เป็นไปตาม Expected result",
+      "evidence": ""
+    },
+    {
+      "id": "MAN-002",
+      "steps": "A/B เป็นเพื่อนแล้วส่งข้อความสลับกัน",
+      "expected": "อีกฝั่งเห็นทันทีและช่องส่งล้างทันที ไม่เด้งไปหน้า direct แยก",
+      "status": "PASS",
+      "time": "2026-10-10T18:59",
+      "actual": "เป็นไปตาม Expected result",
+      "evidence": ""
+    },
+    {
+      "id": "MAN-003",
+      "steps": "รีโหลดและเข้าแชทเพื่อนเดิม",
+      "expected": "ประวัติยังอยู่ ไม่ซ้ำและไม่หายเมื่อมีข้อความสดเข้าระหว่างโหลด",
+      "status": "PASS",
+      "time": "2026-10-10T19:00",
+      "actual": "เป็นไปตาม Expected result",
+      "evidence": ""
+    },
+    {
+      "id": "MAN-004",
+      "steps": "เจ้าของแก้/ลบข้อความ; อีกฝั่งดูพร้อมกัน",
+      "expected": "ทั้งสองฝั่งอัปเดต; อีกฝ่ายแก้/ลบข้อความของเราไม่ได้",
+      "status": "PASS",
+      "time": "2026-10-10T19:00",
+      "actual": "เป็นไปตาม Expected result",
+      "evidence": ""
+    },
+    {
+      "id": "MAN-005",
+      "steps": "ส่งรูปในแชทเพื่อน แล้วรีโหลด",
+      "expected": "รูปถูกเก็บและโหลดได้จริงจาก storage",
+      "status": "PASS",
+      "time": "2026-10-10T19:00",
+      "actual": "เป็นไปตาม Expected result",
+      "evidence": ""
+    },
+    {
+      "id": "MAN-006",
+      "steps": "สร้าง/แก้/ลบห้องด้วยบัญชีเจ้าของ",
+      "expected": "ข้อมูลและรายการห้องเปลี่ยน; สมาชิกทั่วไปจัดการห้องไม่ได้",
+      "status": "PASS",
+      "time": "2026-10-10T19:00",
+      "actual": "เป็นไปตาม Expected result",
+      "evidence": ""
+    },
+    {
+      "id": "MAN-007",
+      "steps": "A เปิด home, B เข้าหรือออกห้อง",
+      "expected": "จำนวนและรายชื่ออัปเดตโดยไม่ต้องรีโหลดหรือเข้าคอล",
+      "status": "PASS",
+      "time": "2026-10-10T19:00",
+      "actual": "เป็นไปตาม Expected result",
+      "evidence": ""
+    },
+    {
+      "id": "MAN-008",
+      "steps": "ปิดเว็บแล้วกลับเข้าห้องที่ยังเป็นสมาชิก",
+      "expected": "เข้าต่อได้ ไม่มี Already a member และไม่เพิ่มสมาชิกซ้ำ",
+      "status": "PASS",
+      "time": "2026-10-10T19:00",
+      "actual": "เป็นไปตาม Expected result",
+      "evidence": ""
+    },
+    {
+      "id": "MAN-009",
+      "steps": "สองบัญชีเข้าคอลในห้อง",
+      "expected": "ได้ยินสองทาง จำนวนคนไม่คูณสอง และโปรไฟล์ไม่ซ้ำ",
+      "status": "PASS",
+      "time": "2026-10-10T19:00",
+      "actual": "เป็นไปตาม Expected result",
+      "evidence": ""
+    },
+    {
+      "id": "MAN-010",
+      "steps": "A โทรเสียงหา B จากหน้าเพื่อน; รับ/ปฏิเสธ/ยกเลิก",
+      "expected": "มีสายเข้า; เชื่อมต่อสำเร็จหรือปิดสายตรงสถานะ ไม่มี popup ค้าง",
+      "status": "PASS",
+      "time": "2026-10-10T19:01",
+      "actual": "เป็นไปตาม Expected result",
+      "evidence": ""
+    },
+    {
+      "id": "MAN-011",
+      "steps": "B อยู่หน้าอื่นแล้วรับสายของ A",
+      "expected": "ไปหน้าเพื่อนและต่อสายเดิมได้; ตรวจ membership ห้องเดิมแยกจากสถานะคอล",
+      "status": "PASS",
+      "time": "2026-10-10T19:01",
+      "actual": "เป็นไปตาม Expected result",
+      "evidence": ""
+    },
+    {
+      "id": "MAN-012",
+      "steps": "เปลี่ยนเสียงเป็นวิดีโอและเปิด/ปิดกล้องสองฝั่ง",
+      "expected": "ภาพอัปเดตจริง เสียงไม่ขาด และอีกฝั่งเห็นสถานะกล้อง",
+      "status": "PASS",
+      "time": "2026-10-10T19:01",
+      "actual": "เป็นไปตาม Expected result",
+      "evidence": ""
+    },
+    {
+      "id": "MAN-013",
+      "steps": "สองเครื่องต่างเครือข่ายโทรหาเพื่อนและคอลห้อง",
+      "expected": "เสียง/ภาพถึงกัน; ถ้าทดสอบ TURN ต้องยืนยัน selected pair เป็น relay",
+      "status": "PASS",
+      "time": "2026-10-10T19:01",
+      "actual": "เป็นไปตาม Expected result",
+      "evidence": ""
+    },
+    {
+      "id": "MAN-014",
+      "steps": "แชร์หน้าจอ/แท็บหลายคนและเลือกจอที่ดู",
+      "expected": "ผู้รับเห็นภาพจริง; จัด grid ได้และหยุดแชร์คืนกล้องถูกต้อง",
+      "status": "PASS",
+      "time": "2026-10-10T19:01",
+      "actual": "เป็นไปตาม Expected result",
+      "evidence": ""
+    },
+    {
+      "id": "MAN-015",
+      "steps": "ส่งรูปในห้องกลุ่ม แล้วออกและเปิดใหม่",
+      "expected": "เห็นรูปสด; ไม่มีประวัติข้อความกลุ่มตามข้อตกลง",
+      "status": "PASS",
+      "time": "2026-10-10T19:01",
+      "actual": "เป็นไปตาม Expected result",
+      "evidence": ""
+    },
+    {
+      "id": "MAN-016",
+      "steps": "แก้รูปโปรไฟล์/เพิ่ม gallery สูงสุด 5 รูป; เปิดสุ่มคุยอีกบัญชี",
+      "expected": "รูปอยู่ในกรอบ, เลื่อนดูได้, ไม่เกิน 5 รูป, ไม่มี gallery ใช้ avatar",
+      "status": "PASS",
+      "time": "2026-10-10T19:02",
+      "actual": "เป็นไปตาม Expected result",
+      "evidence": ""
+    },
+    {
+      "id": "MAN-017",
+      "steps": "เลือกปี/สาขา/ความสนใจแล้วสุ่มคุย",
+      "expected": "ผู้แนะนำเป็นบัญชีจริง; คะแนน/ความสนใจร่วมและตัวกรองตรงข้อมูล",
+      "status": "PASS",
+      "time": "2026-10-10T19:02",
+      "actual": "เป็นไปตาม Expected result",
+      "evidence": ""
+    },
+    {
+      "id": "MAN-018",
+      "steps": "ปล่อย session หมดอายุจริงโดยไม่เรียก API",
+      "expected": "กลับ login; ทดสอบทั้งหน้าเปิดค้างและกลับมาจากแท็บพื้นหลัง",
+      "status": "PASS",
+      "time": "2026-10-10T19:02",
+      "actual": "เป็นไปตาม Expected result",
+      "evidence": ""
+    },
+    {
+      "id": "MAN-019",
+      "steps": "จำลองเครือข่ายขาด/HTTP 503",
+      "expected": "แจ้งข้อผิดพลาดและลองใหม่ได้ ไม่ถือเป็น session หมดอายุโดยอัตโนมัติ",
+      "status": "PASS",
+      "time": "2026-10-10T19:02",
+      "actual": "เป็นไปตาม Expected result",
+      "evidence": ""
+    }
+  ],
+  "workbookVerification": {
+    "updates": 136,
+    "newMasterRows": 0,
+    "originalValuesOutsideEditScopePreserved": true,
+    "originalCellStylesPreserved": true,
+    "otherZipPartsByteIdentical": 27,
+    "sheetOrderMergesFreezePanesPreserved": true,
+    "sourceOriginalUnchanged": true
+  },
+  "outputWorkbook": "test/test-cases/CPFriendFinder_TestCases.xlsx",
+  "e2eCases": [
+    {
+      "id": "E2E-001",
+      "name": "Login Page Loads",
+      "thaiName": "หน้าเข้าสู่ระบบโหลดได้",
+      "status": "PASS",
+      "sourceFile": "test\\e2e\\robot\\tests\\login_smoke.robot",
+      "start": "2026-10-10T18:25:09.754857",
+      "seconds": 1.064919,
+      "message": "",
+      "robotName": "E2E-001 Login Page Loads",
+      "retryObservations": [],
+      "expected": "แสดงหน้า login และช่องกรอกครบ"
+    },
+    {
+      "id": "E2E-002",
+      "name": "Password Can Be Shown And Hidden",
+      "thaiName": "แสดงและซ่อนรหัสผ่าน",
+      "status": "PASS",
+      "sourceFile": "test\\e2e\\robot\\tests\\login_smoke.robot",
+      "start": "2026-10-10T18:25:10.825038",
+      "seconds": 0.783837,
+      "message": "",
+      "robotName": "E2E-002 Password Can Be Shown And Hidden",
+      "retryObservations": [],
+      "expected": "เปลี่ยนชนิดช่องรหัสผ่านเมื่อกด Show/Hide"
+    },
+    {
+      "id": "E2E-003",
+      "name": "Register Link Opens Register Page",
+      "thaiName": "ลิงก์สมัครสมาชิก",
+      "status": "PASS",
+      "sourceFile": "test\\e2e\\robot\\tests\\login_smoke.robot",
+      "start": "2026-10-10T18:25:11.615507",
+      "seconds": 1.078888,
+      "message": "",
+      "robotName": "E2E-003 Register Link Opens Register Page",
+      "retryObservations": [],
+      "expected": "เปิดหน้า register จากลิงก์ได้"
+    },
+    {
+      "id": "E2E-004",
+      "name": "Register And Login Successfully",
+      "thaiName": "สมัครสมาชิก กรอกข้อมูลให้อัตโนมัติ และเข้าสู่ระบบ",
+      "status": "PASS",
+      "sourceFile": "test\\e2e\\robot\\tests\\auth_flow.robot",
+      "start": "2026-10-10T18:24:29.604027",
+      "seconds": 3.420732,
+      "message": "",
+      "robotName": "E2E-004 Register And Login Successfully",
+      "retryObservations": [],
+      "expected": "สมัครสำเร็จ กลับ login พร้อมกรอกข้อมูล และเข้าสู่ home ได้"
+    },
+    {
+      "id": "E2E-005",
+      "name": "Selected Interest Is Saved After Registration",
+      "thaiName": "บันทึกความสนใจหลังสมัคร",
+      "status": "PASS",
+      "sourceFile": "test\\e2e\\robot\\tests\\register_interest.robot",
+      "start": "2026-10-10T18:25:13.778211",
+      "seconds": 3.209394,
+      "message": "",
+      "robotName": "E2E-005 Selected Interest Is Saved After Registration",
+      "retryObservations": [],
+      "expected": "API คืนความสนใจ Gaming ที่เลือกตอนสมัคร"
+    },
+    {
+      "id": "E2E-006",
+      "name": "Home Loads Real Rooms And Search Controls",
+      "thaiName": "หน้าหลักและข้อมูลห้องจริง",
+      "status": "PASS",
+      "sourceFile": "test\\e2e\\robot\\tests\\authenticated_regression.robot",
+      "start": "2026-10-10T18:24:37.762055",
+      "seconds": 1.419008,
+      "message": "",
+      "robotName": "E2E-006 Home Loads Real Rooms And Search Controls",
+      "retryObservations": [],
+      "expected": "แสดงตัวกรองห้องและ API discover คืนรายการ"
+    },
+    {
+      "id": "E2E-007",
+      "name": "Friends Page Handles Account Without Friends",
+      "thaiName": "หน้าเพื่อนเมื่อยังไม่มีเพื่อน",
+      "status": "PASS",
+      "sourceFile": "test\\e2e\\robot\\tests\\authenticated_regression.robot",
+      "start": "2026-10-10T18:24:39.187067",
+      "seconds": 1.496242,
+      "message": "",
+      "robotName": "E2E-007 Friends Page Handles Account Without Friends",
+      "retryObservations": [],
+      "expected": "หน้าเพื่อนแสดงได้และ API คืนรายการว่างสำหรับบัญชีใหม่"
+    },
+    {
+      "id": "E2E-008",
+      "name": "Notifications Page And API Load",
+      "thaiName": "หน้าการแจ้งเตือน",
+      "status": "PASS",
+      "sourceFile": "test\\e2e\\robot\\tests\\authenticated_regression.robot",
+      "start": "2026-10-10T18:24:40.689871",
+      "seconds": 1.738393,
+      "message": "",
+      "robotName": "E2E-008 Notifications Page And API Load",
+      "retryObservations": [],
+      "expected": "หน้าแจ้งเตือนเปิดได้และ API คืนรายการ"
+    },
+    {
+      "id": "E2E-009",
+      "name": "Discovery Loads With Or Without Candidates",
+      "thaiName": "หน้าสุ่มคุยและข้อมูลผู้แนะนำ",
+      "status": "PASS",
+      "sourceFile": "test\\e2e\\robot\\tests\\authenticated_regression.robot",
+      "start": "2026-10-10T18:24:42.435954",
+      "seconds": 2.126248,
+      "message": "",
+      "robotName": "E2E-009 Discovery Loads With Or Without Candidates",
+      "retryObservations": [
+        "'กำลังค้นหาเพื่อน...' does not match '^(พบบัญชีจริง|ไม่มีบัญชีที่ตรงกับตัวกรอง)'"
+      ],
+      "expected": "API discover คืนรายการและสถานะสิ้นสุดการโหลดสำเร็จ"
+    },
+    {
+      "id": "E2E-010",
+      "name": "Settings Opens Own Editable Profile",
+      "thaiName": "เปิดหน้าแก้ไขโปรไฟล์",
+      "status": "PASS",
+      "sourceFile": "test\\e2e\\robot\\tests\\authenticated_regression.robot",
+      "start": "2026-10-10T18:24:44.573417",
+      "seconds": 2.269743,
+      "message": "",
+      "robotName": "E2E-010 Settings Opens Own Editable Profile",
+      "retryObservations": [],
+      "expected": "เปิดตัวแก้ไขโปรไฟล์พร้อมช่อง bio ความสนใจ และ gallery"
+    },
+    {
+      "id": "E2E-011",
+      "name": "Bio Persists After Reload",
+      "thaiName": "บันทึกเกี่ยวกับฉันและโหลดซ้ำ",
+      "status": "PASS",
+      "sourceFile": "test\\e2e\\robot\\tests\\authenticated_regression.robot",
+      "start": "2026-10-10T18:24:46.851200",
+      "seconds": 6.007028,
+      "message": "",
+      "robotName": "E2E-011 Bio Persists After Reload",
+      "retryObservations": [],
+      "expected": "bio ที่บันทึกยังอยู่หลัง reload และตรงกับ API"
+    },
+    {
+      "id": "E2E-012",
+      "name": "Interest Removal And Addition Persist",
+      "thaiName": "ลบและเพิ่มความสนใจ",
+      "status": "PASS",
+      "sourceFile": "test\\e2e\\robot\\tests\\authenticated_regression.robot",
+      "start": "2026-10-10T18:24:52.867119",
+      "seconds": 8.772077,
+      "message": "",
+      "robotName": "E2E-012 Interest Removal And Addition Persist",
+      "retryObservations": [],
+      "expected": "ลบและเพิ่ม Gaming แล้วสถานะตรงทั้งหลัง reload และ API"
+    },
+    {
+      "id": "E2E-013",
+      "name": "Mobile Home Has No Horizontal Page Overflow",
+      "thaiName": "หน้าจอมือถือไม่ล้นแนวนอน",
+      "status": "PASS",
+      "sourceFile": "test\\e2e\\robot\\tests\\authenticated_regression.robot",
+      "start": "2026-10-10T18:25:01.644666",
+      "seconds": 1.255164,
+      "message": "",
+      "robotName": "E2E-013 Mobile Home Has No Horizontal Page Overflow",
+      "retryObservations": [],
+      "expected": "หน้า home ขนาด 390×844 ไม่ล้นแนวนอน"
+    },
+    {
+      "id": "E2E-014",
+      "name": "Logout Invalidates Session",
+      "thaiName": "ออกจากระบบและยกเลิก session",
+      "status": "PASS",
+      "sourceFile": "test\\e2e\\robot\\tests\\authenticated_regression.robot",
+      "start": "2026-10-10T18:25:02.911125",
+      "seconds": 2.19177,
+      "message": "",
+      "robotName": "E2E-014 Logout Invalidates Session",
+      "retryObservations": [],
+      "expected": "logout กลับ login และ API users/me ตอบ 401"
+    },
+    {
+      "id": "E2E-015",
+      "name": "Lost Session Returns To Login On Unauthorized API",
+      "thaiName": "กลับหน้า login เมื่อ API ตอบ 401 หลังลบ cookie",
+      "status": "PASS",
+      "sourceFile": "test\\e2e\\robot\\tests\\authenticated_regression.robot",
+      "start": "2026-10-10T18:25:05.110627",
+      "seconds": 3.278196,
+      "message": "",
+      "robotName": "E2E-015 Lost Session Returns To Login On Unauthorized API",
+      "retryObservations": [
+        "URL 'https://cpfriendfinder-final-production.up.railway.app/home' (str) should be 'https://cpfriendfinder-final-production.up.railway.app/login' (str)"
+      ],
+      "expected": "หลังลบ cookie และ API 401 กลับ login พร้อมล้าง currentUser"
+    }
+  ],
+  "summary": {
+    "junit": {
+      "total": 240,
+      "pass": 240
+    },
+    "robot": {
+      "total": 15,
+      "pass": 15
+    },
+    "manual": {
+      "total": 19,
+      "pass": 19,
+      "source": "ผู้ทดสอบรายงาน"
+    },
+    "totalResults": 274,
+    "totalPass": 274,
+    "staticResources": {
+      "total": 52,
+      "pass": 52,
+      "countedIn274": false
+    }
+  }
+}
