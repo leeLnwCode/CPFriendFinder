@@ -30,6 +30,9 @@ class UserServiceTest {
     @Mock
     private StoragePort storagePort;
 
+    @Mock
+    private com.cp.friend.service.UserInterests userInterests;
+
     private UserService userService;
 
     private UUID userId;
@@ -37,7 +40,7 @@ class UserServiceTest {
 
     @BeforeEach
     void setUp() {
-        userService = new UserService(userRepository, storagePort);
+        userService = new UserService(userRepository, storagePort, userInterests);
 
         userId = UUID.randomUUID();
 

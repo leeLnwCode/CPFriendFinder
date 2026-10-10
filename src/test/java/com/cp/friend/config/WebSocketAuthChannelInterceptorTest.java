@@ -3,7 +3,10 @@ package com.cp.friend.config;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertSame;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.mock;
+
+import org.springframework.security.access.AccessDeniedException;
 
 import java.security.Principal;
 import java.util.UUID;
@@ -25,7 +28,8 @@ class WebSocketAuthChannelInterceptorTest {
     @BeforeEach
     void setUp() {
         channel = mock(MessageChannel.class);
-        interceptor = new WebSocketAuthChannelInterceptor();
+        com.cp.friend.service.RoomMembershipService membership = mock(com.cp.friend.service.RoomMembershipService.class);
+        interceptor = new WebSocketAuthChannelInterceptor(membership);
     }
 
     @Test
@@ -68,16 +72,9 @@ class WebSocketAuthChannelInterceptorTest {
                         new byte[0],
                         accessor.getMessageHeaders());
 
-        Message<?> result = interceptor.preSend(message, channel);
-
-        StompHeaderAccessor resultAccessor =
-                MessageHeaderAccessor.getAccessor(
-                        result,
-                        StompHeaderAccessor.class);
-
-        assertNotNull(resultAccessor);
-        assertNull(
-                resultAccessor.getUser(),
+        assertThrows(
+                AccessDeniedException.class,
+                () -> interceptor.preSend(message, channel),
                 "Unauthenticated client must not become authenticated from STOMP login header");
     }
 }

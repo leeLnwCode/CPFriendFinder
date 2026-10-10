@@ -105,21 +105,23 @@ class MatchingServiceTest {
         ));
 
         // Candidate 1 has: Java, AI, Mobile -> 2/3 = 66.67%
-        when(userInterestRepository.findByUserIdWithInterest(cand1Id)).thenReturn(List.of(
+        List<UserInterest> cand1Interests = List.of(
                 createUserInterest(cand1Id, "Java"),
                 createUserInterest(cand1Id, "AI"),
                 createUserInterest(cand1Id, "Mobile")
-        ));
+        );
 
         // Candidate 2 has: Java, AI, Web -> 3/3 = 100.0%
-        when(userInterestRepository.findByUserIdWithInterest(cand2Id)).thenReturn(List.of(
+        List<UserInterest> cand2Interests = List.of(
                 createUserInterest(cand2Id, "Java"),
                 createUserInterest(cand2Id, "AI"),
                 createUserInterest(cand2Id, "Web")
-        ));
+        );
 
-        when(friendshipRepository.existsBetween(any(), any())).thenReturn(false);
-        when(friendRequestRepository.existsPendingBetween(any(), any())).thenReturn(false);
+        List<UserInterest> batchInterests = new ArrayList<>();
+        batchInterests.addAll(cand1Interests);
+        batchInterests.addAll(cand2Interests);
+        when(userInterestRepository.findByUserIdsWithInterest(any())).thenReturn(batchInterests);
 
         List<MatchCandidateResponse> results = matchingService.recommendFriends(baseId, 10);
 
@@ -151,11 +153,17 @@ class MatchingServiceTest {
         when(userInterestRepository.findByUserIdWithInterest(baseId)).thenReturn(Collections.emptyList());
 
         // Candidate 1 is already a friend
-        when(friendshipRepository.existsBetween(baseId, friendId)).thenReturn(true);
+        com.cp.friend.model.Friendship friendship = new com.cp.friend.model.Friendship();
+        friendship.setUser(baseUser);
+        friendship.setFriend(candidateUser1);
+        when(friendshipRepository.findAllByMember(baseId)).thenReturn(List.of(friendship));
 
         // Candidate 2 has a pending request
-        when(friendshipRepository.existsBetween(baseId, pendingId)).thenReturn(false);
-        when(friendRequestRepository.existsPendingBetween(baseId, pendingId)).thenReturn(true);
+        com.cp.friend.model.FriendRequest pendingRequest = new com.cp.friend.model.FriendRequest();
+        pendingRequest.setSender(baseUser);
+        pendingRequest.setReceiver(candidateUser2);
+        when(friendRequestRepository.findBySenderIdAndStatus(baseId, com.cp.friend.model.FriendRequest.Status.PENDING))
+                .thenReturn(List.of(pendingRequest));
 
         List<MatchCandidateResponse> results = matchingService.recommendFriends(baseId, 10);
 

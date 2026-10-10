@@ -26,13 +26,17 @@ class ChatRoomControllerMvcTest {
     @Mock
     private ChatRoomService chatRoomService;
 
+    @Mock
+    private com.cp.friend.service.RoomRealtimeService realtime;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
 
         ChatRoomController controller =
                 new ChatRoomController(
-                        chatRoomService
+                        chatRoomService,
+                        realtime
                 );
 
         mockMvc = MockMvcBuilders
