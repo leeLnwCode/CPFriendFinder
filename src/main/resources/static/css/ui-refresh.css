@@ -59,7 +59,7 @@ h1,h2,h3 { letter-spacing:-.025em; line-height:1.35; }
  .sidebar-logo { height:40px!important; margin-bottom:12px!important; }
  .sidebar-logo img { width:160px!important; max-height:40px!important; }
  .sidebar-profile { max-width:360px; margin-bottom:12px!important; }
- .sidebar-menu { display:grid!important; grid-template-columns:repeat(5,minmax(0,1fr)); gap:4px!important; }
+ .sidebar-menu { display:grid!important; grid-template-columns:repeat(6,minmax(0,1fr)); gap:4px!important; }
  .sidebar-menu .menu-item { justify-content:center!important; flex-direction:column; gap:6px!important; height:62px!important; padding:6px 2px!important; font-size:11px!important; text-align:center; }
  .page-content,.room-content { padding:24px 16px; width:100%; }
  .friend-content { height:auto; min-height:100dvh; overflow:visible; }
@@ -88,3 +88,5 @@ h1,h2,h3 { letter-spacing:-.025em; line-height:1.35; }
 .video-call-action.muted .video-call-slash { position:absolute; width:3px; height:32px; background:#f87171; transform:rotate(-45deg); border-radius:2px; }
 .remote-video>video,.local-video>video { width:100%; height:100%; object-fit:cover; }
 @media(max-width:700px) { .video-call-window { max-width:100vw; height:100dvh; } .video-call-actions { bottom:24px; gap:16px; } }
+
+.sidebar-logout-status:empty{display:none}.sidebar-logout-status{grid-column:1/-1}@media(max-width:420px){.sidebar-menu .menu-item{font-size:10px!important}}

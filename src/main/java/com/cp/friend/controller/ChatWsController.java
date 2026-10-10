@@ -11,6 +11,7 @@ import com.cp.friend.dto.request.CallInviteRequest;
 import com.cp.friend.dto.request.CallSignalRequest;
 import com.cp.friend.dto.request.ChatMessagePayload;
 import com.cp.friend.service.ChatMessageService;
+import com.cp.friend.service.CallSignalingService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ChatWsController {
 
     private final ChatMessageService chatMessageService;
+    private final CallSignalingService callSignalingService;
     private final com.cp.friend.service.RoomRealtimeService realtime;
 
     @MessageMapping("/rooms/{roomId}/messages")
@@ -74,7 +76,7 @@ public class ChatWsController {
             log.error("[WS] ❌ Authentication required on /rooms/{}/call | signalType={}", roomId, signalType);
             throw new IllegalStateException("Authentication required");
         }
-        chatMessageService.relayCallSignal(UUID.fromString(principal.getName()), roomId, signal);
+        callSignalingService.relayCallSignal(UUID.fromString(principal.getName()), roomId, signal);
         realtime.signal(roomId, UUID.fromString(principal.getName()), sessionId, signal.getType(), signal.getPayload());
     }
 
@@ -89,6 +91,6 @@ public class ChatWsController {
             log.error("[WS] ❌ Authentication required on /call");
             throw new IllegalStateException("Authentication required");
         }
-        chatMessageService.relayCallInvite(UUID.fromString(principal.getName()), request);
+        callSignalingService.relayCallInvite(UUID.fromString(principal.getName()), request);
     }
 }

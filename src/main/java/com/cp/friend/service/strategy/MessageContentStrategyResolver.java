@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 // Resolver — รับ Strategy ทั้งหมดที่ Spring inject เข้ามา (constructor injection ของ List)
-// แล้วเลือกให้ถูกชนิด: เพิ่ม messageType ใหม่ = เพิ่ม Strategy bean ตัวนี้อัปเดตเองอัตโนมัติ (Open/Closed)
+// ลงทะเบียนผ่านสัญญา MessageContentStrategy; คลาสลูกเลือกใช้ Template Method ได้ตามต้องการ
 @Component
 public class MessageContentStrategyResolver {
 
@@ -18,9 +18,7 @@ public class MessageContentStrategyResolver {
 
     public MessageContentStrategyResolver(List<MessageContentStrategy> candidates) {
         for (MessageContentStrategy strategy : candidates) {
-            if (strategy instanceof AbstractMessageContentStrategy abstractStrategy) {
-                strategies.put(abstractStrategy.supportedType(), strategy);
-            }
+            strategies.put(strategy.supportedType(), strategy);
         }
     }
 

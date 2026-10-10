@@ -44,23 +44,18 @@ document.addEventListener("DOMContentLoaded", () => {
 
   async function loadAccount() {
     try {
-      const response = await fetch("/api/users/me", {
-        credentials: "include",
-        headers: { Accept: "application/json" },
-      });
+      const response = await fetch("/api/users/me", {credentials: "include", headers: {Accept: "application/json"}});
       if (!response.ok) throw new Error("โหลดบัญชีไม่สำเร็จ");
       const user = await response.json();
-      document.getElementById("accountEmail").textContent =
-        user.email || "ไม่ระบุ";
-      document.getElementById("accountUsername").textContent =
-        `${user.firstname || ""} ${user.lastname || ""}`.trim() ||
-        "ไม่ระบุชื่อ";
+      document.getElementById("accountEmail").textContent = user.email || "ไม่ระบุ";
+      document.getElementById("accountUsername").textContent = `${user.firstname || ""} ${user.lastname || ""}`.trim() || "ไม่ระบุชื่อ";
     } catch (error) {
       document.getElementById("accountEmail").textContent = error.message;
       document.getElementById("accountUsername").textContent = "—";
     }
   }
   loadAccount();
+  document.getElementById('settingsEditProfile')?.addEventListener('click',()=>{closeAllModals();window.dispatchEvent(new CustomEvent('cp-edit-own-profile'));});
 
   // =========================
   // THEME (ใช้ applyTheme / setTheme จาก theme.js)

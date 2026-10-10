@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="th">
   <head>
+<script th:src="@{/js/auth-session.js(v=1)}"></script>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
@@ -13,16 +14,14 @@
     <link rel="stylesheet" th:href="@{/css/notification.css}" />
     <link rel="stylesheet" th:href="@{/css/friend-profile-popup.css}" />
     <link rel="stylesheet" th:href="@{/css/profile-popup.css(v=11)}" />
-    <link rel="stylesheet" th:href="@{/css/ui-refresh.css}" />
-    <link rel="stylesheet" th:href="@{/css/call-ui.css}" />
-  </head>
+  <link rel="stylesheet" th:href="@{/css/ui-refresh.css}"/>
+<link rel="stylesheet" th:href="@{/css/call-ui.css(v=2)}"/>
+</head>
 
   <body>
     <div class="page-layout">
       <!-- ========================= SIDEBAR ========================== -->
-      <aside
-        th:replace="~{fragments/sidebar :: sidebar('notification')}"
-      ></aside>
+      <aside th:replace="~{fragments/sidebar :: sidebar('notification')}"></aside>
 
       <div th:replace="~{fragments/profile-editor :: profileEditor}"></div>
 
@@ -93,10 +92,10 @@
     <script th:src="@{/js/notification.js}"></script>
     <script th:src="@{/js/sidebar.js}"></script>
     <script th:src="@{/js/profile-popup.js(v=11)}"></script>
-    <div th:replace="~{fragments/global-call :: globalCall}"></div>
+<div th:replace="~{fragments/global-call :: globalCall}"></div>
 
-    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7/bundles/stomp.umd.min.js"></script>
-    <script th:src="@{/js/call.js}"></script>
-    <script th:src="@{/js/global-call.js}"></script>
+<script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7/bundles/stomp.umd.min.js"></script>
+<script th:src="@{/js/call.js(v=11)}"></script>
+<script th:src="@{/js/global-call.js}"></script>
   </body>
 </html>

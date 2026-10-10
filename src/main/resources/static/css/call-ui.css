@@ -50,3 +50,6 @@
  .voice-call-action,.voice-call-end { width:58px; }
  .voice-call-image-wrapper,.voice-call-image { width:104px; height:104px; }
 }
+
+.cp-call-audio-resume { position:fixed; bottom:20px; left:50%; transform:translateX(-50%); z-index:20000; max-width:calc(100vw - 32px); padding:12px 18px; border:2px solid #fff; border-radius:12px; background:#0369a1; color:#fff; font:inherit; font-weight:700; cursor:pointer; box-shadow:0 4px 16px #0004; }
+.cp-call-audio-resume[hidden] { display:none; }

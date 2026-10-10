@@ -22,7 +22,7 @@ public class AuthService {
         private final PasswordEncoder passwordEncoder;
         // Dependency Inversion — พึ่ง interface StoragePort ไม่ใช่ S3 SDK โดยตรง
         private final StoragePort storagePort;
-        private final UserInterestService userInterestService;
+        private final UserInterests userInterestService;
 
         // Register
         @Transactional

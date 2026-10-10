@@ -1,147 +1,33 @@
 <!doctype html>
 <html lang="th" xmlns:th="http://www.thymeleaf.org">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>ค้นพบเพื่อน - CP Friend Finder</title>
-    <link rel="stylesheet" th:href="@{/css/theme.css}" />
-    <link rel="stylesheet" th:href="@{/css/sidebar.css}" />
-    <link rel="stylesheet" th:href="@{/css/layout.css}" />
-    <link rel="stylesheet" th:href="@{/css/random.css}" />
-    <link rel="stylesheet" th:href="@{/css/global-call.css}" />
-    <link rel="stylesheet" th:href="@{/css/ui-refresh.css}" />
-    <link rel="stylesheet" th:href="@{/css/call-ui.css}" />
-    <link rel="stylesheet" th:href="@{/css/chat-room-ui.css}" />
-    <link rel="stylesheet" th:href="@{/css/profile-popup.css(v=11)}" />
-    <link rel="stylesheet" th:href="@{/css/discovery-gallery.css(v=1)}" />
-  </head>
-  <body>
-    <div class="page-layout">
-      <aside th:replace="~{fragments/sidebar :: sidebar('random')}"></aside>
-      <div th:replace="~{fragments/profile-editor :: profileEditor}"></div>
-      <main class="page-content random-content">
-        <header class="discovery-heading">
-          <button
-            type="button"
-            class="edit-discovery-profile"
-            id="editDiscoverProfile"
-          >
-            รูปแนะนำตัวของฉัน
-          </button>
-          <p class="eyebrow">CP FRIEND FINDER</p>
-          <h1>ค้นพบเพื่อนใหม่</h1>
-          <p>เริ่มรู้จักกันจากความสนใจที่เหมือนกัน</p>
-        </header>
-        <p
-          id="discoveryStatus"
-          class="ui-status"
-          role="status"
-          aria-live="polite"
-        >
-          กำลังค้นหาเพื่อน...
-        </p>
-        <div class="matching-options">
-          <label
-            ><input type="checkbox" id="sameYearOnly" />ชั้นปีเดียวกัน</label
-          ><label
-            ><input
-              type="checkbox"
-              id="sameDepartmentOnly"
-            />สาขาเดียวกัน</label
-          >
-        </div>
-        <div class="random-layout">
-          <section class="random-profile-panel">
-            <div class="random-profile">
-              <div class="random-profile-image-wrapper">
-                <img
-                  id="randomProfileImage"
-                  src="/images/avatar-placeholder.svg"
-                  alt="รูปโปรไฟล์"
-                  class="random-profile-image"
-                />
-                <div
-                  id="randomPhotoControls"
-                  class="random-photo-controls"
-                  hidden
-                >
-                  <button
-                    type="button"
-                    id="randomPhotoPrev"
-                    aria-label="ดูรูปก่อนหน้า"
-                  >
-                    ‹</button
-                  ><span id="randomPhotoCounter" aria-live="polite"></span
-                  ><button
-                    type="button"
-                    id="randomPhotoNext"
-                    aria-label="ดูรูปถัดไป"
-                  >
-                    ›
-                  </button>
-                </div>
-              </div>
-              <div
-                id="randomPhotoThumbs"
-                class="random-photo-thumbs"
-                hidden
-              ></div>
-              <h2 id="randomProfileName">กำลังโหลด...</h2>
-              <p id="randomProfileYear"></p>
-              <p id="randomMatchReasons" class="match-reasons"></p>
-              <section class="random-profile-section">
-                <h3>ความสนใจร่วมกัน</h3>
-                <div id="randomProfileInterests" class="random-interests"></div>
-              </section>
-              <section class="random-profile-section">
-                <h3>เกี่ยวกับฉัน</h3>
-                <p id="randomProfileBio" class="random-profile-bio"></p>
-              </section>
-              <div class="random-profile-actions">
-                <button
-                  type="button"
-                  id="addFriendButton"
-                  class="add-friend-button"
-                  disabled
-                >
-                  เพิ่มเพื่อน
-                </button>
-                <button
-                  type="button"
-                  id="nextPersonButton"
-                  class="next-person-button"
-                  disabled
-                >
-                  สุ่มคนถัดไป
-                </button>
-              </div>
-            </div>
-          </section>
-          <section class="discovery-guide">
-            <span class="eyebrow">เริ่มต้นบทสนทนา</span>
-            <h2>เพื่อนใหม่ เริ่มจากคำทักทาย</h2>
-            <p>
-              ส่งคำขอเป็นเพื่อน เมื่ออีกฝ่ายตอบรับ คุณสามารถพูดคุย ส่งรูป
-              หรือโทรหาเพื่อนได้จากหน้าเพื่อนของฉัน
-            </p>
-            <ol>
-              <li>ดูโปรไฟล์และความสนใจร่วมกัน</li>
-              <li>ส่งคำขอเป็นเพื่อน</li>
-              <li>เริ่มคุยหลังได้รับการตอบรับ</li>
-            </ol>
-            <a class="primary-link" href="/friend">ไปที่เพื่อนของฉัน →</a>
-            <a href="/home">หรือเข้าร่วมห้องพูดคุยกับคนที่สนใจเรื่องเดียวกัน</a>
-          </section>
-        </div>
-      </main>
-    </div>
-    <div th:replace="~{fragments/global-call :: globalCall}"></div>
-    <script th:src="@{/js/theme.js}"></script>
-    <script th:src="@{/js/sidebar.js}"></script>
-    <script th:src="@{/js/random.js(v=10)}"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7/bundles/stomp.umd.min.js"></script>
-    <script th:src="@{/js/call.js}"></script>
-    <script th:src="@{/js/global-call.js}"></script>
-    <script th:src="@{/js/profile-popup.js(v=11)}"></script>
-  </body>
-</html>
+<head>
+<script th:src="@{/js/auth-session.js(v=1)}"></script><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>ค้นพบเพื่อน - CP Friend Finder</title>
+<link rel="stylesheet" th:href="@{/css/theme.css}"/><link rel="stylesheet" th:href="@{/css/sidebar.css}"/>
+<link rel="stylesheet" th:href="@{/css/layout.css}"/><link rel="stylesheet" th:href="@{/css/random.css}"/>
+<link rel="stylesheet" th:href="@{/css/global-call.css}"/><link rel="stylesheet" th:href="@{/css/ui-refresh.css}"/>
+<link rel="stylesheet" th:href="@{/css/call-ui.css(v=2)}"/>
+<link rel="stylesheet" th:href="@{/css/chat-room-ui.css}"/>
+<link rel="stylesheet" th:href="@{/css/profile-popup.css(v=11)}"/><link rel="stylesheet" th:href="@{/css/discovery-gallery.css(v=1)}"/></head><body><div class="page-layout">
+<aside th:replace="~{fragments/sidebar :: sidebar('random')}"></aside>
+<div th:replace="~{fragments/profile-editor :: profileEditor}"></div><main class="page-content random-content">
+<header class="discovery-heading"><button type="button" class="edit-discovery-profile" id="editDiscoverProfile">รูปแนะนำตัวของฉัน</button><p class="eyebrow">CP FRIEND FINDER</p><h1>ค้นพบเพื่อนใหม่</h1><p>เริ่มรู้จักกันจากความสนใจที่เหมือนกัน</p></header>
+<p id="discoveryStatus" class="ui-status" role="status" aria-live="polite">กำลังค้นหาเพื่อน...</p>
+<div class="matching-options"><label><input type="checkbox" id="sameYearOnly"/>ชั้นปีเดียวกัน</label><label><input type="checkbox" id="sameDepartmentOnly"/>สาขาเดียวกัน</label></div>
+<div class="random-layout">
+<section class="random-profile-panel"><div class="random-profile">
+<div class="random-profile-image-wrapper"><img id="randomProfileImage" src="/images/avatar-placeholder.svg" alt="รูปโปรไฟล์" class="random-profile-image"/><div id="randomPhotoControls" class="random-photo-controls" hidden><button type="button" id="randomPhotoPrev" aria-label="ดูรูปก่อนหน้า">‹</button><span id="randomPhotoCounter" aria-live="polite"></span><button type="button" id="randomPhotoNext" aria-label="ดูรูปถัดไป">›</button></div></div><div id="randomPhotoThumbs" class="random-photo-thumbs" hidden></div>
+<h2 id="randomProfileName">กำลังโหลด...</h2><p id="randomProfileYear"></p>
+<p id="randomMatchReasons" class="match-reasons"></p><section class="random-profile-section"><h3>ความสนใจร่วมกัน</h3><div id="randomProfileInterests" class="random-interests"></div></section>
+<section class="random-profile-section"><h3>เกี่ยวกับฉัน</h3><p id="randomProfileBio" class="random-profile-bio"></p></section>
+<div class="random-profile-actions"><button type="button" id="addFriendButton" class="add-friend-button" disabled>เพิ่มเพื่อน</button>
+<button type="button" id="nextPersonButton" class="next-person-button" disabled>สุ่มคนถัดไป</button></div></div></section>
+<section class="discovery-guide"><span class="eyebrow">เริ่มต้นบทสนทนา</span><h2>เพื่อนใหม่ เริ่มจากคำทักทาย</h2>
+<p>ส่งคำขอเป็นเพื่อน เมื่ออีกฝ่ายตอบรับ คุณสามารถพูดคุย ส่งรูป หรือโทรหาเพื่อนได้จากหน้าเพื่อนของฉัน</p>
+<ol><li>ดูโปรไฟล์และความสนใจร่วมกัน</li><li>ส่งคำขอเป็นเพื่อน</li><li>เริ่มคุยหลังได้รับการตอบรับ</li></ol>
+<a class="primary-link" href="/friend">ไปที่เพื่อนของฉัน →</a>
+<a href="/home">หรือเข้าร่วมห้องพูดคุยกับคนที่สนใจเรื่องเดียวกัน</a></section></div></main></div>
+<div th:replace="~{fragments/global-call :: globalCall}"></div>
+<script th:src="@{/js/theme.js}"></script><script th:src="@{/js/sidebar.js}"></script><script th:src="@{/js/random.js(v=10)}"></script>
+<script src="https://cdn.jsdelivr.net/npm/@stomp/stompjs@7/bundles/stomp.umd.min.js"></script>
+<script th:src="@{/js/call.js(v=11)}"></script><script th:src="@{/js/global-call.js}"></script><script th:src="@{/js/profile-popup.js(v=11)}"></script></body></html>

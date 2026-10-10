@@ -113,22 +113,15 @@ document.addEventListener("DOMContentLoaded", async () => {
       let targetId = new URLSearchParams(location.search).get("friendId");
       const targetRoom = new URLSearchParams(location.search).get("roomId");
       if (!targetId && targetRoom) {
-        const response = await fetch(
-          `/api/chats/${encodeURIComponent(targetRoom)}`,
-          { credentials: "include" },
-        );
+        const response = await fetch(`/api/chats/${encodeURIComponent(targetRoom)}`, {credentials: "include"});
         if (response.ok) {
           const detail = await response.json();
-          targetId = detail.members?.find(
-            (member) => String(member.userId) !== String(currentUserId),
-          )?.userId;
+          targetId = detail.members?.find(member => String(member.userId) !== String(currentUserId))?.userId;
         }
       }
       targetId ||= sessionStorage.getItem(`cp-last-friend:${currentUserId}`);
-      const firstFriend =
-        [...friendList.querySelectorAll(".friend-list-item")].find(
-          (item) => String(item.dataset.id) === String(targetId),
-        ) || friendList.querySelector(".friend-list-item");
+      const firstFriend = [...friendList.querySelectorAll(".friend-list-item")].find(item => String(item.dataset.id) === String(targetId))
+        || friendList.querySelector(".friend-list-item");
 
       if (firstFriend) {
         await loadConversation(firstFriend);
@@ -218,15 +211,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     const generation = ++conversationGeneration;
     disconnectRoomWebSocket();
     currentRoomId = null;
-    renderedMessageIds.clear();
-    oldestMessageAt = null;
-    historyBusy = false;
+    renderedMessageIds.clear(); oldestMessageAt = null; historyBusy = false;
     olderMessagesButton.hidden = true;
     currentFriendId = friendId;
     sessionStorage.setItem(`cp-last-friend:${currentUserId}`, friendId);
     currentFriendName = friend.dataset.name || "เพื่อน";
-    currentFriendImage =
-      friend.dataset.image || "/images/avatar-placeholder.svg";
+    currentFriendImage = friend.dataset.image || "/images/avatar-placeholder.svg";
 
     chatUserName.textContent = currentFriendName;
     chatUserYear.textContent = friend.dataset.year || "";
@@ -322,36 +312,23 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   async function loadMessages(older = false) {
     if (!currentRoomId || historyBusy) return;
-    const roomId = currentRoomId,
-      generation = conversationGeneration;
-    historyBusy = true;
-    olderMessagesButton.disabled = true;
-    const scrollHeight = chatMessages.scrollHeight,
-      scrollTop = chatMessages.scrollTop;
+    const roomId = currentRoomId, generation = conversationGeneration;
+    historyBusy = true; olderMessagesButton.disabled = true;
+    const scrollHeight = chatMessages.scrollHeight, scrollTop = chatMessages.scrollTop;
     try {
-      const before =
-        older && oldestMessageAt
-          ? `&before=${encodeURIComponent(oldestMessageAt)}`
-          : "";
-      const response = await fetch(
-        `/api/chats/${roomId}/messages?limit=50${before}`,
-        { headers: { Accept: "application/json" }, credentials: "include" },
-      );
-      if (!response.ok)
-        throw new Error(`โหลดข้อความไม่สำเร็จ (${response.status})`);
+      const before = older && oldestMessageAt ? `&before=${encodeURIComponent(oldestMessageAt)}` : "";
+      const response = await fetch(`/api/chats/${roomId}/messages?limit=50${before}`, {headers:{Accept:"application/json"},credentials:"include"});
+      if (!response.ok) throw new Error(`โหลดข้อความไม่สำเร็จ (${response.status})`);
       const messages = await response.json();
       if (generation !== conversationGeneration) return;
       if (!older) {
         // Keep messages that arrived through WebSocket while history was loading.
         const live = [...chatMessages.querySelectorAll("[data-message-id]")];
-        chatMessages.replaceChildren();
-        renderedMessageIds.clear();
+        chatMessages.replaceChildren(); renderedMessageIds.clear();
         messages.forEach(appendMessage);
-        for (const node of live)
-          if (!renderedMessageIds.has(node.dataset.messageId)) {
-            renderedMessageIds.add(node.dataset.messageId);
-            chatMessages.append(node);
-          }
+        for (const node of live) if (!renderedMessageIds.has(node.dataset.messageId)) {
+          renderedMessageIds.add(node.dataset.messageId); chatMessages.append(node);
+        }
       } else {
         const first = chatMessages.firstChild;
         for (const message of messages) {
@@ -362,30 +339,15 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (messages[0]?.createdAt) oldestMessageAt = messages[0].createdAt;
       olderMessagesButton.hidden = messages.length < 50 || !oldestMessageAt;
       if (!chatMessages.children.length) {
-        const empty = document.createElement("div");
-        empty.className = "friend-empty";
-        empty.textContent = "ยังไม่มีข้อความ";
-        chatMessages.append(empty);
+        const empty = document.createElement("div"); empty.className = "friend-empty"; empty.textContent = "ยังไม่มีข้อความ"; chatMessages.append(empty);
       }
-      if (older)
-        chatMessages.scrollTop =
-          scrollTop + chatMessages.scrollHeight - scrollHeight;
+      if (older) chatMessages.scrollTop = scrollTop + chatMessages.scrollHeight - scrollHeight;
       else scrollToBottom();
     } catch (error) {
       if (generation !== conversationGeneration) return;
-      if (!older) {
-        chatMessages.replaceChildren();
-        const retry = document.createElement("button");
-        retry.textContent = "โหลดข้อความไม่สำเร็จ · ลองอีกครั้ง";
-        retry.addEventListener("click", () => loadMessages());
-        chatMessages.append(retry);
-      } else olderMessagesButton.textContent = "โหลดไม่สำเร็จ · ลองอีกครั้ง";
-    } finally {
-      if (generation === conversationGeneration) {
-        historyBusy = false;
-        olderMessagesButton.disabled = false;
-      }
-    }
+      if (!older) { chatMessages.replaceChildren(); const retry = document.createElement("button"); retry.textContent = "โหลดข้อความไม่สำเร็จ · ลองอีกครั้ง"; retry.addEventListener("click",()=>loadMessages()); chatMessages.append(retry); }
+      else olderMessagesButton.textContent = "โหลดไม่สำเร็จ · ลองอีกครั้ง";
+    } finally { if (generation === conversationGeneration) {historyBusy=false; olderMessagesButton.disabled=false;} }
   }
 
   /*
@@ -397,7 +359,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   messageForm.addEventListener("submit", async (event) => {
     event.preventDefault();
 
-    if (sendingText) return;
+    if(sendingText) return;
     const text = messageInput.value.trim();
 
     if (!text) {
@@ -410,9 +372,9 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
 
     const sendingGeneration = conversationGeneration;
-    const draft = messageInput.value;
-    messageInput.value = "";
-    sendingText = true;
+    const draft=messageInput.value;
+    messageInput.value='';
+    sendingText=true;
     try {
       const response = await fetch(`/api/chats/${currentRoomId}/messages`, {
         method: "POST",
@@ -444,15 +406,13 @@ document.addEventListener("DOMContentLoaded", async () => {
       appendMessage(message);
       scrollToBottom();
 
+
       messageInput.focus();
     } catch (error) {
-      if (sendingGeneration === conversationGeneration && !messageInput.value)
-        messageInput.value = draft;
+      if(sendingGeneration===conversationGeneration && !messageInput.value) messageInput.value=draft;
       console.error("ส่งข้อความล้มเหลว:", error);
       alert("ไม่สามารถส่งข้อความได้");
-    } finally {
-      sendingText = false;
-    }
+    } finally {sendingText=false;}
   });
 
   /*
@@ -474,8 +434,7 @@ document.addEventListener("DOMContentLoaded", async () => {
    */
 
   function appendMessage(message, scroll = true) {
-    if (message?.roomId && String(message.roomId) !== String(currentRoomId))
-      return;
+    if (message?.roomId && String(message.roomId) !== String(currentRoomId)) return;
     if (message?.id && renderedMessageIds.has(String(message.id))) return;
     if (message?.id) renderedMessageIds.add(String(message.id));
     if (!message) {
@@ -485,12 +444,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     /*
      * ถ้าไม่ใช่ TEXT ตอนนี้ยังไม่ render
      */
-    if (message.deleted)
-      message = {
-        ...message,
-        content: "ข้อความนี้ถูกลบแล้ว",
-        messageType: "TEXT",
-      };
+    if (message.deleted) message = {...message, content: "ข้อความนี้ถูกลบแล้ว", messageType: "TEXT"};
 
     removeEmptyMessage();
 
@@ -516,18 +470,26 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     content.className = "friend-chat-message-content";
 
-    if (
-      message.messageType === "IMAGE" &&
-      /^https?:\/\/|^\//.test(message.content || "")
-    ) {
-      const image = document.createElement("img");
-      image.src = message.content;
-      image.alt = "รูปภาพในแชท";
-      image.loading = "lazy";
-      content.append(image);
+    if (message.messageType === "IMAGE" && /^https?:\/\/|^\//.test(message.content || "")) {
+      const image = document.createElement("img"); image.src = message.content; image.alt = "รูปภาพในแชท"; image.loading = "lazy"; content.append(image);
     } else content.textContent = message.content || "";
 
     wrapper.appendChild(content);
+    if(isMine && message.messageType==='TEXT' && message.id) {
+      const edit=document.createElement('button');edit.type='button';edit.className='message-edit-button';edit.innerHTML='<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="m15 5 4 4M4 20l4-1L20 7a2.8 2.8 0 0 0-4-4L4 15z"/></svg>';edit.title='แก้ไขข้อความ';edit.setAttribute('aria-label','แก้ไขข้อความของฉัน');
+      edit.addEventListener('click',async()=>{
+        const draft=window.prompt('แก้ไขข้อความ',content.textContent);
+        if(draft===null || draft===content.textContent) return;
+        if(!draft.trim() || draft.length>5000){alert('ข้อความต้องมี 1–5000 ตัวอักษร');return;}
+        edit.disabled=true;
+        try {
+          const response=await fetch(`/api/chats/${message.roomId}/messages/${message.id}`,{method:'PUT',credentials:'include',headers:{'Content-Type':'application/json'},body:JSON.stringify({content:draft})});
+          if(!response.ok)throw new Error();
+          const updated=await response.json();content.textContent=updated.content;
+        }catch(_){alert('แก้ไขข้อความไม่สำเร็จ กรุณาลองอีกครั้ง');}finally{edit.disabled=false;}
+      });wrapper.append(edit);
+    }
+
 
     chatMessages.appendChild(wrapper);
 
@@ -550,9 +512,7 @@ document.addEventListener("DOMContentLoaded", async () => {
    */
 
   function disconnectRoomWebSocket() {
-    const old = socket;
-    socket = null;
-    stompConnected = false;
+    const old = socket; socket = null; stompConnected = false;
     if (old) old.close();
   }
   function connectRoomWebSocket() {
@@ -612,6 +572,7 @@ document.addEventListener("DOMContentLoaded", async () => {
           ack: "auto",
         });
 
+        sendStompFrame("SUBSCRIBE", {id:`friend-updates-${currentRoomId}`,destination:`/topic/rooms/${currentRoomId}/message-updates`,ack:"auto"});
         return;
       }
 
@@ -634,7 +595,12 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
           }
 
-          appendMessage(message);
+          if (message.type === 'EDIT' && message.message) {
+            const updated=message.message;
+            if(String(updated.roomId)!==String(currentRoomId)) return;
+            const existing=[...chatMessages.querySelectorAll('[data-message-id]')].find(n=>n.dataset.messageId===String(updated.id));
+            if(existing) existing.querySelector('.friend-chat-message-content').textContent=updated.content;
+          } else appendMessage(message);
         } catch (error) {
           console.error("อ่าน WebSocket message ไม่ได้:", error);
         }
@@ -850,26 +816,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   imageInput.addEventListener("change", async (event) => {
-    const file = event.target.files[0];
-    event.target.value = "";
-    if (!file || imageButton.disabled) return;
-    if (!currentRoomId) {
-      alert("กรุณาเลือกเพื่อนก่อนส่งรูป");
-      return;
-    }
-    const generation = conversationGeneration,
-      roomId = currentRoomId;
-    imageButton.disabled = true;
-    imageButton.setAttribute("aria-busy", "true");
-    try {
-      const message = await CPChatImages.send(roomId, file);
-      if (generation === conversationGeneration) appendMessage(message);
-    } catch (error) {
-      alert(error.message || "ส่งรูปไม่สำเร็จ");
-    } finally {
-      imageButton.disabled = false;
-      imageButton.removeAttribute("aria-busy");
-    }
+    const file=event.target.files[0];event.target.value='';
+    if(!file || imageButton.disabled)return;
+    if(!currentRoomId){alert('กรุณาเลือกเพื่อนก่อนส่งรูป');return;}
+    const generation=conversationGeneration, roomId=currentRoomId;
+    imageButton.disabled=true;imageButton.setAttribute('aria-busy','true');
+    try {const message=await CPChatImages.send(roomId,file);if(generation===conversationGeneration)appendMessage(message);}
+    catch(error){alert(error.message || 'ส่งรูปไม่สำเร็จ');}
+    finally{imageButton.disabled=false;imageButton.removeAttribute('aria-busy');}
   });
 
   /*
@@ -968,14 +922,32 @@ document.addEventListener("DOMContentLoaded", async () => {
   let speakerMuted = false;
   let acceptingCall = false;
   let startingCall = false;
+  // Ring timeouts: caller gives up after RING_TIMEOUT_MS; callee's incoming screen closes a bit later
+  // so the caller's CANCEL normally arrives first.
+  const RING_TIMEOUT_MS = 40000;
+  const PENDING_CALL_MAX_AGE_MS = 30000;
+  let ringTimer = null;
+  let incomingTimer = null;
+  function clearRingTimers() { clearTimeout(ringTimer); clearTimeout(incomingTimer); ringTimer = incomingTimer = null; }
+  // After entering the call room, end the call if nobody else shows up (caller gave up, CANCEL got lost).
+  const NO_PEER_TIMEOUT_MS = 20000;
+  let remotePeerCount = 0;
+  window.addEventListener("cp-call-streams", event => { remotePeerCount = Array.isArray(event.detail) ? event.detail.length : 0; });
+  function armNoPeerTimeout() {
+    const call = callInfo;
+    setTimeout(() => {
+      if (callInfo !== call || !CPCall.isActive() || remotePeerCount > 0) return;
+      console.warn("[friend] ไม่มีอีกฝ่ายเข้ามาในสายภายใน", NO_PEER_TIMEOUT_MS / 1000, "วินาที → วางสาย");
+      CPCall.leaveCall(); clearCallUI();
+    }, NO_PEER_TIMEOUT_MS);
+  }
 
   function callStatus(message) {
-    if (currentCallMode === "VIDEO") {
-      if (videoCallStatus) videoCallStatus.textContent = message;
-    } else if (voiceCallStatus) voiceCallStatus.textContent = message;
+    if (currentCallMode === "VIDEO") { if (videoCallStatus) videoCallStatus.textContent = message; }
+    else if (voiceCallStatus) voiceCallStatus.textContent = message;
   }
   function clock() {
-    return `${String(Math.floor(callSeconds / 60)).padStart(2, "0")}:${String(callSeconds % 60).padStart(2, "0")}`;
+    return `${String(Math.floor(callSeconds / 60)).padStart(2,"0")}:${String(callSeconds % 60).padStart(2,"0")}`;
   }
   function startCallTimer() {
     if (callTimer) return;
@@ -984,11 +956,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       if (videoCallDuration) videoCallDuration.textContent = clock();
     }, 1000);
   }
-  function stopCallTimer() {
-    clearInterval(callTimer);
-    callTimer = null;
-    callSeconds = 0;
-  }
+  function stopCallTimer() { clearInterval(callTimer); callTimer = null; callSeconds = 0; }
   function syncCallControls() {
     const stream = CPCall.getLocalStream();
     const audio = stream?.getAudioTracks()[0];
@@ -999,11 +967,8 @@ document.addEventListener("DOMContentLoaded", async () => {
       button.disabled = !audio;
       button.classList.toggle("muted", microphoneMuted);
       button.setAttribute("aria-pressed", String(microphoneMuted));
-      button.querySelector(":scope > span:last-child").textContent =
-        microphoneMuted ? "เปิดไมค์" : "ปิดไมค์";
-      const slash = button.querySelector(
-        ".voice-call-slash, .video-call-slash",
-      );
+      button.querySelector(":scope > span:last-child").textContent = microphoneMuted ? "เปิดไมค์" : "ปิดไมค์";
+      const slash = button.querySelector(".voice-call-slash, .video-call-slash");
       if (slash) slash.style.display = microphoneMuted ? "block" : "none";
     }
     if (voiceCallSpeaker) {
@@ -1014,8 +979,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       videoCallCamera.disabled = !CPCall.isActive();
       videoCallCamera.classList.toggle("muted", cameraOff);
       videoCallCamera.setAttribute("aria-pressed", String(!cameraOff));
-      videoCallCamera.querySelector(":scope > span:last-child").textContent =
-        cameraOff ? "เปิดกล้อง" : "ปิดกล้อง";
+      videoCallCamera.querySelector(":scope > span:last-child").textContent = cameraOff ? "เปิดกล้อง" : "ปิดกล้อง";
       const slash = videoCallCamera.querySelector(".video-call-slash");
       if (slash) slash.style.display = cameraOff ? "block" : "none";
     }
@@ -1025,25 +989,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     CPCall.refreshMediaViews();
   }
   function showIncomingActions(incoming) {
-    videoCallOverlay?.classList.toggle(
-      "ringing",
-      incoming && currentCallMode === "VIDEO",
-    );
-    if (incomingVoiceActions)
-      incomingVoiceActions.style.display =
-        incoming && currentCallMode === "VOICE" ? "flex" : "none";
-    if (incomingVideoActions)
-      incomingVideoActions.style.display =
-        incoming && currentCallMode === "VIDEO" ? "flex" : "none";
-    for (const button of [
-      voiceCallEnd,
-      voiceCallMute,
-      voiceCallSpeaker,
-      voiceCallUpgrade,
-      videoCallEnd,
-      videoCallMute,
-      videoCallCamera,
-    ]) {
+    videoCallOverlay?.classList.toggle("ringing", incoming && currentCallMode === "VIDEO");
+    if (incomingVoiceActions) incomingVoiceActions.style.display = incoming && currentCallMode === "VOICE" ? "flex" : "none";
+    if (incomingVideoActions) incomingVideoActions.style.display = incoming && currentCallMode === "VIDEO" ? "flex" : "none";
+    for (const button of [voiceCallEnd, voiceCallMute, voiceCallSpeaker, voiceCallUpgrade, videoCallEnd, videoCallMute, videoCallCamera]) {
       if (button) button.style.display = incoming ? "none" : "";
     }
   }
@@ -1070,8 +1019,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     currentCallMode = "VIDEO";
     $call("videoCallUserName").textContent = name || "เพื่อน";
     $call("videoCallUserImage").src = image || "/images/avatar-placeholder.svg";
-    $call("videoCallRemoteImage").src =
-      image || "/images/avatar-placeholder.svg";
+    $call("videoCallRemoteImage").src = image || "/images/avatar-placeholder.svg";
     if (videoCallDuration) videoCallDuration.textContent = clock();
     callStatus(status);
     showIncomingActions(incoming);
@@ -1079,106 +1027,71 @@ document.addEventListener("DOMContentLoaded", async () => {
     syncCallControls();
   }
   function clearCallUI() {
-    closeVoiceCall();
-    closeVideoCall();
+    clearRingTimers();
+    closeVoiceCall(); closeVideoCall();
     incomingCallSignal = callInfo = currentCallMode = null;
     speakerMuted = false;
     acceptingCall = false;
-    for (const button of [
-      voiceCallAccept,
-      voiceCallDecline,
-      videoCallAccept,
-      videoCallDecline,
-    ])
-      if (button) button.disabled = false;
+    for (const button of [voiceCallAccept,voiceCallDecline,videoCallAccept,videoCallDecline]) if (button) button.disabled = false;
   }
   function friendlyMediaError(error) {
-    if (error.name === "NotAllowedError")
-      return "กรุณาอนุญาตไมค์และกล้องในเบราว์เซอร์ แล้วลองอีกครั้ง";
-    if (error.name === "NotFoundError")
-      return "ไม่พบไมค์หรือกล้อง กรุณาตรวจอุปกรณ์";
-    if (error.name === "NotReadableError")
-      return "ไมค์หรือกล้องกำลังถูกใช้งาน กรุณาปิดแอปอื่นแล้วลองอีกครั้ง";
+    if (error.name === "NotAllowedError") return "กรุณาอนุญาตไมค์และกล้องในเบราว์เซอร์ แล้วลองอีกครั้ง";
+    if (error.name === "NotFoundError") return "ไม่พบไมค์หรือกล้อง กรุณาตรวจอุปกรณ์";
+    if (error.name === "NotReadableError") return "ไมค์หรือกล้องกำลังถูกใช้งาน กรุณาปิดแอปอื่นแล้วลองอีกครั้ง";
     return error.message || "เชื่อมต่อสายไม่สำเร็จ กรุณาลองใหม่";
   }
   async function startCall(mode) {
     if (startingCall || CPCall.isBusy() || incomingCallSignal) return;
-    if (!currentFriendId || !currentRoomId)
-      return alert("กรุณาเลือกเพื่อนก่อนโทร");
+    if (!currentFriendId || !currentRoomId) return alert("กรุณาเลือกเพื่อนก่อนโทร");
     startingCall = true;
-    callInfo = {
-      friendId: currentFriendId,
-      roomId: currentRoomId,
-      name: currentFriendName,
-      image: currentFriendImage,
-    };
+    callInfo = {friendId:currentFriendId,roomId:currentRoomId,name:currentFriendName,image:currentFriendImage};
     currentCallMode = mode;
     voiceCallButton.disabled = videoCallButton.disabled = true;
     try {
-      await CPCall.startFriendCall(callInfo.friendId, callInfo.roomId, mode);
+      await CPCall.startFriendCall(callInfo.friendId,callInfo.roomId,mode);
       const open = mode === "VIDEO" ? openVideoCallUI : openVoiceCallUI;
-      open(callInfo.name, callInfo.image, "กำลังโทร...");
-    } catch (error) {
-      CPCall.leaveCall(false);
-      clearCallUI();
-      alert(friendlyMediaError(error));
-    } finally {
-      startingCall = false;
-      voiceCallButton.disabled = videoCallButton.disabled = false;
-    }
+      open(callInfo.name,callInfo.image,"กำลังโทร...");
+      const ringingFor = callInfo;
+      clearTimeout(ringTimer);
+      ringTimer = setTimeout(async () => {
+        if (callInfo !== ringingFor || CPCall.isActive()) return;
+        console.warn("[friend] ไม่มีผู้รับสายภายใน", RING_TIMEOUT_MS / 1000, "วินาที → ยกเลิกสาย");
+        await cancelOutgoingCall();
+        alert("ไม่มีผู้รับสาย");
+      }, RING_TIMEOUT_MS);
+    } catch (error) { CPCall.leaveCall(false); clearCallUI(); alert(friendlyMediaError(error)); }
+    finally { startingCall = false; voiceCallButton.disabled = videoCallButton.disabled = false; }
   }
   async function cancelOutgoingCall() {
-    try {
-      await CPCall.cancelFriendCall();
-    } catch (error) {
-      console.warn("ส่ง CANCEL ไม่สำเร็จ:", error);
-    } finally {
-      CPCall.leaveCall(false);
-      clearCallUI();
-    }
+    try { await CPCall.cancelFriendCall(); }
+    catch (error) { console.warn("ส่ง CANCEL ไม่สำเร็จ:", error); }
+    finally { CPCall.leaveCall(false); clearCallUI(); }
   }
   async function declineIncomingCall() {
     const signal = incomingCallSignal;
     if (!signal) return;
-    try {
-      await CPCall.declineFriendCall(signal);
-    } catch (error) {
-      callStatus(error.message);
-      return;
-    }
-    CPCall.leaveCall(false);
-    clearCallUI();
+    try { await CPCall.declineFriendCall(signal); }
+    catch (error) { callStatus(error.message); return; }
+    CPCall.leaveCall(false); clearCallUI();
   }
   async function acceptIncomingCall() {
     if (!incomingCallSignal || acceptingCall) return;
     const signal = incomingCallSignal;
     acceptingCall = true;
-    for (const button of [
-      voiceCallAccept,
-      voiceCallDecline,
-      videoCallAccept,
-      videoCallDecline,
-    ])
-      if (button) button.disabled = true;
+    for (const button of [voiceCallAccept,voiceCallDecline,videoCallAccept,videoCallDecline]) if (button) button.disabled = true;
     callStatus("กำลังเปิดไมค์และเชื่อมต่อ...");
     try {
       await CPCall.acceptFriendCall(signal);
       if (incomingCallSignal !== signal) return;
       incomingCallSignal = null;
+      armNoPeerTimeout();
       showIncomingActions(false);
-      callStatus("กำลังเชื่อมต่อ...");
-      syncCallControls();
+      callStatus("กำลังเชื่อมต่อ..."); syncCallControls();
     } catch (error) {
       if (incomingCallSignal === signal) callStatus(friendlyMediaError(error));
     } finally {
       acceptingCall = false;
-      for (const button of [
-        voiceCallAccept,
-        voiceCallDecline,
-        videoCallAccept,
-        videoCallDecline,
-      ])
-        if (button) button.disabled = false;
+      for (const button of [voiceCallAccept,voiceCallDecline,videoCallAccept,videoCallDecline]) if (button) button.disabled = false;
     }
   }
   async function resumePendingIncomingCall() {
@@ -1186,14 +1099,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!raw) return;
     sessionStorage.removeItem("cp-pending-call");
     let signal;
-    try {
-      signal = JSON.parse(raw);
-    } catch (_) {
+    try { signal = JSON.parse(raw); } catch (_) { return; }
+    if (!signal?.fromUserId || !signal.roomId) return;
+    if (!signal.receivedAt || Date.now() - signal.receivedAt > PENDING_CALL_MAX_AGE_MS) {
+      console.warn("[friend] ข้ามสายเรียกเข้าที่เก่าเกินไป", signal);
       return;
     }
-    if (!signal?.fromUserId || !signal.roomId) return;
-    currentFriendId = signal.fromUserId;
-    currentRoomId = signal.roomId;
+    currentFriendId = signal.fromUserId; currentRoomId = signal.roomId;
     currentFriendName = signal.fromName || "เพื่อน";
     currentFriendImage = signal.fromImage || "/images/avatar-placeholder.svg";
     showIncomingCall(signal);
@@ -1201,73 +1113,59 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
   function showIncomingCall(signal) {
     incomingCallSignal = signal;
-    callInfo = {
-      friendId: signal.fromUserId,
-      roomId: signal.roomId,
-      name: signal.fromName || "เพื่อน",
-      image: signal.fromImage,
-    };
+    callInfo = {friendId:signal.fromUserId,roomId:signal.roomId,name:signal.fromName || "เพื่อน",image:signal.fromImage};
     const open = signal.mode === "VIDEO" ? openVideoCallUI : openVoiceCallUI;
-    open(
-      callInfo.name,
-      callInfo.image,
-      signal.mode === "VIDEO" ? "สายวิดีโอเข้า" : "สายเรียกเข้า",
-      true,
-    );
+    open(callInfo.name,callInfo.image,signal.mode === "VIDEO" ? "สายวิดีโอเข้า" : "สายเรียกเข้า",true);
+    clearTimeout(incomingTimer);
+    incomingTimer = setTimeout(() => {
+      if (incomingCallSignal !== signal || acceptingCall) return;
+      console.warn("[friend] สายเรียกเข้าหมดเวลา (ไม่มี CANCEL จากผู้โทร) → ปิดหน้าจอ");
+      clearCallUI();
+    }, RING_TIMEOUT_MS + 5000);
   }
-  window.addEventListener("cp-call-connected", () => {
-    callStatus("กำลังสนทนา");
-    startCallTimer();
-    syncCallControls();
-  });
-  window.addEventListener("cp-call-mode-changed", (event) => {
+  // If the media connection fails and does not recover (ICE restart) within 15s, end the call.
+  let mediaFailTimer = null;
+  window.addEventListener("cp-call-connected", () => { clearTimeout(mediaFailTimer); mediaFailTimer = null; callStatus("กำลังสนทนา"); startCallTimer(); syncCallControls(); });
+  window.addEventListener("cp-call-mode-changed", event => {
     if (event.detail?.mode !== "VIDEO" || !callInfo) return;
-    openVideoCallUI(callInfo.name, callInfo.image, "กำลังสนทนา");
+    openVideoCallUI(callInfo.name,callInfo.image,"กำลังสนทนา");
     syncCallControls();
   });
   window.addEventListener("cp-call-media-state", () => syncCallControls());
-  window.addEventListener("cp-call-error", (event) =>
-    callStatus(event.detail?.message || "การเชื่อมต่อขาดหาย"),
-  );
-  window.addEventListener("cp-call-ended", () => {
-    CPCall.leaveCall(false);
-    clearCallUI();
+  window.addEventListener("cp-call-error", event => {
+    callStatus(event.detail?.message || "การเชื่อมต่อขาดหาย");
+    const mediaFailed = event.detail?.reason === "media-failed" || event.detail?.message === "เชื่อมต่อสื่อไม่สำเร็จ กรุณาลองโทรใหม่";
+    if (!mediaFailed || !CPCall.isActive() || !callInfo || mediaFailTimer) return;
+    const failedCall = callInfo;
+    mediaFailTimer = setTimeout(() => {
+      mediaFailTimer = null;
+      if (callInfo !== failedCall || !CPCall.isActive()) return;
+      console.warn("[friend] เชื่อมต่อสื่อไม่กลับมาภายใน 15 วินาที → วางสาย");
+      CPCall.leaveCall(); clearCallUI();
+      alert("การเชื่อมต่อขาดหาย สายถูกตัด");
+    }, 15000);
   });
-  window.addEventListener("cp-call-signal", async (event) => {
+  window.addEventListener("cp-call-ended", () => { CPCall.leaveCall(false); clearCallUI(); });
+  window.addEventListener("cp-call-signal", async event => {
     const signal = event.detail;
     if (!signal) return;
     if (signal.type === "INVITE") {
-      if (CPCall.isBusy() || incomingCallSignal || startingCall) {
-        CPCall.declineFriendCall(signal).catch(console.error);
-        return;
-      }
-      showIncomingCall(signal);
-      return;
+      if (CPCall.isBusy() || incomingCallSignal || startingCall) { CPCall.declineFriendCall(signal).catch(console.error); return; }
+      showIncomingCall(signal); return;
     }
-    if (
-      !callInfo ||
-      String(signal.fromUserId) !== String(callInfo.friendId) ||
-      String(signal.roomId) !== String(callInfo.roomId)
-    )
-      return;
+    if (!callInfo || String(signal.fromUserId) !== String(callInfo.friendId) || String(signal.roomId) !== String(callInfo.roomId)) return;
     if (signal.type === "ACCEPT") {
       if (incomingCallSignal || CPCall.isActive()) return;
-      try {
-        await CPCall.joinRoomCall(
-          callInfo.roomId,
-          signal.mode || currentCallMode,
-        );
-        callStatus("กำลังเชื่อมต่อ...");
-        syncCallControls();
-      } catch (error) {
-        await cancelOutgoingCall();
-        alert(friendlyMediaError(error));
+      clearRingTimers();
+      const accepted = callInfo;
+      try { await CPCall.joinRoomCall(callInfo.roomId, signal.mode || currentCallMode); callStatus("กำลังเชื่อมต่อ..."); syncCallControls(); armNoPeerTimeout(); }
+      catch (error) {
+        // User hung up while we were connecting: clearCallUI() already ran, nothing to report.
+        if (callInfo !== accepted) return;
+        await cancelOutgoingCall(); alert(friendlyMediaError(error));
       }
     }
-    if (signal.type === "DECLINE" || signal.type === "CANCEL") {
-      CPCall.leaveCall(false);
-      clearCallUI();
-    }
+    if (signal.type === "DECLINE" || signal.type === "CANCEL") { CPCall.leaveCall(false); clearCallUI(); }
   });
   voiceCallButton?.addEventListener("click", () => startCall("VOICE"));
   videoCallButton?.addEventListener("click", () => startCall("VIDEO"));
@@ -1276,83 +1174,51 @@ document.addEventListener("DOMContentLoaded", async () => {
   voiceCallDecline?.addEventListener("click", declineIncomingCall);
   videoCallDecline?.addEventListener("click", declineIncomingCall);
   async function closeOrDecline() {
-    if (incomingCallSignal) {
-      await declineIncomingCall();
-      return;
-    }
-    if (CPCall.isActive()) {
-      CPCall.leaveCall();
-      clearCallUI();
-    } else await cancelOutgoingCall();
+    if (incomingCallSignal) { await declineIncomingCall(); return; }
+    if (CPCall.isActive()) { CPCall.leaveCall(); clearCallUI(); }
+    else await cancelOutgoingCall();
   }
   voiceCallClose?.addEventListener("click", closeOrDecline);
   if (voiceCallEnd)
     voiceCallEnd.addEventListener("click", async () => {
-      if (CPCall.isActive?.()) {
-        CPCall.leaveCall();
-        clearCallUI();
-      } else if (currentCallMode === "VOICE") {
-        await cancelOutgoingCall();
-      }
+      if (CPCall.isActive?.()) { CPCall.leaveCall(); clearCallUI(); }
+      else if (currentCallMode === "VOICE") { await cancelOutgoingCall(); }
     });
   if (videoCallClose) videoCallClose.addEventListener("click", closeOrDecline);
   if (videoCallEnd)
     videoCallEnd.addEventListener("click", async () => {
-      if (CPCall.isActive?.()) {
-        CPCall.leaveCall();
-        clearCallUI();
-      } else if (currentCallMode === "VIDEO") {
-        await cancelOutgoingCall();
-      }
+      if (CPCall.isActive?.()) { CPCall.leaveCall(); clearCallUI(); }
+      else if (currentCallMode === "VIDEO") { await cancelOutgoingCall(); }
     });
-  if (voiceCallMute)
-    voiceCallMute.addEventListener("click", () => {
-      CPCall.toggleMicrophone();
-      syncCallControls();
-    });
-  videoCallMute?.addEventListener("click", () => {
-    CPCall.toggleMicrophone();
-    syncCallControls();
-  });
-  voiceCallSpeaker?.addEventListener("click", () => {
-    speakerMuted = !speakerMuted;
-    syncCallControls();
-  });
+  if (voiceCallMute) voiceCallMute.addEventListener("click", () => { CPCall.toggleMicrophone(); syncCallControls(); });
+  videoCallMute?.addEventListener("click", () => { CPCall.toggleMicrophone(); syncCallControls(); });
+  voiceCallSpeaker?.addEventListener("click", () => { speakerMuted = !speakerMuted; syncCallControls(); });
   voiceCallUpgrade?.addEventListener("click", async () => {
     voiceCallUpgrade.disabled = true;
     callStatus("กำลังเปิดกล้อง...");
-    try {
-      await CPCall.upgradeToVideo();
-    } catch (error) {
-      callStatus(friendlyMediaError(error));
-    } finally {
-      syncCallControls();
-    }
+    try { await CPCall.upgradeToVideo(); }
+    catch (error) { callStatus(friendlyMediaError(error)); }
+    finally { syncCallControls(); }
   });
   videoCallCamera?.addEventListener("click", async () => {
     videoCallCamera.disabled = true;
-    try {
-      await CPCall.toggleCamera();
-    } catch (error) {
-      callStatus(friendlyMediaError(error));
-    } finally {
-      syncCallControls();
-    }
+    try { await CPCall.toggleCamera(); }
+    catch (error) { callStatus(friendlyMediaError(error)); }
+    finally { syncCallControls(); }
   });
-  document.addEventListener("keydown", (event) => {
-    if (
-      event.key === "Escape" &&
-      !CPCall.isActive() &&
-      !acceptingCall &&
-      currentCallMode
-    )
-      closeOrDecline();
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape" && !CPCall.isActive() && !acceptingCall && currentCallMode) closeOrDecline();
   });
-  window.addEventListener("pagehide", () => {
-    disconnectRoomWebSocket();
-    CPCall.leaveCall();
-    stopCallTimer();
+  // Closing / refreshing the tab while the call is not connected yet: stop the other side ringing.
+  // beforeunload fires before call.js's pagehide handler (which closes the STOMP socket).
+  // Mobile browsers may skip beforeunload; the ring timeouts cover that case.
+  window.addEventListener("beforeunload", () => {
+    if (!callInfo || CPCall.isActive()) return;
+    const type = incomingCallSignal ? "DECLINE" : "CANCEL";
+    CPCall.wsPublish("/app/call", { type, toUserId: callInfo.friendId, roomId: callInfo.roomId });
   });
+  window.addEventListener("pagehide", () => { disconnectRoomWebSocket(); CPCall.leaveCall(); stopCallTimer(); });
+
 
   /*
    * =========================================================
@@ -1363,12 +1229,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   try {
     await CPCall.loadMe();
     CPCall.connectWS();
-  } catch (error) {
-    console.error("เริ่มระบบรับสายไม่สำเร็จ:", error);
-  }
+  } catch (error) { console.error("เริ่มระบบรับสายไม่สำเร็จ:", error); }
   await loadCurrentUser();
 
-  const hasPendingCall = sessionStorage.getItem("cp-pending-call") !== null;
+  const hasPendingCall =
+    sessionStorage.getItem("cp-pending-call") !== null;
 
   if (hasPendingCall) {
     await resumePendingIncomingCall();
