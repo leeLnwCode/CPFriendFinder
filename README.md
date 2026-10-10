@@ -12,7 +12,7 @@
 
 | ลำดับ | ชื่อ-นามสกุล | รหัสนักศึกษา | Section | Branch | หน้าที่รับผิดชอบ |
 |---|---|---|---|---|---|
-| 1 | ปองภพ ศรีรักษ์ | 673380279-7 | 01 | `phongphop_673380279-7` | Backend Core (User/Profile), สถาปัตยกรรม Layered, SOLID analysis, README |
+| 1 | ปองภพ ศรีรักษ์ | 673380279-7 | 01 | `phongphop_673380279-7_01` | Backend Core (User/Profile), สถาปัตยกรรม Layered, SOLID analysis, README |
 | 2 | ปิยพนธ์ แก้วเก็บคำ | 673380050-9 | 01 | `piyapon_673380050-9_01` | Database/Entity/Repository ทั้งระบบ (14 ตาราง), CRUD ห้องแชทและเพื่อน, schema |
 | 3 | โยโกะ คามิโจ | 673380302-8 | 01 | `Yoko_673380302-8_01` | Frontend Thymeleaf ทุกหน้า, WebSocket UI, หน้าสุ่มคุย/Voice call |
 | 4 | จิรัชญา เป้าจันทึก | 673380510-1 | 01 | `jiratchaya_673380510-1_01` | DTO/Validation, REST API, Testing (JUnit 5/Mockito), Test Report |
