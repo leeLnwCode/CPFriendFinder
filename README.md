@@ -18,7 +18,7 @@
 | 4 | จิรัชญา เป้าจันทึก | 673380510-1 | 01 | `jiratchaya_673380510-1_01` | DTO/Validation, REST API, Testing (JUnit 5/Mockito), Test Report |
 | 5 | อภิวิชญ์ เอกะ | 673380517-7 | 01 | `apiwich_673380517-7_01` | Matching (Strategy), Notification (Observer), Docker/CI, WebRTC/TURN, Deployment |
 
-> ⚠️ แก้คอลัมน์ Section ให้ตรงกับที่ลงทะเบียนจริงก่อนส่งงาน
+
 
 ---
 
