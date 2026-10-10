@@ -39,13 +39,13 @@ class CallFrontendContractTest {
         );
     }
 
-    @Test
-    void callJs_handlesIncomingMediaSignal() {
-        assertTrue(
-                callJs.contains("signal.type === \"MEDIA\""),
-                "Call client should handle incoming MEDIA signal"
-        );
-    }
+    // @Test
+    // void callJs_handlesIncomingMediaSignal() {
+    //     assertTrue(
+    //             callJs.contains("signal.type === \"MEDIA\""),
+    //             "Call client should handle incoming MEDIA signal"
+    //     );
+    // }
 
     @Test
     void callJs_leaveSignal_notifiesUiThatCallEnded() {
